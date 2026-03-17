@@ -40,6 +40,15 @@ const cours = [
     ready: true,
   },
   {
+    href: siteUrl('/cours/exemples/'),
+    title: 'Exemples de code',
+    description: '66 scripts MicroPython classés par thème : GPIO, PWM, NeoPixel, ADC, OLED, interruptions, audio.',
+    category: 'Référence',
+    color: 'purple',
+    icon: '📂',
+    ready: true,
+  },
+  {
     href: '#',
     title: 'Protocoles de communication',
     description: 'I2C, SPI, UART, I2S — comment les composants communiquent entre eux et avec l\'ESP32.',
@@ -70,7 +79,7 @@ const cours = [
 
 const colorMap: Record<string, string> = {
   blue: 'bg-blue-500/10 text-blue-400 border-blue-500/20 hover:border-blue-500/40',
-  purple: 'bg-purple-500/10 text-purple-400 border-purple-500/20 hover:border-purple-500/40',
+  purple: 'bg-purple-500/10 text-purple-400 border-purple-500/20 hover:border-purple-500/40 cursor-pointer',
   emerald: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 hover:border-emerald-500/40',
   orange: 'bg-orange-500/10 text-orange-400 border-orange-500/20 hover:border-orange-500/40',
   cyan: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20 hover:border-cyan-500/40',
