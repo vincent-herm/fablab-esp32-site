@@ -75,5 +75,29 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
         document.documentElement.setAttribute('data-theme', saved);
       }
     </script>
+
+    <!-- Boutons copier sur les blocs de code -->
+    <script is:inline>
+      document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('pre').forEach(pre => {
+          const code = pre.querySelector('code');
+          if (!code) return;
+          const btn = document.createElement('button');
+          btn.className = 'copy-btn';
+          btn.textContent = 'copier';
+          btn.addEventListener('click', () => {
+            navigator.clipboard.writeText(code.innerText).then(() => {
+              btn.textContent = '✓ copié';
+              btn.classList.add('copied');
+              setTimeout(() => {
+                btn.textContent = 'copier';
+                btn.classList.remove('copied');
+              }, 2000);
+            });
+          });
+          pre.appendChild(btn);
+        });
+      });
+    </script>
   </body>
 </html>
