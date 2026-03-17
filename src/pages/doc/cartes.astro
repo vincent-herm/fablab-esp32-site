@@ -25,17 +25,18 @@ const cartes = [
     badge: 'Version améliorée',
     badgeColor: 'bg-blue-500/15 text-blue-400',
     emoji: '🔵',
-    prix: '~8€',
+    prix: '~8–14€',
     desc: "La version plus récente de l'ESP32 avec plus de broches, de la mémoire en plus et surtout un port USB natif — plus besoin de puce intermédiaire pour se connecter.",
     specs: [
       { label: 'Processeur', value: '240 MHz (double cœur Xtensa LX7)' },
       { label: 'Mémoire', value: '512 Ko RAM · jusqu\'à 16 Mo Flash' },
       { label: 'Broches', value: '45 GPIO' },
-      { label: 'Sans fil', value: 'WiFi + Bluetooth 5 (BLE)' },
-      { label: 'Spécial', value: 'USB natif — connexion directe' },
+      { label: 'Sans fil', value: 'WiFi 2.4 GHz + Bluetooth 5 (BLE)' },
+      { label: 'Spécial', value: 'USB natif · Basic Kit Waveshare ~14€' },
     ],
-    pourquoi: "Choisis l'ESP32-S3 si tu as besoin de plus de broches GPIO, d'un écran couleur (SPI rapide), ou d'une connexion USB directe sans adaptateur. C'est la carte pour les projets plus ambitieux.",
+    pourquoi: "Choisis l'ESP32-S3 si tu as besoin de plus de broches GPIO, d'un écran couleur (SPI rapide), ou d'une connexion USB directe sans adaptateur. Waveshare propose un ESP32-S3 Basic Kit à ~14€ prêt à l'emploi.",
     color: 'border-blue-500/20 bg-blue-500/5',
+    lien: 'https://www.waveshare.com/product/arduino/boards-kits/esp32-s3.htm',
   },
   {
     nom: 'Raspberry Pi Pico 2W',
@@ -89,20 +90,40 @@ const cartes = [
     color: 'border-purple-500/20 bg-purple-500/5',
   },
   {
-    nom: 'Waveshare Touch LCD',
-    badge: 'Écran tactile',
+    nom: 'Waveshare ESP32-S3 Touch LCD',
+    badge: 'Écran tactile intégré',
     badgeColor: 'bg-teal-500/15 text-teal-400',
     emoji: '🖥️',
-    prix: '~15-25€',
-    desc: "Écran couleur tactile pour ESP32-S3. Plusieurs tailles disponibles (2.8\" à 4.3\"). Idéal pour créer des interfaces graphiques complètes avec boutons virtuels.",
+    prix: '25€ – 45€',
+    desc: "Des cartes tout-en-un : l'ESP32-S3 et un écran couleur tactile sur le même circuit. Plusieurs tailles disponibles, de 1.5\" à 4.3\". Idéal pour créer des interfaces graphiques sans câblage.",
     specs: [
-      { label: 'Tailles', value: '2.8\", 3.5\", 4.3\" disponibles' },
-      { label: 'Résolution', value: '320×240 à 800×480 px' },
-      { label: 'Interface', value: 'SPI (écran) + I2C (tactile)' },
-      { label: 'Tactile', value: 'Résistif (stylet) ou capacitif (doigt)' },
+      { label: 'Modèle 3.5\"', value: 'ESP32-S3 Touch LCD 3.5B — 320×480 IPS — ~27€' },
+      { label: 'Modèle 4.3\"', value: 'ESP32-S3 Touch LCD 4.3C — 800×480, 5 doigts — ~42€' },
+      { label: 'Interface écran', value: 'QSPI (très rapide, 40 MHz+)' },
+      { label: 'Tactile', value: 'Capacitif multi-touch (doigt)' },
+      { label: 'Spécial', value: 'ESP32-S3 + écran + tactile sur une seule carte' },
     ],
-    pourquoi: "Quand tu veux un vrai tableau de bord ou une interface graphique — pas juste des LEDs. L'écran tactile transforme ton ESP32 en mini-tablette programmable.",
+    pourquoi: "Ces cartes Waveshare sont parfaites quand tu veux une interface graphique sans te prendre la tête avec le câblage. L'écran et le microcontrôleur sont déjà assemblés. Tu te concentres sur le code. Le modèle 3.5\" est le bon compromis taille/prix pour débuter.",
     color: 'border-teal-500/20 bg-teal-500/5',
+    lien: 'https://www.waveshare.com/product/arduino/boards-kits/esp32-s3.htm',
+  },
+  {
+    nom: 'Waveshare ESP32 Touch LCD 3.5\"',
+    badge: 'Avec codec audio',
+    badgeColor: 'bg-indigo-500/15 text-indigo-400',
+    emoji: '🎙️',
+    prix: '~27€',
+    desc: "La version ESP32 classique (pas S3) avec écran 3.5\" tactile et, surprise, un codec audio intégré avec micro et haut-parleur. La seule carte Waveshare avec tout : écran, son et WiFi.",
+    specs: [
+      { label: 'Modèle', value: 'ESP32-Touch-LCD-3.5' },
+      { label: 'Écran', value: '320×480 IPS, SPI' },
+      { label: 'Audio', value: 'Codec intégré + micro + HP' },
+      { label: 'Prix mars 2026', value: '~27€ (27–29 USD sur waveshare.com)' },
+      { label: 'Connectivité', value: 'WiFi + BLE via ESP32-WROOM-32' },
+    ],
+    pourquoi: "Un cas particulier intéressant : cette carte combine un écran tactile, un micro et un haut-parleur dans un seul module à 27€. Idéal pour un projet avec interface visuelle ET sonore — assistant vocal, tableau de bord interactif, etc.",
+    color: 'border-indigo-500/20 bg-indigo-500/5',
+    lien: 'https://www.waveshare.com/esp32-touch-lcd-3.5.htm',
   },
 ];
 ---
@@ -162,6 +183,16 @@ const cartes = [
               <div class="rounded-xl bg-base-100/40 p-4">
                 <h4 class="text-xs font-bold text-base-content/50 uppercase tracking-wider mb-2">Quand la choisir ?</h4>
                 <p class="text-sm text-base-content/70 leading-relaxed">{carte.pourquoi}</p>
+                {carte.lien && (
+                  <a
+                    href={carte.lien}
+                    target="_blank"
+                    class="inline-flex items-center gap-1.5 mt-3 text-xs text-teal-400 hover:text-teal-300 transition-colors font-medium"
+                  >
+                    Voir sur Waveshare.com
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                  </a>
+                )}
               </div>
 
             </div>
