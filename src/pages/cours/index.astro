@@ -1,18 +1,19 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import { url } from '../../utils/url';
 
 const cours = [
   {
-    href: '/cours/introduction-micropython/',
+    href: url('/cours/introduction-micropython/'),
     title: 'Introduction à MicroPython',
-    description: 'Python sur microcontrôleur : syntaxe, différences avec le Python classique, premiers pas sur ESP32.',
+    description: 'Python sur microcontrôleur : syntaxe, différences avec Arduino, premiers pas sur ESP32.',
     category: 'Bases',
     color: 'blue',
     icon: '🐍',
     ready: true,
   },
   {
-    href: '/cours/protocoles-communication/',
+    href: '#',
     title: 'Protocoles de communication',
     description: 'I2C, SPI, UART, I2S — comment les composants communiquent entre eux et avec l\'ESP32.',
     category: 'Électronique',
@@ -21,16 +22,16 @@ const cours = [
     ready: false,
   },
   {
-    href: '/cours/capteurs/',
+    href: '#',
     title: 'Capteurs courants',
-    description: 'DHT22 (température), HC-SR04 (distance), MPU6050 (gyroscope), BMP280 (pression)...',
+    description: 'DHT22 (température), HC-SR04 (distance), MPU6050 (gyroscope)...',
     category: 'Capteurs',
     color: 'emerald',
     icon: '📡',
     ready: false,
   },
   {
-    href: '/cours/actionneurs/',
+    href: '#',
     title: 'Actionneurs',
     description: 'Servomoteurs, moteurs DC, relais, vibreurs — donner du mouvement à tes projets.',
     category: 'Mécatronique',
@@ -39,7 +40,7 @@ const cours = [
     ready: false,
   },
   {
-    href: '/cours/iot-wifi-mqtt/',
+    href: '#',
     title: 'Réseau & IoT avec ESP32',
     description: 'WiFi, HTTP, MQTT — connecte ton ESP32 à Internet et à d\'autres appareils.',
     category: 'IoT',
@@ -48,7 +49,7 @@ const cours = [
     ready: false,
   },
   {
-    href: '/cours/audio-esp32/',
+    href: '#',
     title: 'Audio sur ESP32',
     description: 'I2S, codecs, génération de sons, lecture WAV et MP3 — l\'audio pas à pas.',
     category: 'Audio',
@@ -57,7 +58,7 @@ const cours = [
     ready: false,
   },
   {
-    href: '/cours/mecatronique/',
+    href: '#',
     title: 'Introduction à la mécatronique',
     description: 'L\'interface entre mécanique, électronique et informatique — principes fondamentaux.',
     category: 'Mécatronique',
@@ -82,7 +83,6 @@ const colorMap: Record<string, string> = {
   title="Cours théoriques"
   description="7 cours MicroPython : bases Python, protocoles I2C/SPI/I2S, capteurs, actionneurs, IoT, audio sur ESP32."
 >
-  <!-- En-tête -->
   <section class="py-20 hero-pattern border-b border-base-200/60">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="max-w-2xl">
@@ -95,14 +95,13 @@ const colorMap: Record<string, string> = {
     </div>
   </section>
 
-  <!-- Grille cours -->
   <section class="py-16">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {cours.map(c => (
           <a
-            href={c.ready ? c.href : '#'}
-            class={`group rounded-2xl border bg-base-200/20 p-6 card-hover transition-all ${colorMap[c.color]} ${!c.ready ? 'opacity-60 cursor-not-allowed' : ''}`}
+            href={c.href}
+            class={`group rounded-2xl border bg-base-200/20 p-6 transition-all ${colorMap[c.color]} ${!c.ready ? 'opacity-60 cursor-not-allowed pointer-events-none' : 'card-hover'}`}
           >
             <div class="flex items-start justify-between mb-4">
               <div class="text-3xl">{c.icon}</div>
@@ -117,12 +116,8 @@ const colorMap: Record<string, string> = {
                 )}
               </div>
             </div>
-            <h3 class="font-bold text-base-content mb-2 group-hover:text-current transition-colors">
-              {c.title}
-            </h3>
-            <p class="text-sm text-base-content/60 leading-relaxed">
-              {c.description}
-            </p>
+            <h3 class="font-bold text-base-content mb-2">{c.title}</h3>
+            <p class="text-sm text-base-content/60 leading-relaxed">{c.description}</p>
           </a>
         ))}
       </div>
