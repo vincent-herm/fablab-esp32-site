@@ -5,8 +5,8 @@ import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
-  site: 'https://vincent-fablab.github.io',
-  base: '/',
+  site: 'https://vincent-herm.github.io',
+  base: '/fablab-esp32-site',
   vite: {
     plugins: [tailwindcss()]
   },
