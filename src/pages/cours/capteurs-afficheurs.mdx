@@ -1,0 +1,328 @@
+---
+title: 'Capteurs et afficheurs'
+description: "Lire des valeurs analogiques avec l'ADC de l'ESP32, afficher des données sur un écran OLED SSD1306 et mesurer la température avec le DS18B20."
+---
+
+import Layout from '../../layouts/Layout.astro';
+import DifficultyBadge from '../../components/DifficultyBadge.astro';
+import { siteUrl } from '../../utils/url';
+
+<Layout title={frontmatter.title} description={frontmatter.description}>
+
+<div class="border-b border-base-200/60 bg-base-200/20">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+    <div class="flex items-center gap-2 text-sm text-base-content/50">
+      <a href={siteUrl('/')} class="hover:text-base-content transition-colors">Accueil</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <a href={siteUrl('/cours/')} class="hover:text-base-content transition-colors">Cours</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <span class="text-base-content/80">Capteurs et afficheurs</span>
+    </div>
+  </div>
+</div>
+
+<section class="py-12 hero-pattern border-b border-base-200/60">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-2xl">📡</span>
+      <span class="text-xs px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-400 font-medium">Capteurs</span>
+      <DifficultyBadge level="intermediaire" />
+    </div>
+    <h1 class="text-3xl sm:text-4xl font-black mb-4">Capteurs et afficheurs</h1>
+    <p class="text-base-content/65 text-lg leading-relaxed max-w-2xl">
+      Mesure des grandeurs physiques avec l'ADC de l'ESP32, visualise des données sur un écran OLED SSD1306 et intègre un capteur de température numérique DS18B20.
+    </p>
+  </div>
+</section>
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+## ADC — Entrées analogiques
+
+L'ESP32 dispose de 18 canaux ADC 12 bits. La valeur renvoyée va de **0** (0 V) à **4095** (3.3 V).
+
+<div class="rounded-xl border border-amber-500/20 bg-amber-500/5 p-5 my-6">
+  <h4 class="font-bold text-amber-400 mb-2">⚠️ Attention : ADC2 incompatible WiFi</h4>
+  <p class="text-sm text-base-content/70">Les pins ADC2 (GPIO 0, 2, 4, 12-15, 25-27) ne fonctionnent pas quand le WiFi est actif. Pour des mesures fiables avec WiFi, utilise uniquement ADC1 (GPIO 32-39).</p>
+</div>
+
+```python
+from machine import ADC, Pin
+
+# Potentiomètre sur GPIO 33 (ADC1)
+adc = ADC(Pin(33))
+adc.atten(ADC.ATTN_11DB)   # plage 0–3.3 V
+adc.width(ADC.WIDTH_12BIT) # résolution 12 bits (0–4095)
+
+valeur = adc.read()
+tension = valeur * 3.3 / 4095
+print(f"ADC : {valeur}  →  {tension:.2f} V")
+```
+
+### Calibration : convertir en grandeur physique
+
+```python
+from machine import ADC, Pin
+
+adc = ADC(Pin(33))
+adc.atten(ADC.ATTN_11DB)
+
+def lire_tension():
+    return adc.read() * 3.3 / 4095
+
+# Capteur LM35 : 10 mV par °C
+def lire_temperature_lm35():
+    v = lire_tension()
+    return v * 100   # 1 V = 100 °C
+
+# Potentiomètre : convertir en pourcentage
+def lire_potentiometre():
+    return adc.read() * 100 // 4095
+```
+
+### Cellule photoélectrique (LDR)
+
+```python
+from machine import ADC, Pin, PWM
+import time
+
+ldr = ADC(Pin(32))
+ldr.atten(ADC.ATTN_11DB)
+led = PWM(Pin(2), freq=1000)
+
+while True:
+    lumiere = ldr.read()           # 0 = sombre, 4095 = lumineux
+    # Plus il fait sombre, plus la LED brille
+    led.duty(4095 - lumiere)
+    time.sleep_ms(50)
+```
+
+---
+
+## OLED SSD1306 — Afficheur I2C
+
+Le SSD1306 est un afficheur OLED 128×64 pixels, communiquant en I2C. Le module `ssd1306` est inclus dans MicroPython pour ESP32.
+
+<div class="overflow-x-auto rounded-xl border border-base-200/80 my-6">
+  <table class="table w-full">
+    <thead>
+      <tr><th>Pin SSD1306</th><th>Pin ESP32</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="font-mono">VCC</td><td>3.3 V</td><td>Alimentation</td></tr>
+      <tr><td class="font-mono">GND</td><td>GND</td><td>Masse</td></tr>
+      <tr><td class="font-mono">SDA</td><td>GPIO 21</td><td>Données I2C</td></tr>
+      <tr><td class="font-mono">SCL</td><td>GPIO 22</td><td>Horloge I2C</td></tr>
+    </tbody>
+  </table>
+</div>
+
+```python
+from machine import Pin, I2C
+import ssd1306
+
+# Initialisation I2C
+i2c  = I2C(0, scl=Pin(22), sda=Pin(21))
+oled = ssd1306.SSD1306_I2C(128, 64, i2c)
+
+# Effacer et afficher du texte
+oled.fill(0)                        # fond noir
+oled.text("Bonjour Fablab!", 0, 0)  # texte en haut
+oled.text("ESP32 + OLED", 0, 16)
+oled.show()                         # envoyer vers l'écran
+```
+
+### Tracer des formes
+
+```python
+# Ligne
+oled.line(0, 32, 127, 32, 1)        # ligne horizontale
+
+# Rectangle
+oled.rect(10, 10, 50, 30, 1)        # contour
+oled.fill_rect(70, 10, 50, 30, 1)   # plein
+
+# Pixel
+oled.pixel(64, 32, 1)               # allumer un pixel
+
+oled.show()
+```
+
+### Station météo simple
+
+```python
+from machine import Pin, I2C, ADC
+import ssd1306, time
+
+i2c  = I2C(0, scl=Pin(22), sda=Pin(21))
+oled = ssd1306.SSD1306_I2C(128, 64, i2c)
+adc  = ADC(Pin(33))
+adc.atten(ADC.ATTN_11DB)
+
+while True:
+    v = adc.read() * 3.3 / 4095
+    temp = v * 100  # LM35 : 10 mV/°C
+
+    oled.fill(0)
+    oled.text("Temperature:", 0, 0)
+    oled.text(f"{temp:.1f} C", 20, 20)
+    oled.show()
+    time.sleep(1)
+```
+
+### Tracé de courbe sinusoïdale
+
+```python
+from machine import Pin, I2C
+import ssd1306, math
+
+i2c  = I2C(0, scl=Pin(22), sda=Pin(21))
+oled = ssd1306.SSD1306_I2C(128, 64, i2c)
+
+oled.fill(0)
+for x in range(128):
+    y = int(32 - 28 * math.sin(2 * math.pi * x / 64))
+    oled.pixel(x, y, 1)
+oled.show()
+```
+
+---
+
+## DS18B20 — Température numérique 1-Wire
+
+Le DS18B20 mesure la température de -55 à +125 °C avec une précision de ±0.5 °C. Il communique sur un seul fil (1-Wire).
+
+<div class="overflow-x-auto rounded-xl border border-base-200/80 my-6">
+  <table class="table w-full">
+    <thead>
+      <tr><th>Pin DS18B20</th><th>Connexion</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>GND (broche 1)</td><td>GND</td></tr>
+      <tr><td>DATA (broche 2)</td><td>GPIO 27 + résistance 4.7 kΩ vers 3.3 V</td></tr>
+      <tr><td>VDD (broche 3)</td><td>3.3 V</td></tr>
+    </tbody>
+  </table>
+</div>
+
+```python
+from machine import Pin
+import onewire, ds18x20, time
+
+# Initialisation 1-Wire sur GPIO 27
+ow      = onewire.OneWire(Pin(27))
+capteur = ds18x20.DS18X20(ow)
+
+# Trouver les capteurs sur le bus
+roms = capteur.scan()
+print(f"{len(roms)} capteur(s) trouvé(s)")
+
+while True:
+    capteur.convert_temp()   # déclencher la mesure
+    time.sleep_ms(750)       # attendre la conversion (750 ms)
+
+    for rom in roms:
+        temp = capteur.read_temp(rom)
+        print(f"Température : {temp:.1f} °C")
+
+    time.sleep(2)
+```
+
+### Plusieurs capteurs sur un seul fil
+
+Le protocole 1-Wire permet de chaîner plusieurs DS18B20 sur le même pin :
+
+```python
+from machine import Pin
+import onewire, ds18x20, time
+
+ow      = onewire.OneWire(Pin(27))
+capteur = ds18x20.DS18X20(ow)
+roms    = capteur.scan()
+
+capteur.convert_temp()
+time.sleep_ms(750)
+
+for i, rom in enumerate(roms):
+    temp = capteur.read_temp(rom)
+    print(f"Capteur {i+1} : {temp:.1f} °C")
+```
+
+### DS18B20 + OLED — Station météo complète
+
+```python
+from machine import Pin, I2C
+import onewire, ds18x20, ssd1306, time
+
+i2c  = I2C(0, scl=Pin(22), sda=Pin(21))
+oled = ssd1306.SSD1306_I2C(128, 64, i2c)
+ow   = onewire.OneWire(Pin(27))
+ds   = ds18x20.DS18X20(ow)
+roms = ds.scan()
+
+while True:
+    ds.convert_temp()
+    time.sleep_ms(750)
+
+    oled.fill(0)
+    oled.text("Station Meteo", 0, 0)
+    oled.line(0, 12, 127, 12, 1)
+
+    for i, rom in enumerate(roms):
+        temp = ds.read_temp(rom)
+        oled.text(f"T{i+1}: {temp:.1f}C", 0, 20 + i * 12)
+
+    oled.show()
+    time.sleep(2)
+```
+
+---
+
+## Résumé des connexions
+
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6">
+  <div class="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4">
+    <h4 class="font-bold text-emerald-400 mb-2 text-sm">ADC (analogique)</h4>
+    <ul class="text-xs text-base-content/70 space-y-1">
+      <li>GPIO 32-39 → ADC1 (WiFi OK)</li>
+      <li>GPIO 0-27 → ADC2 (sans WiFi)</li>
+      <li>Résolution : 12 bits (0-4095)</li>
+    </ul>
+  </div>
+  <div class="rounded-xl border border-purple-500/20 bg-purple-500/5 p-4">
+    <h4 class="font-bold text-purple-400 mb-2 text-sm">I2C (OLED)</h4>
+    <ul class="text-xs text-base-content/70 space-y-1">
+      <li>SDA → GPIO 21</li>
+      <li>SCL → GPIO 22</li>
+      <li>Adresse : 0x3C</li>
+    </ul>
+  </div>
+  <div class="rounded-xl border border-blue-500/20 bg-blue-500/5 p-4">
+    <h4 class="font-bold text-blue-400 mb-2 text-sm">1-Wire (DS18B20)</h4>
+    <ul class="text-xs text-base-content/70 space-y-1">
+      <li>DATA → GPIO 27</li>
+      <li>Résistance 4.7 kΩ vers 3.3 V</li>
+      <li>Plusieurs capteurs possibles</li>
+    </ul>
+  </div>
+</div>
+
+---
+
+## Prochaine étape
+
+<div class="rounded-xl border border-primary/20 bg-primary/5 p-6 my-8">
+  <div class="flex items-center justify-between gap-4 flex-wrap">
+    <div>
+      <h4 class="font-bold mb-1">Programmation temps réel</h4>
+      <p class="text-sm text-base-content/60">Timing précis, séquenceurs non-bloquants et interruptions.</p>
+    </div>
+    <a href={siteUrl('/cours/programmation-temps-reel/')} class="btn btn-primary btn-sm whitespace-nowrap">
+      Cours suivant →
+    </a>
+  </div>
+</div>
+
+</div>
+
+</Layout>

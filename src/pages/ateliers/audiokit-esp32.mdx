@@ -1,0 +1,224 @@
+---
+title: 'AudioKit ESP32-A1S'
+description: "Génère des sons, explore le codec ES8388 et joue une gamme musicale avec la carte AI-Thinker AudioKit."
+level: 'intermediaire'
+duration: '3h'
+tags: ['ESP32-A1S', 'I2S', 'ES8388', 'Audio', 'Codec']
+---
+
+import Layout from '../../layouts/Layout.astro';
+import GitHubCodeBlock from '../../components/GitHubCodeBlock.astro';
+import DifficultyBadge from '../../components/DifficultyBadge.astro';
+import { siteUrl } from '../../utils/url';
+
+<Layout
+  title="Atelier 02 — AudioKit ESP32-A1S"
+  description="Génère des sons, explore le codec ES8388 et joue une gamme musicale avec la carte AI-Thinker AudioKit."
+>
+
+{/* Navigation */}
+<div class="border-b border-base-200/60 bg-base-200/20">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+    <div class="flex items-center gap-2 text-sm text-base-content/50">
+      <a href={siteUrl('/')} class="hover:text-base-content transition-colors">Accueil</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <a href={siteUrl('/ateliers/')} class="hover:text-base-content transition-colors">Ateliers</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <span class="text-base-content/80">AudioKit ESP32-A1S</span>
+    </div>
+  </div>
+</div>
+
+{/* En-tête atelier */}
+<section class="py-12 hero-pattern border-b border-base-200/60">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center gap-3 mb-6">
+      <span class="font-mono text-primary/60 text-sm font-bold bg-primary/10 px-3 py-1 rounded-lg">ATELIER 02</span>
+      <DifficultyBadge level="intermediaire" />
+    </div>
+    <h1 class="text-3xl sm:text-4xl font-black mb-4">AudioKit ESP32-A1S</h1>
+    <p class="text-base-content/65 text-lg leading-relaxed max-w-2xl mb-8">
+      Explore le codec audio ES8388 intégré à la carte AI-Thinker AudioKit. Génère des sons via PWM, joue une gamme musicale et découvre le protocole I2S.
+    </p>
+    <div class="flex flex-wrap gap-4">
+      <div class="flex items-center gap-2 text-sm text-base-content/60">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        3h
+      </div>
+      <div class="flex flex-wrap gap-2">
+        {['ESP32-A1S', 'I2S', 'ES8388', 'Audio', 'Codec'].map(tag => (
+          <span class="text-xs px-2.5 py-1 rounded-lg bg-base-200/60 text-base-content/50 font-mono">{tag}</span>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+{/* Contenu */}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+## Ce que tu vas créer
+
+À la fin de cet atelier, tu auras :
+- Compris la différence entre son PWM simple et codec I2S
+- Généré des tonalités sur le haut-parleur intégré
+- Joué une gamme musicale complète avec les bonnes fréquences
+- Contrôlé le volume avec les boutons de la carte
+
+---
+
+## La carte AI-Thinker AudioKit
+
+<div class="rounded-xl border border-base-200/80 bg-base-200/20 p-6 my-6">
+  <h3 class="font-bold mb-4">Composants intégrés</h3>
+  <div class="grid grid-cols-2 gap-3 text-sm">
+    <div class="flex items-center gap-2"><span class="text-emerald-400">✓</span> ESP32 (240 MHz dual-core)</div>
+    <div class="flex items-center gap-2"><span class="text-emerald-400">✓</span> Codec ES8388 (I2C + I2S)</div>
+    <div class="flex items-center gap-2"><span class="text-emerald-400">✓</span> 2 microphones intégrés</div>
+    <div class="flex items-center gap-2"><span class="text-emerald-400">✓</span> Jack 3.5 mm stéréo</div>
+    <div class="flex items-center gap-2"><span class="text-emerald-400">✓</span> 6 boutons programmables</div>
+    <div class="flex items-center gap-2"><span class="text-emerald-400">✓</span> Connecteurs haut-parleurs</div>
+  </div>
+</div>
+
+## Matériel nécessaire
+
+<div class="overflow-x-auto rounded-xl border border-base-200/80 my-6">
+  <table class="table table-zebra w-full">
+    <thead>
+      <tr><th>Composant</th><th>Quantité</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="font-medium">ESP32 AudioKit A1S</td><td>1</td><td class="text-base-content/60">Fourni en atelier</td></tr>
+      <tr><td class="font-medium">Haut-parleur 4Ω / 3W</td><td>1 ou 2</td><td class="text-base-content/60">Fourni en atelier</td></tr>
+      <tr><td class="font-medium">Câble micro-USB</td><td>1</td><td class="text-base-content/60">Pour programmer</td></tr>
+    </tbody>
+  </table>
+</div>
+
+---
+
+## Partie 1 — Son simple avec PWM
+
+Avant d'utiliser le codec, on génère des sons directement avec PWM sur le haut-parleur. C'est la méthode la plus simple — pas besoin de configurer le ES8388.
+
+### Fréquences des notes musicales
+
+<div class="overflow-x-auto rounded-xl border border-base-200/80 my-6">
+  <table class="table w-full text-sm">
+    <thead>
+      <tr><th>Note</th><th>Do</th><th>Ré</th><th>Mi</th><th>Fa</th><th>Sol</th><th>La</th><th>Si</th><th>Do (oct.)</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="font-medium">Fréquence (Hz)</td>
+        <td>262</td><td>294</td><td>330</td><td>349</td><td>392</td><td>440</td><td>494</td><td>523</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="atelier2-audiokit/gamme_pwm.py"
+  language="python"
+  title="Gamme musicale avec PWM — gamme_pwm.py"
+/>
+
+---
+
+## Partie 2 — Codec ES8388 via I2S
+
+Le protocole **I2S** (Inter-IC Sound) est conçu spécifiquement pour l'audio numérique. Il sépare les données audio de l'horloge sur des fils dédiés.
+
+### Architecture I2S sur l'AudioKit
+
+<div class="rounded-xl overflow-hidden border border-base-200/60 bg-[#1a1b26] my-4">
+  <div class="px-4 py-2 border-b border-white/8 text-white/50 text-xs font-mono">connexions I2S</div>
+  <pre class="p-4 text-xs font-mono text-white/70 leading-relaxed overflow-x-auto"><code>{`ESP32          ES8388
+GPIO 27  ────  BCLK   (Bit Clock)
+GPIO 25  ────  WCLK   (Word Clock / LR Select)
+GPIO 26  ────  DOUT   (Data Out → vers codec)
+GPIO 35  ────  DIN    (Data In  ← depuis codec)
+
+GPIO 32  ────  SDA    (I2C - configuration)
+GPIO 33  ────  SCL    (I2C - configuration)`}</code></pre>
+</div>
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="atelier2-audiokit/main.py"
+  language="python"
+  title="AudioKit ESP32 — main.py"
+/>
+
+---
+
+## Étapes de réalisation
+
+### Étape 1 — Flasher MicroPython
+
+Télécharge le firmware ESP32 depuis [micropython.org/download/esp32/](https://micropython.org/download/esp32/) :
+
+<div class="rounded-xl overflow-hidden border border-base-200/60 bg-[#1a1b26] my-4">
+  <div class="px-4 py-2 border-b border-white/8 text-white/50 text-xs font-mono">terminal</div>
+  <pre class="p-4 text-xs font-mono text-white/70 leading-relaxed overflow-x-auto"><code>{`esptool.py --port /dev/ttyUSB0 erase_flash
+esptool.py --port /dev/ttyUSB0 --baud 460800 write_flash -z 0x1000 esp32-firmware.bin`}</code></pre>
+</div>
+
+### Étape 2 — Connecter le haut-parleur
+
+Connecte le haut-parleur au connecteur **SPK** sur la carte (polaire rouge sur le `+`).
+
+### Étape 3 — Copier le code
+
+<div class="rounded-xl overflow-hidden border border-base-200/60 bg-[#1a1b26] my-4">
+  <div class="px-4 py-2 border-b border-white/8 text-white/50 text-xs font-mono">terminal</div>
+  <pre class="p-4 text-xs font-mono text-white/70 leading-relaxed overflow-x-auto"><code>{`mpremote cp main.py :main.py && mpremote reset`}</code></pre>
+</div>
+
+### Étape 4 — Tester
+
+Appuie sur les boutons de la carte pour :
+- **BTN1** : jouer la gamme Do → Do
+- **BTN2** : monter le volume
+- **BTN3** : baisser le volume
+- **BTN4** : jouer une mélodie
+
+---
+
+## Pour aller plus loin
+
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6">
+  {[
+    { title: 'Enregistrement micro', desc: 'Capture l\'audio depuis les microphones intégrés et rejoue-le.' },
+    { title: 'Streaming audio WiFi', desc: 'Diffuse de l\'audio depuis un serveur HTTP via WiFi.' },
+    { title: 'Analyseur de spectre', desc: 'Affiche un spectrogramme FFT en temps réel via UART.' },
+  ].map(card => (
+    <div class="rounded-xl border border-base-200/80 bg-base-200/30 p-5">
+      <h4 class="font-semibold text-sm mb-2">{card.title}</h4>
+      <p class="text-xs text-base-content/60">{card.desc}</p>
+    </div>
+  ))}
+</div>
+
+<div class="border-t border-base-200/60 pt-10 mt-10 flex items-center justify-between">
+  <a href={siteUrl('/ateliers/serveur-web-esp32/')} class="group flex items-center gap-3 rounded-xl border border-base-200/80 bg-base-200/30 px-5 py-4 hover:border-primary/30 transition-colors">
+    <svg class="w-5 h-5 text-base-content/40 group-hover:text-primary group-hover:-translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+    <div>
+      <div class="text-xs text-base-content/50 mb-0.5">Atelier précédent</div>
+      <div class="font-semibold text-sm group-hover:text-primary transition-colors">Serveur web ESP32</div>
+    </div>
+  </a>
+  <a href={siteUrl('/ateliers/ecran-tactile-esp32/')} class="group flex items-center gap-3 rounded-xl border border-base-200/80 bg-base-200/30 px-5 py-4 hover:border-primary/30 transition-colors">
+    <div class="text-right">
+      <div class="text-xs text-base-content/50 mb-0.5">Atelier suivant</div>
+      <div class="font-semibold text-sm group-hover:text-primary transition-colors">Écran tactile ESP32-S3</div>
+    </div>
+    <svg class="w-5 h-5 text-base-content/40 group-hover:text-primary group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+  </a>
+</div>
+
+</div>
+
+</Layout>

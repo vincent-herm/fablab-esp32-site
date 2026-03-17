@@ -13,6 +13,33 @@ const cours = [
     ready: true,
   },
   {
+    href: siteUrl('/cours/gpio-pwm/'),
+    title: 'GPIO, PWM et NeoPixel',
+    description: 'Contrôle des LEDs, lecture de boutons, luminosité avec PWM et effets RGB avec les WS2812.',
+    category: 'Électronique',
+    color: 'orange',
+    icon: '💡',
+    ready: true,
+  },
+  {
+    href: siteUrl('/cours/capteurs-afficheurs/'),
+    title: 'Capteurs et afficheurs',
+    description: 'ADC, OLED SSD1306, capteur DS18B20 (1-Wire) — mesurer et afficher des grandeurs physiques.',
+    category: 'Capteurs',
+    color: 'emerald',
+    icon: '📡',
+    ready: true,
+  },
+  {
+    href: siteUrl('/cours/programmation-temps-reel/'),
+    title: 'Programmation temps réel',
+    description: 'Boucles non-bloquantes, séquenceurs, machine à états et interruptions sur ESP32.',
+    category: 'Avancé',
+    color: 'cyan',
+    icon: '⏱️',
+    ready: true,
+  },
+  {
     href: '#',
     title: 'Protocoles de communication',
     description: 'I2C, SPI, UART, I2S — comment les composants communiquent entre eux et avec l\'ESP32.',
@@ -23,28 +50,10 @@ const cours = [
   },
   {
     href: '#',
-    title: 'Capteurs courants',
-    description: 'DHT22 (température), HC-SR04 (distance), MPU6050 (gyroscope)...',
-    category: 'Capteurs',
-    color: 'emerald',
-    icon: '📡',
-    ready: false,
-  },
-  {
-    href: '#',
-    title: 'Actionneurs',
-    description: 'Servomoteurs, moteurs DC, relais, vibreurs — donner du mouvement à tes projets.',
-    category: 'Mécatronique',
-    color: 'orange',
-    icon: '⚙️',
-    ready: false,
-  },
-  {
-    href: '#',
     title: 'Réseau & IoT avec ESP32',
     description: 'WiFi, HTTP, MQTT — connecte ton ESP32 à Internet et à d\'autres appareils.',
     category: 'IoT',
-    color: 'cyan',
+    color: 'pink',
     icon: '🌐',
     ready: false,
   },
@@ -53,17 +62,8 @@ const cours = [
     title: 'Audio sur ESP32',
     description: 'I2S, codecs, génération de sons, lecture WAV et MP3 — l\'audio pas à pas.',
     category: 'Audio',
-    color: 'pink',
-    icon: '🎵',
-    ready: false,
-  },
-  {
-    href: '#',
-    title: 'Introduction à la mécatronique',
-    description: 'L\'interface entre mécanique, électronique et informatique — principes fondamentaux.',
-    category: 'Mécatronique',
     color: 'amber',
-    icon: '🤖',
+    icon: '🎵',
     ready: false,
   },
 ];
@@ -81,7 +81,7 @@ const colorMap: Record<string, string> = {
 
 <Layout
   title="Cours théoriques"
-  description="7 cours MicroPython : bases Python, protocoles I2C/SPI/I2S, capteurs, actionneurs, IoT, audio sur ESP32."
+  description="7 cours MicroPython : GPIO, PWM, NeoPixel, capteurs, OLED, temps réel, protocoles I2C/SPI, IoT, audio sur ESP32."
 >
   <section class="py-20 hero-pattern border-b border-base-200/60">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

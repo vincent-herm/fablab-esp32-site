@@ -1,0 +1,295 @@
+---
+title: 'GPIO, PWM et NeoPixel'
+description: 'Contrôle des LEDs, boutons et LED RGB avec MicroPython : GPIO numérique, PWM et bandeaux NeoPixel WS2812.'
+---
+
+import Layout from '../../layouts/Layout.astro';
+import DifficultyBadge from '../../components/DifficultyBadge.astro';
+import { siteUrl } from '../../utils/url';
+
+<Layout title={frontmatter.title} description={frontmatter.description}>
+
+<div class="border-b border-base-200/60 bg-base-200/20">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+    <div class="flex items-center gap-2 text-sm text-base-content/50">
+      <a href={siteUrl('/')} class="hover:text-base-content transition-colors">Accueil</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <a href={siteUrl('/cours/')} class="hover:text-base-content transition-colors">Cours</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <span class="text-base-content/80">GPIO, PWM et NeoPixel</span>
+    </div>
+  </div>
+</div>
+
+<section class="py-12 hero-pattern border-b border-base-200/60">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-2xl">💡</span>
+      <span class="text-xs px-2.5 py-1 rounded-full bg-orange-500/15 text-orange-400 font-medium">Actionneurs</span>
+      <DifficultyBadge level="debutant" />
+    </div>
+    <h1 class="text-3xl sm:text-4xl font-black mb-4">GPIO, PWM et NeoPixel</h1>
+    <p class="text-base-content/65 text-lg leading-relaxed max-w-2xl">
+      Les sorties numériques de l'ESP32 : allumer une LED, lire un bouton, contrôler la luminosité avec PWM et créer des effets de couleur avec les LED RGB WS2812.
+    </p>
+  </div>
+</section>
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+## GPIO numérique — sorties
+
+Le GPIO (General Purpose Input/Output) est la façon la plus simple d'interagir avec le monde physique. Un pin peut être mis à `1` (3.3 V) ou `0` (0 V).
+
+```python
+from machine import Pin
+
+# Configurer un pin en sortie
+led = Pin(2, Pin.OUT)
+
+# Allumer / éteindre
+led.on()    # met le pin à 3.3 V
+led.off()   # remet à 0 V
+led.value(1)  # équivalent de on()
+led.value(0)  # équivalent de off()
+```
+
+### Clignoter une LED
+
+```python
+from machine import Pin
+import time
+
+led = Pin(2, Pin.OUT)
+
+while True:
+    led.on()
+    time.sleep_ms(500)
+    led.off()
+    time.sleep_ms(500)
+```
+
+### Compter les clignotements
+
+```python
+from machine import Pin
+import time
+
+led = Pin(2, Pin.OUT)
+
+for i in range(10):        # 10 fois
+    led.on()
+    time.sleep_ms(200)
+    led.off()
+    time.sleep_ms(200)
+
+print("Fini !")
+```
+
+---
+
+## GPIO numérique — entrées (boutons)
+
+Pour lire un bouton, on configure le pin en entrée. La résistance pull-up interne évite le pin "flottant" quand le bouton est relâché.
+
+```python
+from machine import Pin
+
+# Pin en entrée avec résistance pull-up interne
+bp = Pin(0, Pin.IN, Pin.PULL_UP)
+
+# Lecture : 0 = bouton appuyé, 1 = relâché
+print(bp.value())
+```
+
+<div class="rounded-xl border border-amber-500/20 bg-amber-500/5 p-5 my-6">
+  <h4 class="font-bold text-amber-400 mb-2">⚠️ Logique inversée</h4>
+  <p class="text-sm text-base-content/70">Avec PULL_UP, la logique est inversée : <code>0</code> = appuyé, <code>1</code> = relâché. Le bouton connecte le pin à GND quand il est pressé.</p>
+</div>
+
+### LED contrôlée par bouton
+
+```python
+from machine import Pin
+
+led = Pin(2, Pin.OUT)
+bp  = Pin(0, Pin.IN, Pin.PULL_UP)
+
+while True:
+    if bp.value() == 0:   # bouton appuyé
+        led.on()
+    else:
+        led.off()
+```
+
+---
+
+## PWM — Pulse Width Modulation
+
+Le PWM simule une sortie analogique en faisant varier la largeur des impulsions. Utilisé pour la luminosité des LEDs, les servomoteurs, les sons.
+
+<div class="overflow-x-auto rounded-xl border border-base-200/80 my-6">
+  <table class="table w-full">
+    <thead>
+      <tr><th>Paramètre</th><th>Valeur</th><th>Effet</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="font-mono">freq</td><td>100 – 40 000 Hz</td><td>Fréquence du signal</td></tr>
+      <tr><td class="font-mono">duty</td><td>0 – 1023</td><td>Rapport cyclique (0 = éteint, 1023 = plein)</td></tr>
+    </tbody>
+  </table>
+</div>
+
+```python
+from machine import Pin, PWM
+import time
+
+pwm = PWM(Pin(2))
+pwm.freq(1000)      # 1 kHz
+
+# Faire varier la luminosité
+for duty in range(0, 1024, 10):
+    pwm.duty(duty)
+    time.sleep_ms(10)
+
+# Éteindre proprement
+pwm.duty(0)
+pwm.deinit()
+```
+
+### Correction de luminosité (courbe gamma)
+
+L'œil humain ne perçoit pas la luminosité de façon linéaire. Une correction quadratique donne un rendu plus naturel :
+
+```python
+from machine import Pin, PWM
+
+pwm = PWM(Pin(2), freq=1000)
+
+def luminosite(pourcent):
+    """pourcent : 0 à 100 → duty corrigé"""
+    duty = int((pourcent / 100) ** 2 * 1023)
+    pwm.duty(duty)
+
+luminosite(50)   # 50% perçu (pas 50% électrique)
+luminosite(100)  # pleine puissance
+```
+
+---
+
+## NeoPixel — LED RGB WS2812
+
+Les NeoPixel (WS2812) sont des LED RGB adressables en série. Un seul fil de données contrôle autant de LED que tu veux.
+
+```python
+from machine import Pin
+from neopixel import NeoPixel
+
+N   = 8                     # nombre de LEDs
+pin = Pin(26, Pin.OUT)
+np  = NeoPixel(pin, N)
+
+# Chaque LED = (rouge, vert, bleu) de 0 à 255
+np[0] = (255, 0, 0)         # LED 0 : rouge
+np[1] = (0, 255, 0)         # LED 1 : vert
+np[2] = (0, 0, 255)         # LED 2 : bleu
+np.write()                  # envoyer les données
+```
+
+### Éteindre toutes les LEDs
+
+```python
+for i in range(N):
+    np[i] = (0, 0, 0)
+np.write()
+```
+
+### Animation de défilement
+
+```python
+from machine import Pin
+import time
+from neopixel import NeoPixel
+
+np = NeoPixel(Pin(26, Pin.OUT), 8)
+
+def defilement(couleur, delai_ms=100):
+    for i in range(8):
+        for j in range(8):
+            np[j] = couleur if j == i else (0, 0, 0)
+        np.write()
+        time.sleep_ms(delai_ms)
+
+while True:
+    defilement((255, 0, 0))    # rouge
+    defilement((0, 255, 0))    # vert
+    defilement((0, 0, 255))    # bleu
+```
+
+### Arc-en-ciel (rainbow)
+
+```python
+from machine import Pin
+from neopixel import NeoPixel
+import time
+
+np = NeoPixel(Pin(26, Pin.OUT), 8)
+
+def roue_couleurs(position):
+    """Convertit 0-255 en couleur arc-en-ciel RGB"""
+    if position < 85:
+        return (255 - position * 3, position * 3, 0)
+    elif position < 170:
+        position -= 85
+        return (0, 255 - position * 3, position * 3)
+    else:
+        position -= 170
+        return (position * 3, 0, 255 - position * 3)
+
+offset = 0
+while True:
+    for i in range(8):
+        np[i] = roue_couleurs((i * 32 + offset) % 256)
+    np.write()
+    offset = (offset + 1) % 256
+    time.sleep_ms(20)
+```
+
+---
+
+## Résumé des pins ESP32
+
+<div class="overflow-x-auto rounded-xl border border-base-200/80 my-6">
+  <table class="table table-zebra w-full">
+    <thead>
+      <tr><th>Pin</th><th>Usage typique</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="font-mono">2</td><td>LED intégrée / sortie</td><td>LED bleue sur la plupart des boards</td></tr>
+      <tr><td class="font-mono">0</td><td>Bouton BOOT / entrée</td><td>PULL_UP interne</td></tr>
+      <tr><td class="font-mono">26</td><td>NeoPixel</td><td>Données WS2812</td></tr>
+      <tr><td class="font-mono">5</td><td>Buzzer / son</td><td>PWM à 50-4000 Hz</td></tr>
+      <tr><td class="font-mono">18, 19, 23</td><td>LEDs supplémentaires</td><td>Carte ENIM</td></tr>
+    </tbody>
+  </table>
+</div>
+
+---
+
+## Prochaine étape
+
+<div class="rounded-xl border border-primary/20 bg-primary/5 p-6 my-8">
+  <div class="flex items-center justify-between gap-4 flex-wrap">
+    <div>
+      <h4 class="font-bold mb-1">Capteurs et afficheurs</h4>
+      <p class="text-sm text-base-content/60">ADC, OLED SSD1306 et capteur de température DS18B20.</p>
+    </div>
+    <a href={siteUrl('/cours/capteurs-afficheurs/')} class="btn btn-primary btn-sm whitespace-nowrap">
+      Cours suivant →
+    </a>
+  </div>
+</div>
+
+</div>
+
+</Layout>
