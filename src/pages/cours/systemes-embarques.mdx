@@ -1,0 +1,257 @@
+---
+title: "C'est quoi un microcontrôleur ?"
+description: "Les microcontrôleurs sont partout autour de toi sans que tu le saches. Découvre ce qu'ils font, pourquoi ils sont si utiles, et comment tu peux en programmer un toi-même."
+---
+
+import Layout from '../../layouts/Layout.astro';
+import DifficultyBadge from '../../components/DifficultyBadge.astro';
+import { siteUrl } from '../../utils/url';
+
+<Layout title={frontmatter.title} description={frontmatter.description}>
+
+<div class="border-b border-base-200/60 bg-base-200/20">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+    <div class="flex items-center gap-2 text-sm text-base-content/50">
+      <a href={siteUrl('/')} class="hover:text-base-content transition-colors">Accueil</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <a href={siteUrl('/cours/')} class="hover:text-base-content transition-colors">Cours</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <span class="text-base-content/80">C'est quoi un microcontrôleur ?</span>
+    </div>
+  </div>
+</div>
+
+<section class="py-12 hero-pattern border-b border-base-200/60">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-2xl">🤔</span>
+      <span class="text-xs px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-400 font-medium">Pour commencer</span>
+      <DifficultyBadge level="debutant" />
+    </div>
+    <h1 class="text-3xl sm:text-4xl font-black mb-4">C'est quoi un microcontrôleur ?</h1>
+    <p class="text-base-content/65 text-lg leading-relaxed max-w-2xl">
+      Avant de brancher quoi que ce soit, prenons cinq minutes pour comprendre de quoi on parle — et pourquoi c'est passionnant.
+    </p>
+  </div>
+</section>
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mdx-content">
+
+## Ils sont partout autour de toi
+
+Regarde autour de toi. Ta machine à laver sait quand l'eau est chaude et arrête de chauffer. Ton four s'éteint à la bonne température. Les feux de circulation passent au vert au bon moment. La télécommande de ta télé envoie un signal infrarouge quand tu appuies sur un bouton.
+
+Tout ça, ce sont des **microcontrôleurs** au travail.
+
+Un microcontrôleur, c'est un tout petit ordinateur — parfois plus petit qu'une pièce de monnaie — qui fait **une seule chose, mais très bien**. Il lit des capteurs, prend des décisions, et contrôle des actionneurs. Il tourne en boucle, sans jamais s'arrêter, souvent pendant des années.
+
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 my-8">
+  {[
+    { icon: '🚗', label: 'Voiture', ex: '50 à 100 microcontrôleurs' },
+    { icon: '🧺', label: 'Lave-linge', ex: 'Capteur, pompe, moteur' },
+    { icon: '🚦', label: 'Feux rouges', ex: 'Timing, capteurs de voiture' },
+    { icon: '🎮', label: 'Manette', ex: 'Boutons, vibration, Bluetooth' },
+  ].map(item => (
+    <div class="rounded-xl border border-base-200/80 bg-base-200/20 p-4 text-center">
+      <div class="text-3xl mb-2">{item.icon}</div>
+      <div class="font-bold text-sm">{item.label}</div>
+      <div class="text-xs text-base-content/50 mt-1">{item.ex}</div>
+    </div>
+  ))}
+</div>
+
+---
+
+## La différence avec un ordinateur
+
+Ton ordinateur ou ton téléphone, c'est une machine **généraliste** — il peut faire des milliers de choses différentes en même temps : jouer de la musique, afficher une page web, envoyer un mail.
+
+Un microcontrôleur, lui, est **spécialisé**. Il est conçu pour être :
+
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6">
+  <div class="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-5 text-center">
+    <div class="text-2xl mb-2">💰</div>
+    <div class="font-bold text-sm mb-1">Pas cher</div>
+    <div class="text-xs text-base-content/60">Un ESP32 coûte 3 à 5€. Un Raspberry Pi coûte 30€+.</div>
+  </div>
+  <div class="rounded-xl border border-blue-500/20 bg-blue-500/5 p-5 text-center">
+    <div class="text-2xl mb-2">🔋</div>
+    <div class="font-bold text-sm mb-1">Économe</div>
+    <div class="text-xs text-base-content/60">Peut tourner des mois sur une pile AA. Idéal pour les capteurs sans fil.</div>
+  </div>
+  <div class="rounded-xl border border-purple-500/20 bg-purple-500/5 p-5 text-center">
+    <div class="text-2xl mb-2">⚡</div>
+    <div class="font-bold text-sm mb-1">Réactif</div>
+    <div class="text-xs text-base-content/60">Démarre en millisecondes. Réagit en temps réel à son environnement.</div>
+  </div>
+</div>
+
+---
+
+## La révolution Arduino — quand bricoler est devenu accessible
+
+Jusqu'en 2005, programmer de l'électronique, c'était réservé aux ingénieurs. Il fallait des compilateurs complexes, des programmateurs spéciaux, des connaissances pointues.
+
+Puis est arrivé **Arduino** — une petite carte à 20€ avec un logiciel gratuit, inventée par des professeurs italiens pour leurs étudiants en design. L'idée : rendre la programmation d'électronique accessible à tout le monde.
+
+Ça a déclenché une explosion. Des millions de bricoleurs, artistes, enseignants, étudiants se sont mis à créer des projets qui n'auraient jamais existé avant. Des robots, des instruments de musique, des jardins automatiques, des œuvres d'art interactives.
+
+C'est ce qu'on appelle le **mouvement maker** — le droit de comprendre, de réparer, de créer avec la technologie.
+
+---
+
+## L'ESP32 — notre carte de chevet
+
+Aujourd'hui on utilise l'**ESP32**, une carte fabriquée par la société Espressif, basée à Shanghai. C'est en quelque sorte le successeur spirituel d'Arduino, mais beaucoup plus puissant :
+
+<div class="overflow-x-auto rounded-xl border border-base-200/80 my-6">
+  <table class="table w-full">
+    <thead>
+      <tr><th></th><th>Arduino Uno</th><th class="text-primary">ESP32</th><th>Raspberry Pi 5</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="font-medium text-sm">Prix</td>
+        <td class="text-sm">~20€</td>
+        <td class="text-sm text-primary font-medium">~5€</td>
+        <td class="text-sm">~80€</td>
+      </tr>
+      <tr>
+        <td class="font-medium text-sm">Processeur</td>
+        <td class="text-sm">8 MHz</td>
+        <td class="text-sm text-primary font-medium">240 MHz × 2</td>
+        <td class="text-sm">2.4 GHz × 4</td>
+      </tr>
+      <tr>
+        <td class="font-medium text-sm">WiFi</td>
+        <td class="text-sm">Non</td>
+        <td class="text-sm text-primary font-medium">✓ intégré</td>
+        <td class="text-sm">✓ intégré</td>
+      </tr>
+      <tr>
+        <td class="font-medium text-sm">Bluetooth</td>
+        <td class="text-sm">Non</td>
+        <td class="text-sm text-primary font-medium">✓ intégré</td>
+        <td class="text-sm">✓ intégré</td>
+      </tr>
+      <tr>
+        <td class="font-medium text-sm">Système d'exploitation</td>
+        <td class="text-sm">Non</td>
+        <td class="text-sm text-primary font-medium">Non</td>
+        <td class="text-sm">Linux</td>
+      </tr>
+      <tr>
+        <td class="font-medium text-sm">Idéal pour</td>
+        <td class="text-sm">Débutants</td>
+        <td class="text-sm text-primary font-medium">Projets connectés</td>
+        <td class="text-sm">Mini-PC</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+L'ESP32 a le meilleur rapport qualité/prix/fonctionnalités. Pour 5€, tu as WiFi, Bluetooth, 30+ broches, deux cœurs de processeur. C'est pour ça qu'on l'utilise dans nos ateliers.
+
+---
+
+## Pourquoi MicroPython — et pas Arduino ?
+
+Pour programmer un Arduino, on utilise le **C++** — un langage puissant, mais austère. Voici comment allumer une LED qui clignote :
+
+```cpp
+// Arduino (C++)
+void setup() {
+  pinMode(2, OUTPUT);
+}
+void loop() {
+  digitalWrite(2, HIGH);
+  delay(500);
+  digitalWrite(2, LOW);
+  delay(500);
+}
+```
+
+Avec **MicroPython**, le même programme :
+
+```python
+# MicroPython
+from machine import Pin
+import time
+
+led = Pin(2, Pin.OUT)
+while True:
+    led.toggle()
+    time.sleep_ms(500)
+```
+
+C'est plus court, plus lisible, et surtout — si tu as déjà fait un peu de Python, tu es déjà à moitié chez toi. Et si tu n'en as jamais fait, c'est le meilleur endroit pour commencer.
+
+L'autre avantage de MicroPython : le **REPL**. Tu branches l'ESP32 sur ton ordinateur, tu ouvres Thonny, et tu peux taper du code directement et voir le résultat en temps réel — comme si tu discutais avec la carte.
+
+```python
+>>> from machine import Pin
+>>> led = Pin(2, Pin.OUT)
+>>> led.on()    # La LED s'allume instantanément !
+>>> led.off()
+```
+
+Pas de compilation. Pas de chargement. Juste du code et du résultat.
+
+---
+
+## Ce qu'on peut créer
+
+Voici ce qui devient possible avec une carte à 5€ et un peu de code :
+
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-6">
+  {[
+    { icon: '🌡️', titre: 'Station météo', desc: 'Température, humidité, pression — affiché sur un écran ou envoyé sur ton téléphone.' },
+    { icon: '🔐', titre: 'Serrure connectée', desc: 'Un badge RFID ou un code pour déverrouiller une porte, une boîte, un cadenas.' },
+    { icon: '💧', titre: 'Arrosage automatique', desc: 'Un capteur d\'humidité du sol et une pompe — ton jardin se gère tout seul.' },
+    { icon: '🎵', titre: 'Instrument de musique', desc: 'Des boutons, un haut-parleur et quelques fréquences — tu joues de la musique.' },
+    { icon: '🚨', titre: 'Alarme DIY', desc: 'Détecteur de mouvement, buzzer, notification WiFi — tu protèges ce que tu veux.' },
+    { icon: '🎮', titre: 'Contrôleur de jeu', desc: 'Joystick, accéléromètre, LEDs — tu crées tes propres interfaces.' },
+  ].map(item => (
+    <div class="flex gap-4 rounded-xl border border-base-200/80 bg-base-200/10 p-4">
+      <div class="text-2xl shrink-0">{item.icon}</div>
+      <div>
+        <div class="font-bold text-sm mb-1">{item.titre}</div>
+        <div class="text-xs text-base-content/60 leading-relaxed">{item.desc}</div>
+      </div>
+    </div>
+  ))}
+</div>
+
+Et ça, c'est juste avec une carte à 5€. Quand tu commences à combiner plusieurs composants — un écran, des capteurs, une connexion WiFi — les possibilités deviennent vraiment illimitées.
+
+---
+
+## Tu n'as pas besoin d'être ingénieur
+
+La question qu'on entend souvent : *"Mais je ne suis pas électronicien, je ne m'y connais pas du tout — c'est pour moi ?"*
+
+Réponse courte : **oui**.
+
+Nos ateliers sont conçus pour des gens qui n'ont jamais touché à l'électronique. On fournit tout le matériel. On explique chaque connexion. Et MicroPython est fait pour que tu puisses tester une idée en quelques minutes, pas en quelques heures.
+
+Ce qui t'aide le plus, ce n'est pas un diplôme — c'est la curiosité.
+
+---
+
+## Prochaine étape
+
+<div class="rounded-xl border border-primary/20 bg-primary/5 p-6 my-8">
+  <div class="flex items-center justify-between gap-4 flex-wrap">
+    <div>
+      <h4 class="font-bold mb-1">Introduction à MicroPython</h4>
+      <p class="text-sm text-base-content/60">Découvre la syntaxe, le REPL et les premiers modules.</p>
+    </div>
+    <a href={siteUrl('/cours/introduction-micropython/')} class="btn btn-primary btn-sm whitespace-nowrap">
+      Cours suivant →
+    </a>
+  </div>
+</div>
+
+</div>
+
+</Layout>

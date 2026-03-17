@@ -1,0 +1,195 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { siteUrl } from '../../utils/url';
+
+const cartes = [
+  {
+    nom: 'ESP32 classique',
+    badge: 'Notre carte principale',
+    badgeColor: 'bg-primary/15 text-primary',
+    emoji: '⭐',
+    prix: '~5€',
+    desc: "La carte qu'on utilise dans la plupart des ateliers. Petite, puissante, WiFi + Bluetooth intégrés. Le meilleur rapport qualité/prix pour débuter.",
+    specs: [
+      { label: 'Processeur', value: '240 MHz (double cœur)' },
+      { label: 'Mémoire', value: '520 Ko RAM · 4 Mo Flash' },
+      { label: 'Broches', value: '30 GPIO' },
+      { label: 'Sans fil', value: 'WiFi 802.11b/g/n + Bluetooth 4.2' },
+      { label: 'Alimentation', value: '3.3 V (via USB 5V)' },
+    ],
+    pourquoi: "C'est la carte pour démarrer. Elle fait tout ce dont tu as besoin pour tes premiers projets : contrôler des LEDs, lire des capteurs, se connecter à Internet. Elle est suffisamment puissante pour des projets avancés et suffisamment simple pour débuter.",
+    color: 'border-primary/30 bg-primary/5',
+  },
+  {
+    nom: 'ESP32-S3',
+    badge: 'Version améliorée',
+    badgeColor: 'bg-blue-500/15 text-blue-400',
+    emoji: '🔵',
+    prix: '~8€',
+    desc: "La version plus récente de l'ESP32 avec plus de broches, de la mémoire en plus et surtout un port USB natif — plus besoin de puce intermédiaire pour se connecter.",
+    specs: [
+      { label: 'Processeur', value: '240 MHz (double cœur Xtensa LX7)' },
+      { label: 'Mémoire', value: '512 Ko RAM · jusqu\'à 16 Mo Flash' },
+      { label: 'Broches', value: '45 GPIO' },
+      { label: 'Sans fil', value: 'WiFi + Bluetooth 5 (BLE)' },
+      { label: 'Spécial', value: 'USB natif — connexion directe' },
+    ],
+    pourquoi: "Choisis l'ESP32-S3 si tu as besoin de plus de broches GPIO, d'un écran couleur (SPI rapide), ou d'une connexion USB directe sans adaptateur. C'est la carte pour les projets plus ambitieux.",
+    color: 'border-blue-500/20 bg-blue-500/5',
+  },
+  {
+    nom: 'Raspberry Pi Pico 2W',
+    badge: 'Alternatif populaire',
+    badgeColor: 'bg-pink-500/15 text-pink-400',
+    emoji: '🍓',
+    prix: '~7€',
+    desc: "La carte officielle de la Fondation Raspberry Pi. Basée sur leur propre puce RP2350, avec WiFi intégré et un support MicroPython officiel exemplaire.",
+    specs: [
+      { label: 'Processeur', value: 'RP2350 — 150 MHz (double cœur ARM)' },
+      { label: 'Mémoire', value: '520 Ko RAM · 4 Mo Flash' },
+      { label: 'Broches', value: '26 GPIO' },
+      { label: 'Sans fil', value: 'WiFi 802.11n + Bluetooth 5.2' },
+      { label: 'Spécial', value: '2 cœurs programmables PIO' },
+    ],
+    pourquoi: "Le Pico 2W a l'avantage d'une documentation exceptionnelle et d'une communauté immense. Si tu veux apprendre MicroPython avec les meilleures ressources disponibles, c'est un excellent choix.",
+    color: 'border-pink-500/20 bg-pink-500/5',
+  },
+  {
+    nom: 'M5Stack StickC Plus2',
+    badge: 'Tout-en-un',
+    badgeColor: 'bg-amber-500/15 text-amber-400',
+    emoji: '📦',
+    prix: '~25€',
+    desc: "Une carte ESP32 dans un boîtier compact avec écran couleur, batterie rechargeable et boutons déjà intégrés. Idéal pour les projets nomades sans breadboard.",
+    specs: [
+      { label: 'Processeur', value: 'ESP32-PICO (240 MHz)' },
+      { label: 'Écran', value: '1.14\" couleur 135×240 px' },
+      { label: 'Batterie', value: '200 mAh rechargeable USB-C' },
+      { label: 'Capteurs', value: 'IMU 6 axes (accéléro + gyro)' },
+      { label: 'Boutons', value: '3 boutons programmables' },
+    ],
+    pourquoi: "Le M5Stack est parfait quand tu veux un projet propre et portable sans fils qui traînent. L'écran et la batterie sont déjà là — tu te concentres sur le code, pas sur le câblage.",
+    color: 'border-amber-500/20 bg-amber-500/5',
+  },
+  {
+    nom: 'ESP32 AudioKit A1S',
+    badge: 'Audio',
+    badgeColor: 'bg-purple-500/15 text-purple-400',
+    emoji: '🎵',
+    prix: '~15€',
+    desc: "Une carte ESP32 spécialisée pour l'audio, avec codec stéréo ES8388, deux microphones intégrés et connecteurs pour haut-parleurs. Pour tout ce qui touche au son.",
+    specs: [
+      { label: 'Codec', value: 'ES8388 — stéréo 24 bits' },
+      { label: 'Micros', value: '2 microphones intégrés' },
+      { label: 'Sorties', value: 'Jack 3.5 mm + connecteurs HP' },
+      { label: 'Interface', value: 'I2C (config) + I2S (audio)' },
+      { label: 'Boutons', value: '6 boutons programmables' },
+    ],
+    pourquoi: "Si ton projet implique du son — jouer de la musique, enregistrer un micro, créer un synthétiseur — l'AudioKit A1S a tout ce qu'il faut déjà câblé et prêt à l'emploi.",
+    color: 'border-purple-500/20 bg-purple-500/5',
+  },
+  {
+    nom: 'Waveshare Touch LCD',
+    badge: 'Écran tactile',
+    badgeColor: 'bg-teal-500/15 text-teal-400',
+    emoji: '🖥️',
+    prix: '~15-25€',
+    desc: "Écran couleur tactile pour ESP32-S3. Plusieurs tailles disponibles (2.8\" à 4.3\"). Idéal pour créer des interfaces graphiques complètes avec boutons virtuels.",
+    specs: [
+      { label: 'Tailles', value: '2.8\", 3.5\", 4.3\" disponibles' },
+      { label: 'Résolution', value: '320×240 à 800×480 px' },
+      { label: 'Interface', value: 'SPI (écran) + I2C (tactile)' },
+      { label: 'Tactile', value: 'Résistif (stylet) ou capacitif (doigt)' },
+    ],
+    pourquoi: "Quand tu veux un vrai tableau de bord ou une interface graphique — pas juste des LEDs. L'écran tactile transforme ton ESP32 en mini-tablette programmable.",
+    color: 'border-teal-500/20 bg-teal-500/5',
+  },
+];
+---
+
+<Layout
+  title="Les cartes de développement"
+  description="Guide grand public des cartes de développement : ESP32, Pico 2W, M5Stack. À quoi ça sert, comment choisir, pourquoi."
+>
+  <section class="py-20 hero-pattern border-b border-base-200/60">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-2xl">
+        <p class="text-emerald-400 text-sm font-mono font-medium mb-3">// doc / cartes</p>
+        <h1 class="text-4xl sm:text-5xl font-black mb-5">Les cartes de développement</h1>
+        <p class="text-base-content/65 text-lg leading-relaxed">
+          Une carte de développement, c'est un microcontrôleur monté sur un circuit imprimé avec tout ce qu'il faut pour le brancher et le programmer. Voici celles qu'on utilise au fablab.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-16">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="space-y-10">
+        {cartes.map(carte => (
+          <div class={`rounded-2xl border p-6 sm:p-8 ${carte.color}`}>
+
+            <div class="flex items-start justify-between gap-4 flex-wrap mb-5">
+              <div class="flex items-center gap-3">
+                <span class="text-3xl">{carte.emoji}</span>
+                <div>
+                  <h2 class="text-xl font-black">{carte.nom}</h2>
+                  <span class={`text-xs font-medium px-2.5 py-1 rounded-lg ${carte.badgeColor}`}>{carte.badge}</span>
+                </div>
+              </div>
+              <div class="text-right">
+                <div class="text-2xl font-black">{carte.prix}</div>
+                <div class="text-xs text-base-content/40">prix indicatif</div>
+              </div>
+            </div>
+
+            <p class="text-base-content/70 mb-6 leading-relaxed">{carte.desc}</p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+
+              <div>
+                <h4 class="text-xs font-bold text-base-content/50 uppercase tracking-wider mb-3">Caractéristiques</h4>
+                <ul class="space-y-2">
+                  {carte.specs.map(s => (
+                    <li class="flex gap-2 text-sm">
+                      <span class="text-base-content/40 shrink-0 w-24">{s.label}</span>
+                      <span class="font-medium">{s.value}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div class="rounded-xl bg-base-100/40 p-4">
+                <h4 class="text-xs font-bold text-base-content/50 uppercase tracking-wider mb-2">Quand la choisir ?</h4>
+                <p class="text-sm text-base-content/70 leading-relaxed">{carte.pourquoi}</p>
+              </div>
+
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="py-16 bg-base-200/30">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-black mb-8 text-center">Pas sûr de ton choix ?</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {[
+          { question: 'Je veux juste commencer', reponse: 'Prends l\'ESP32 classique. C\'est la carte de nos ateliers — tout le matériel et les explications sont là pour toi.', btn: 'Voir les ateliers', href: '/ateliers/' },
+          { question: 'Je veux un projet portable', reponse: 'Le M5Stack StickC Plus2 a une batterie et un écran intégrés. Idéal pour un projet nomade sans fils qui traînent.', btn: null, href: null },
+          { question: 'Je veux faire du son', reponse: 'L\'AudioKit A1S est fait pour ça — micro, codec et connecteurs haut-parleur déjà intégrés.', btn: null, href: null },
+        ].map(item => (
+          <div class="rounded-xl border border-base-200/80 bg-base-100/50 p-5">
+            <h4 class="font-bold text-sm mb-2">"{item.question}"</h4>
+            <p class="text-xs text-base-content/60 leading-relaxed mb-3">{item.reponse}</p>
+            {item.btn && (
+              <a href={siteUrl(item.href)} class="text-xs text-primary font-medium hover:underline">{item.btn} →</a>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+</Layout>

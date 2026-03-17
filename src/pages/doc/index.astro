@@ -3,12 +3,12 @@ import Layout from '../../layouts/Layout.astro';
 import { siteUrl } from '../../utils/url';
 
 const boards = [
-  { name: 'ESP32 classique', desc: 'La board originale — WiFi + Bluetooth, 38 GPIO', href: siteUrl('/doc/boards/esp32/'), badge: 'ESP32' },
-  { name: 'ESP32-S3', desc: 'Version améliorée — plus de GPIO, USB natif', href: siteUrl('/doc/boards/esp32-s3/'), badge: 'ESP32-S3' },
-  { name: 'ESP32-A1S AudioKit', desc: 'Codec ES8388, micro, haut-parleurs, boutons', href: siteUrl('/doc/boards/esp32-audiokit/'), badge: 'Audio' },
-  { name: 'Raspberry Pi Pico 2W', desc: 'RP2350, WiFi, dual-core — MicroPython officiel', href: siteUrl('/doc/boards/pico-2w/'), badge: 'Pico' },
-  { name: 'M5Stack StickC Plus2', desc: 'Écran, batterie, boutons — tout-en-un', href: siteUrl('/doc/boards/m5stack-stickc/'), badge: 'M5Stack' },
-  { name: 'Waveshare Touch LCD', desc: 'Écrans tactiles pour ESP32-S3', href: siteUrl('/doc/boards/waveshare-touch-lcd/'), badge: 'Display' },
+  { name: 'ESP32 classique', desc: 'La board originale — WiFi + Bluetooth, 38 GPIO', href: siteUrl('/doc/cartes/'), badge: 'ESP32' },
+  { name: 'ESP32-S3', desc: 'Version améliorée — plus de GPIO, USB natif', href: siteUrl('/doc/cartes/'), badge: 'ESP32-S3' },
+  { name: 'ESP32-A1S AudioKit', desc: 'Codec ES8388, micro, haut-parleurs, boutons', href: siteUrl('/doc/cartes/'), badge: 'Audio' },
+  { name: 'Raspberry Pi Pico 2W', desc: 'RP2350, WiFi, dual-core — MicroPython officiel', href: siteUrl('/doc/cartes/'), badge: 'Pico' },
+  { name: 'M5Stack StickC Plus2', desc: 'Écran, batterie, boutons — tout-en-un', href: siteUrl('/doc/cartes/'), badge: 'M5Stack' },
+  { name: 'Waveshare Touch LCD', desc: 'Écrans tactiles pour ESP32-S3', href: siteUrl('/doc/cartes/'), badge: 'Display' },
 ];
 
 const composants = [
@@ -49,12 +49,12 @@ const protocoleColors: Record<string, string> = {
       <h2 class="text-2xl font-black mb-8">Cartes de développement</h2>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {boards.map(board => (
-          <div class="rounded-xl border border-base-200/80 bg-base-200/20 p-5">
+          <a href={board.href} class="group rounded-xl border border-base-200/80 bg-base-200/20 p-5 hover:border-emerald-500/30 hover:bg-base-200/40 transition-all block">
             <span class="text-xs font-mono font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-lg">{board.badge}</span>
-            <h3 class="font-bold text-sm mt-3 mb-1">{board.name}</h3>
+            <h3 class="font-bold text-sm mt-3 mb-1 group-hover:text-emerald-400 transition-colors">{board.name}</h3>
             <p class="text-xs text-base-content/50">{board.desc}</p>
-            <p class="text-xs text-base-content/30 mt-2 italic">Fiche à venir</p>
-          </div>
+            <p class="text-xs text-emerald-400/60 mt-2 font-medium">Voir la fiche →</p>
+          </a>
         ))}
       </div>
     </div>
