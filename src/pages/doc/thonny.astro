@@ -1,0 +1,193 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { siteUrl } from '../../utils/url';
+---
+
+<Layout
+  title="Thonny — IDE pour MicroPython"
+  description="Guide complet de Thonny : installation, connexion à l'ESP32, téléversement de fichiers, REPL interactif et raccourcis essentiels."
+>
+  <section class="py-20 hero-pattern border-b border-base-200/60">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center gap-2 text-sm text-base-content/50 mb-6">
+        <a href={siteUrl('/')} class="hover:text-base-content transition-colors">Accueil</a>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        <a href={siteUrl('/doc/')} class="hover:text-base-content transition-colors">Doc</a>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        <span class="text-base-content/80">Thonny</span>
+      </div>
+      <div class="max-w-2xl">
+        <p class="text-emerald-400 text-sm font-mono font-medium mb-3">// doc / outils</p>
+        <h1 class="text-4xl sm:text-5xl font-black mb-5">Thonny</h1>
+        <p class="text-base-content/65 text-lg leading-relaxed">
+          L'IDE recommandé pour programmer l'ESP32 avec MicroPython. Gratuit, simple, et conçu pour les débutants.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-16">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-14">
+
+      <!-- Installation -->
+      <div>
+        <h2 class="text-2xl font-black mb-6">Installation</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+          {[
+            { os: 'Windows', lien: 'https://thonny.org', note: 'Installeur .exe — tout est inclus' },
+            { os: 'macOS', lien: 'https://thonny.org', note: 'Package .pkg — fonctionne sur Intel et Apple Silicon' },
+            { os: 'Linux', lien: 'https://thonny.org', note: 'pip install thonny ou via le gestionnaire de paquets' },
+          ].map(item => (
+            <div class="rounded-xl border border-base-200/80 bg-base-200/20 p-5">
+              <h3 class="font-bold mb-1">{item.os}</h3>
+              <p class="text-xs text-base-content/60 mb-3">{item.note}</p>
+              <a href={item.lien} target="_blank" class="text-xs text-primary font-medium hover:underline">
+                Télécharger sur thonny.org →
+              </a>
+            </div>
+          ))}
+        </div>
+        <div class="rounded-xl border border-blue-500/20 bg-blue-500/5 p-5">
+          <p class="text-sm text-base-content/70">
+            <strong class="text-blue-400">Version recommandée :</strong> Thonny 4.x. Il inclut déjà Python 3 — pas besoin d'installer Python séparément.
+          </p>
+        </div>
+      </div>
+
+      <!-- Connexion ESP32 -->
+      <div>
+        <h2 class="text-2xl font-black mb-6">Connecter l'ESP32</h2>
+        <ol class="space-y-4">
+          {[
+            { n: '1', titre: 'Brancher l\'ESP32 en USB', desc: 'Connecte l\'ESP32 à ton ordinateur avec un câble micro-USB (ou USB-C selon le modèle). Un nouveau port COM apparaît.' },
+            { n: '2', titre: 'Choisir l\'interpréteur', desc: 'Ouvre Thonny → menu Outils (ou Run) → Configurer l\'interpréteur → choisir MicroPython (ESP32).' },
+            { n: '3', titre: 'Sélectionner le port', desc: 'Dans la liste des ports, choisis le port COM de l\'ESP32. Sur Mac : /dev/cu.usbserial-XXXX. Sur Windows : COM3, COM4...' },
+            { n: '4', titre: 'Connecter', desc: 'Clique sur le bouton Stop/Restart (icône rouge). Si tout va bien, le REPL apparaît en bas : >>> MicroPython sur l\'ESP32.' },
+          ].map(step => (
+            <div class="flex gap-4 rounded-xl border border-base-200/80 bg-base-200/10 p-5">
+              <span class="w-8 h-8 rounded-full bg-primary/20 text-primary font-black text-sm flex items-center justify-center shrink-0">{step.n}</span>
+              <div>
+                <div class="font-bold text-sm mb-1">{step.titre}</div>
+                <div class="text-sm text-base-content/60">{step.desc}</div>
+              </div>
+            </div>
+          ))}
+        </ol>
+        <div class="mt-4 rounded-xl border border-amber-500/20 bg-amber-500/5 p-5">
+          <p class="text-sm text-base-content/70">
+            <strong class="text-amber-400">⚠️ Port non visible ?</strong> Il faut parfois installer le driver USB. Sur les ESP32 classiques avec puce CH340 : <strong>driver CH340</strong>. Sur les modèles avec CP2102 : <strong>driver Silicon Labs CP210x</strong>.
+          </p>
+        </div>
+      </div>
+
+      <!-- Interface -->
+      <div>
+        <h2 class="text-2xl font-black mb-6">L'interface Thonny</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {[
+            { zone: 'Éditeur (haut)', desc: 'Zone de code. C\'est ici que tu écris tes programmes avant de les envoyer sur la carte.', color: 'border-blue-500/20 bg-blue-500/5' },
+            { zone: 'Shell / REPL (bas)', desc: 'Console interactive. Tape du code directement, résultat immédiat. Idéal pour tester.', color: 'border-emerald-500/20 bg-emerald-500/5' },
+            { zone: 'Gestionnaire de fichiers', desc: 'Menu View → Files. Volet gauche = ton ordi, volet droit = fichiers sur l\'ESP32.', color: 'border-purple-500/20 bg-purple-500/5' },
+            { zone: 'Barre d\'outils', desc: 'Boutons Run (▶), Stop (■), nouveau fichier, ouvrir, sauvegarder.', color: 'border-orange-500/20 bg-orange-500/5' },
+          ].map(item => (
+            <div class={`rounded-xl border p-5 ${item.color}`}>
+              <h3 class="font-bold text-sm mb-2">{item.zone}</h3>
+              <p class="text-xs text-base-content/60">{item.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Opérations courantes -->
+      <div>
+        <h2 class="text-2xl font-black mb-6">Opérations courantes</h2>
+        <div class="space-y-4">
+          <div class="rounded-xl border border-base-200/80 bg-base-200/10 p-5">
+            <h3 class="font-bold text-sm mb-3">Exécuter un script directement (sans sauvegarder)</h3>
+            <p class="text-sm text-base-content/60 mb-2">Appuie sur <kbd class="kbd kbd-sm">F5</kbd> ou le bouton ▶ vert. Le script tourne sur l'ESP32 mais n'est pas sauvegardé. Si tu débranches, il disparaît.</p>
+          </div>
+          <div class="rounded-xl border border-base-200/80 bg-base-200/10 p-5">
+            <h3 class="font-bold text-sm mb-3">Sauvegarder sur l'ESP32 (permanent)</h3>
+            <p class="text-sm text-base-content/60 mb-2">Menu Fichier → Sauvegarder sous → choisir <strong>MicroPython device</strong> → nommer le fichier <code class="font-mono text-xs bg-base-300/50 px-1 rounded">main.py</code>. Il se relancera automatiquement au prochain démarrage.</p>
+          </div>
+          <div class="rounded-xl border border-base-200/80 bg-base-200/10 p-5">
+            <h3 class="font-bold text-sm mb-3">Transférer un fichier depuis l'explorateur</h3>
+            <p class="text-sm text-base-content/60">Menu View → Files. Clic droit sur un fichier dans la partie gauche (ton ordi) → Upload to /. Le fichier apparaît dans la partie droite (ESP32).</p>
+          </div>
+          <div class="rounded-xl border border-base-200/80 bg-base-200/10 p-5">
+            <h3 class="font-bold text-sm mb-3">Arrêter le programme en cours</h3>
+            <p class="text-sm text-base-content/60">Appuie sur <kbd class="kbd kbd-sm">Ctrl</kbd> + <kbd class="kbd kbd-sm">C</kbd> dans le Shell. Ou clique sur le bouton Stop ■ rouge.</p>
+          </div>
+          <div class="rounded-xl border border-base-200/80 bg-base-200/10 p-5">
+            <h3 class="font-bold text-sm mb-3">Redémarrer la carte (soft reset)</h3>
+            <p class="text-sm text-base-content/60">Dans le Shell, appuie sur <kbd class="kbd kbd-sm">Ctrl</kbd> + <kbd class="kbd kbd-sm">D</kbd>. L'ESP32 repart depuis le début (relance boot.py puis main.py).</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Raccourcis clavier -->
+      <div>
+        <h2 class="text-2xl font-black mb-6">Raccourcis clavier essentiels</h2>
+        <div class="overflow-x-auto rounded-xl border border-base-200/80">
+          <table class="table w-full">
+            <thead>
+              <tr><th>Action</th><th>Raccourci</th></tr>
+            </thead>
+            <tbody>
+              {[
+                ['Exécuter le script', 'F5'],
+                ['Arrêter le programme', 'Ctrl + C (dans le Shell)'],
+                ['Soft reset (redémarrer)', 'Ctrl + D (dans le Shell)'],
+                ['Nouveau fichier', 'Ctrl + N'],
+                ['Ouvrir un fichier', 'Ctrl + O'],
+                ['Sauvegarder', 'Ctrl + S'],
+                ['Zoom avant / arrière', 'Ctrl + + / Ctrl + -'],
+                ['Commenter une ligne', 'Ctrl + F1'],
+                ['Autocomplétion', 'Tab'],
+              ].map(([action, raccourci]) => (
+                <tr>
+                  <td class="text-sm">{action}</td>
+                  <td class="font-mono text-xs text-primary">{raccourci}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Flash MicroPython -->
+      <div>
+        <h2 class="text-2xl font-black mb-6">Flasher MicroPython sur une nouvelle carte</h2>
+        <p class="text-base-content/60 text-sm mb-4">Si ta carte est neuve ou si MicroPython n'est pas installé, Thonny peut le faire directement.</p>
+        <ol class="space-y-3">
+          {[
+            'Branche l\'ESP32 en USB.',
+            'Menu Outils → Configurer l\'interpréteur → clic sur "Install or update MicroPython".',
+            'Sélectionne la variante : ESP32 / ESP32-S3 / Pico selon ta carte.',
+            'Clique sur Install. Thonny télécharge et flash le firmware automatiquement.',
+            'Une fois terminé, redémarre Thonny et connecte-toi normalement.',
+          ].map((step, i) => (
+            <div class="flex gap-3 text-sm text-base-content/70">
+              <span class="text-primary font-bold shrink-0">{i + 1}.</span>
+              <span>{step}</span>
+            </div>
+          ))}
+        </ol>
+      </div>
+
+      <!-- Lien vers doc OS -->
+      <div class="rounded-xl border border-primary/20 bg-primary/5 p-6">
+        <div class="flex items-center justify-between gap-4 flex-wrap">
+          <div>
+            <h4 class="font-bold mb-1">Gestion des fichiers sur l'ESP32</h4>
+            <p class="text-sm text-base-content/60">Commandes <code class="font-mono">os</code> : lister, créer, supprimer des fichiers directement depuis le REPL.</p>
+          </div>
+          <a href={siteUrl('/doc/micropython-os/')} class="btn btn-primary btn-sm whitespace-nowrap">
+            Voir la fiche →
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</Layout>

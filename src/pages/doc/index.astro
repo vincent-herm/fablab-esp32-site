@@ -3,12 +3,12 @@ import Layout from '../../layouts/Layout.astro';
 import { siteUrl } from '../../utils/url';
 
 const boards = [
-  { name: 'ESP32 classique', desc: 'La board originale — WiFi + Bluetooth, 38 GPIO', href: siteUrl('/doc/cartes/'), badge: 'ESP32' },
-  { name: 'ESP32-S3', desc: 'Version améliorée — plus de GPIO, USB natif', href: siteUrl('/doc/cartes/'), badge: 'ESP32-S3' },
-  { name: 'Waveshare Touch LCD 3.5"', desc: 'Écran tactile + codec audio + micro intégrés', href: siteUrl('/doc/cartes/'), badge: 'Audio' },
-  { name: 'Raspberry Pi Pico 2W', desc: 'RP2350, WiFi, dual-core — MicroPython officiel', href: siteUrl('/doc/cartes/'), badge: 'Pico' },
-  { name: 'M5Stack StickC Plus2', desc: 'Écran, batterie, boutons — tout-en-un', href: siteUrl('/doc/cartes/'), badge: 'M5Stack' },
-  { name: 'Waveshare Touch LCD', desc: 'Écrans tactiles pour ESP32-S3', href: siteUrl('/doc/cartes/'), badge: 'Display' },
+  { name: 'ESP32 classique', desc: 'La board originale — WiFi + Bluetooth, 38 GPIO', href: siteUrl('/doc/cartes/#esp32-classique'), badge: 'ESP32' },
+  { name: 'ESP32-S3', desc: 'Version améliorée — plus de GPIO, USB natif', href: siteUrl('/doc/cartes/#esp32-s3'), badge: 'ESP32-S3' },
+  { name: 'Waveshare Touch LCD 3.5"', desc: 'Écran tactile + codec audio + micro intégrés', href: siteUrl('/doc/cartes/#waveshare-touch-35'), badge: 'Audio' },
+  { name: 'Raspberry Pi Pico 2W', desc: 'RP2350, WiFi, dual-core — MicroPython officiel', href: siteUrl('/doc/cartes/#pico-2w'), badge: 'Pico' },
+  { name: 'M5Stack StickC Plus2', desc: 'Écran, batterie, boutons — tout-en-un', href: siteUrl('/doc/cartes/#m5stack'), badge: 'M5Stack' },
+  { name: 'Waveshare Touch LCD', desc: 'Écrans tactiles pour ESP32-S3', href: siteUrl('/doc/cartes/#waveshare-s3'), badge: 'Display' },
 ];
 
 const composants = [
@@ -62,6 +62,20 @@ const protocoleColors: Record<string, string> = {
 
   <section class="py-16 bg-base-200/30">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-black mb-8">Outils</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-16">
+        {[
+          { name: 'Thonny', desc: 'IDE recommandé : connexion, REPL, transfert de fichiers, flash du firmware', href: siteUrl('/doc/thonny/'), badge: 'IDE' },
+          { name: 'Commandes OS', desc: 'Gérer les fichiers sur l\'ESP32 : os.listdir(), boot.py, main.py, mémoire', href: siteUrl('/doc/micropython-os/'), badge: 'MicroPython' },
+        ].map(tool => (
+          <a href={tool.href} class="group rounded-xl border border-base-200/80 bg-base-200/20 p-5 hover:border-emerald-500/30 hover:bg-base-200/40 transition-all block">
+            <span class="text-xs font-mono font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-lg">{tool.badge}</span>
+            <h3 class="font-bold text-sm mt-3 mb-1 group-hover:text-emerald-400 transition-colors">{tool.name}</h3>
+            <p class="text-xs text-base-content/50">{tool.desc}</p>
+            <p class="text-xs text-emerald-400/60 mt-2 font-medium">Voir la fiche →</p>
+          </a>
+        ))}
+      </div>
       <h2 class="text-2xl font-black mb-8">Composants</h2>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {composants.map(comp => (
