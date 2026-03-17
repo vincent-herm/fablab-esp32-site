@@ -1,0 +1,121 @@
+---
+---
+
+<footer class="border-t border-base-200/60 bg-base-100/50 mt-24">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+
+      <!-- Colonne brand -->
+      <div class="md:col-span-1">
+        <a href="/" class="flex items-center gap-3 mb-4">
+          <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+              <circle cx="12" cy="3" r="1"/>
+            </svg>
+          </div>
+          <span class="font-bold">Fablab ESP32</span>
+        </a>
+        <p class="text-sm text-base-content/60 leading-relaxed">
+          Ateliers MicroPython pour débutants et makers. Électronique, objets connectés, robotique — en Ardèche.
+        </p>
+        <div class="flex items-center gap-1 mt-4">
+          <svg class="w-4 h-4 text-base-content/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+          </svg>
+          <span class="text-xs text-base-content/40">Ardèche, France</span>
+        </div>
+      </div>
+
+      <!-- Apprendre -->
+      <div>
+        <h3 class="font-semibold text-sm mb-4 text-base-content/80">Apprendre</h3>
+        <ul class="space-y-2">
+          {[
+            { label: 'Ateliers pratiques', href: '/ateliers/' },
+            { label: 'Cours théoriques', href: '/cours/' },
+            { label: 'Documentation', href: '/doc/' },
+            { label: 'Blog & projets', href: '/blog/' },
+          ].map(link => (
+            <li>
+              <a href={link.href} class="text-sm text-base-content/60 hover:text-primary transition-colors">
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- Documentation -->
+      <div>
+        <h3 class="font-semibold text-sm mb-4 text-base-content/80">Documentation</h3>
+        <ul class="space-y-2">
+          {[
+            { label: 'Boards ESP32', href: '/doc/boards/' },
+            { label: 'Composants', href: '/doc/composants/' },
+            { label: 'Librairies MicroPython', href: '/doc/librairies/' },
+            { label: 'Dépôt GitHub', href: 'https://github.com/vincent-fablab/fablab-esp32-ateliers' },
+          ].map(link => (
+            <li>
+              <a
+                href={link.href}
+                class="text-sm text-base-content/60 hover:text-primary transition-colors inline-flex items-center gap-1"
+                target={link.href.startsWith('http') ? '_blank' : undefined}
+                rel={link.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+              >
+                {link.label}
+                {link.href.startsWith('http') && (
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                  </svg>
+                )}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- Contact -->
+      <div>
+        <h3 class="font-semibold text-sm mb-4 text-base-content/80">Fablab</h3>
+        <ul class="space-y-2">
+          {[
+            { label: 'À propos', href: '/a-propos/' },
+            { label: 'Boutique', href: '/boutique/' },
+            { label: 'Services B2B', href: '/a-propos/#b2b' },
+          ].map(link => (
+            <li>
+              <a href={link.href} class="text-sm text-base-content/60 hover:text-primary transition-colors">
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+
+        <!-- Badge atelier -->
+        <div class="mt-6">
+          <div class="inline-flex items-center gap-2 bg-success/10 text-success border border-success/20 rounded-full px-3 py-1.5 text-xs font-medium">
+            <span class="w-2 h-2 rounded-full bg-success animate-pulse"></span>
+            Ateliers ouverts · 20€ / 3h
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="border-t border-base-200/60 mt-10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p class="text-xs text-base-content/40">
+        © {new Date().getFullYear()} Fablab ESP32 Ardèche · Contenu sous licence{' '}
+        <a href="https://creativecommons.org/licenses/by-sa/4.0/" class="hover:text-primary" target="_blank" rel="noopener">CC BY-SA 4.0</a>
+      </p>
+      <div class="flex items-center gap-2 text-xs text-base-content/40">
+        <span>Construit avec</span>
+        <a href="https://astro.build" class="hover:text-primary" target="_blank" rel="noopener">Astro</a>
+        <span>+</span>
+        <a href="https://tailwindcss.com" class="hover:text-primary" target="_blank" rel="noopener">Tailwind</a>
+      </div>
+    </div>
+  </div>
+</footer>

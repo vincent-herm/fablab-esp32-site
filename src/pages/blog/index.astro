@@ -1,0 +1,69 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const articles = [
+  {
+    titre: 'Escape game avec ESP32 : les coulisses techniques',
+    date: '15 mars 2026',
+    description: 'Comment 12 ESP32 coordonnent des serrures électroniques, de la brume et des effets sonores pour Ardèche Games.',
+    tags: ['Escape game', 'ESP32', 'RFID', 'Audio'],
+    href: '/blog/escape-game-esp32/',
+    featured: true,
+  },
+  {
+    titre: 'Atelier AudioKit : jouer une gamme avec l\'ESP32-A1S',
+    date: '10 mars 2026',
+    description: 'Retour sur notre premier atelier AudioKit — codec ES8388, I2S et génération de sons sinusoïdaux.',
+    tags: ['AudioKit', 'ES8388', 'I2S'],
+    href: '/blog/atelier-audiokit/',
+    featured: false,
+  },
+];
+---
+
+<Layout
+  title="Blog"
+  description="Projets réalisés au fablab, retours d'ateliers, tutoriels MicroPython et actualités du fablab en Ardèche."
+>
+  <section class="py-20 hero-pattern border-b border-base-200/60">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <p class="text-amber-400 text-sm font-mono font-medium mb-3">// blog</p>
+      <h1 class="text-4xl sm:text-5xl font-black mb-5">Blog & Projets</h1>
+      <p class="text-base-content/65 text-lg">Retours d'ateliers, projets réalisés, tutoriels et actualités du fablab.</p>
+    </div>
+  </section>
+
+  <section class="py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {articles.length > 0 ? (
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {articles.map(article => (
+            <a href={article.href} class="group rounded-2xl border border-base-200/80 bg-base-200/20 p-7 card-hover hover:border-amber-500/30 transition-colors">
+              {article.featured && (
+                <div class="inline-flex items-center gap-1.5 text-xs text-amber-400 font-medium bg-amber-500/10 px-2.5 py-1 rounded-full mb-4">
+                  ⭐ À la une
+                </div>
+              )}
+              <div class="text-xs text-base-content/40 mb-3">{article.date}</div>
+              <h2 class="font-bold text-lg mb-3 group-hover:text-amber-400 transition-colors leading-tight">
+                {article.titre}
+              </h2>
+              <p class="text-sm text-base-content/60 leading-relaxed mb-4">{article.description}</p>
+              <div class="flex flex-wrap gap-1.5">
+                {article.tags.map(tag => (
+                  <span class="text-xs px-2 py-0.5 rounded-md bg-base-300/60 text-base-content/50 font-mono">{tag}</span>
+                ))}
+              </div>
+            </a>
+          ))}
+        </div>
+      ) : (
+        <div class="text-center py-20">
+          <div class="text-4xl mb-4">✍️</div>
+          <h2 class="text-xl font-bold mb-2">Les articles arrivent bientôt</h2>
+          <p class="text-base-content/50">Le blog sera alimenté par les retours d'ateliers et les projets réalisés.</p>
+        </div>
+      )}
+    </div>
+  </section>
+</Layout>

@@ -1,0 +1,106 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import AtelierCard from '../../components/AtelierCard.astro';
+
+const ateliers = [
+  {
+    numero: 1,
+    title: 'Serveur web avec ESP32',
+    description: 'Crée un point d\'accès WiFi, sers une page HTML et contrôle une LED depuis ton navigateur. Le projet d\'introduction parfait.',
+    href: '/ateliers/serveur-web-esp32/',
+    level: 'debutant' as const,
+    duration: '3h',
+    tags: ['ESP32', 'WiFi', 'MicroPython', 'HTML', 'LED'],
+  },
+  {
+    numero: 2,
+    title: 'AudioKit ESP32-A1S',
+    description: 'Génère des sons, explore le codec ES8388 et joue une gamme musicale avec la carte AI-Thinker AudioKit.',
+    href: '/ateliers/audiokit-esp32/',
+    level: 'intermediaire' as const,
+    duration: '3h',
+    tags: ['ESP32-A1S', 'I2S', 'ES8388', 'Audio', 'Codec'],
+  },
+  {
+    numero: 3,
+    title: 'Écran tactile ESP32-S3',
+    description: 'Crée une interface graphique interactive sur un écran Waveshare Touch LCD avec gestion des événements tactiles.',
+    href: '/ateliers/ecran-tactile-esp32/',
+    level: 'intermediaire' as const,
+    duration: '3h',
+    tags: ['ESP32-S3', 'SPI', 'Tactile', 'UI', 'Waveshare'],
+  },
+  {
+    numero: 4,
+    title: 'RFID & Escape Game',
+    description: 'Badge RFID, serrures électroniques et déclencheurs d\'ambiance — crée les énigmes d\'un vrai escape game.',
+    href: '/ateliers/rfid-escape-game/',
+    level: 'intermediaire' as const,
+    duration: '3h',
+    tags: ['RFID', 'RC522', 'SPI', 'GPIO', 'Escape game'],
+  },
+];
+---
+
+<Layout
+  title="Ateliers pratiques"
+  description="4 ateliers MicroPython progressifs en Ardèche. ESP32, AudioKit, écran tactile, RFID. Code téléchargeable, matériel fourni, 20€/3h."
+>
+  <!-- En-tête section -->
+  <section class="py-20 hero-pattern border-b border-base-200/60">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-2xl">
+        <p class="text-primary text-sm font-mono font-medium mb-3">// ateliers</p>
+        <h1 class="text-4xl sm:text-5xl font-black mb-5">Projets pratiques</h1>
+        <p class="text-base-content/65 text-lg leading-relaxed">
+          Des ateliers en présentiel en Ardèche pour créer de vrais projets avec l'ESP32 et MicroPython. Code disponible sur GitHub, schémas inclus.
+        </p>
+
+        <div class="flex flex-wrap gap-3 mt-8">
+          <div class="inline-flex items-center gap-2 bg-base-200/60 rounded-full px-4 py-2 text-sm">
+            <span class="w-2 h-2 rounded-full bg-success"></span>
+            4 ateliers disponibles
+          </div>
+          <div class="inline-flex items-center gap-2 bg-base-200/60 rounded-full px-4 py-2 text-sm">
+            <svg class="w-4 h-4 text-base-content/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+            </svg>
+            En présentiel, Ardèche
+          </div>
+          <div class="inline-flex items-center gap-2 bg-base-200/60 rounded-full px-4 py-2 text-sm font-semibold">
+            20€ / 3h · 6 personnes max
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Grille des ateliers -->
+  <section class="py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {ateliers.map(atelier => (
+          <AtelierCard {...atelier} />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Info pratique -->
+  <section class="py-16 bg-base-200/30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl mx-auto text-center">
+        <h2 class="text-2xl font-black mb-4">Tout le matériel est fourni</h2>
+        <p class="text-base-content/60 mb-8">
+          ESP32, câbles, composants, alimentation — tu n'as besoin que de ton ordinateur portable (ou pas, on a des écrans). Tu repars avec le code sur GitHub et les schémas.
+        </p>
+        <a href="/a-propos/" class="btn btn-primary gap-2">
+          Réserver un atelier
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </section>
+</Layout>

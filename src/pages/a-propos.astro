@@ -1,0 +1,136 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout
+  title="À propos"
+  description="Vincent, ancien professeur d'ESP32, anime un fablab en Ardèche. Ateliers MicroPython débutants et services B2B pour escape games."
+>
+  <!-- Hero -->
+  <section class="py-20 hero-pattern border-b border-base-200/60">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <p class="text-base-content/50 text-sm font-mono font-medium mb-3">// à propos</p>
+      <h1 class="text-4xl sm:text-5xl font-black mb-5">Le fablab & Vincent</h1>
+      <p class="text-base-content/65 text-lg leading-relaxed max-w-2xl">
+        Un projet né d'une passion pour l'électronique et d'une envie de la rendre accessible à tous, dans un coin d'Ardèche.
+      </p>
+    </div>
+  </section>
+
+  <!-- À propos de Vincent -->
+  <section class="py-16">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+        <div>
+          <h2 class="text-2xl font-black mb-5">Vincent</h2>
+          <div class="space-y-4 text-base-content/70 leading-relaxed">
+            <p>
+              Ancien professeur d'ESP32 à l'université jusqu'en 2021, j'ai accumulé du matériel, des connaissances et surtout une conviction : <strong class="text-base-content">l'électronique est accessible à tous</strong> quand on l'aborde par la pratique.
+            </p>
+            <p>
+              Mon fablab en Ardèche, c'est un espace pour expérimenter, apprendre, et surtout créer des choses qui fonctionnent vraiment. Pas de théorie abstraite — des objets qui s'allument, qui sonnent, qui réagissent.
+            </p>
+            <p>
+              Je dispose de 40 cartes ESP32 héritées de mon passé d'enseignant, d'un stock de capteurs et d'actionneurs, et d'une vraie passion pour MicroPython.
+            </p>
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          <div class="rounded-xl border border-base-200/80 bg-base-200/30 p-5">
+            <h3 class="font-semibold text-sm mb-3">Ce que j'ai dans le fablab</h3>
+            <ul class="space-y-2 text-sm text-base-content/60">
+              {[
+                '40 cartes ESP32 (stock 2020)',
+                'Capteurs : DHT22, HC-SR04, MPU6050, RFID RC522...',
+                'Actionneurs : servos, moteurs, relais, LEDs',
+                'ESP32-A1S AudioKit (AI-Thinker) avec codec ES8388',
+                'Écrans Waveshare Touch LCD (1.28", 1.69", 2.1")',
+                'M5Stack : StickC Plus2, Core2, Cardputer',
+                'Alimentation, câbles, breadboards en quantité',
+              ].map(item => (
+                <li class="flex items-start gap-2">
+                  <span class="text-primary mt-0.5 text-xs">▸</span>
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Ateliers -->
+  <section id="inscription" class="py-16 bg-base-200/30">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-black mb-8">Réserver un atelier</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="prose prose-invert max-w-none">
+          <p>Les ateliers ont lieu en présentiel en Ardèche. Pour réserver :</p>
+          <ul>
+            <li>Envoie un email ou un message</li>
+            <li>Indique l'atelier qui t'intéresse</li>
+            <li>Je te confirme une date disponible</li>
+            <li>Paiement de 20€ sur place le jour J</li>
+          </ul>
+          <p class="text-base-content/60 text-sm">
+            Petits groupes (6 personnes max) pour assurer un suivi personnalisé. Tout le matériel est fourni.
+          </p>
+        </div>
+        <div class="rounded-xl border border-primary/20 bg-primary/5 p-6">
+          <h3 class="font-bold mb-4">Contact</h3>
+          <p class="text-base-content/60 text-sm mb-6">
+            Pour réserver ou pour toute question sur les ateliers :
+          </p>
+          <a href="mailto:contact@fablab-esp32.fr" class="btn btn-primary w-full gap-2 mb-3">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+            </svg>
+            contact@fablab-esp32.fr
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section B2B -->
+  <section id="b2b" class="py-16">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-black mb-3">Services B2B</h2>
+      <p class="text-base-content/60 mb-8 max-w-xl">
+        Je propose aussi mes services aux entreprises pour des installations ESP32 sur mesure, notamment dans le domaine des escape games et événements.
+      </p>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {[
+          {
+            title: 'Escape games',
+            desc: 'Serrures électroniques, effets sonores, RFID, synchronisation multi-salles avec ESP32.',
+            icon: '🔐',
+          },
+          {
+            title: 'Murder parties',
+            desc: 'Déclencheurs d\'ambiance, indices numériques, systèmes de jeu connectés.',
+            icon: '🎭',
+          },
+          {
+            title: 'Événementiel',
+            desc: 'Installations interactives, jeux connectés, animations technologiques.',
+            icon: '🎪',
+          },
+        ].map(service => (
+          <div class="rounded-xl border border-base-200/80 bg-base-200/20 p-6">
+            <div class="text-3xl mb-4">{service.icon}</div>
+            <h3 class="font-bold mb-2">{service.title}</h3>
+            <p class="text-sm text-base-content/60">{service.desc}</p>
+          </div>
+        ))}
+      </div>
+      <div class="mt-8 p-5 rounded-xl border border-base-200/80 bg-base-200/20">
+        <p class="text-sm text-base-content/60">
+          <strong class="text-base-content">Client de référence :</strong> Ardèche Games — murder party et jeux grandeur nature. Des ESP32 coordonnent les effets sonores, les serrures RFID et les déclencheurs d'ambiance de leurs salles.
+        </p>
+      </div>
+    </div>
+  </section>
+</Layout>

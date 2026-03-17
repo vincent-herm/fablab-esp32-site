@@ -1,0 +1,407 @@
+---
+import Layout from '../layouts/Layout.astro';
+import AtelierCard from '../components/AtelierCard.astro';
+
+const ateliers = [
+  {
+    numero: 1,
+    title: 'Serveur web avec ESP32',
+    description: 'Crée un point d\'accès WiFi, sers une page HTML et contrôle une LED depuis ton navigateur.',
+    href: '/ateliers/serveur-web-esp32/',
+    level: 'debutant' as const,
+    duration: '3h',
+    tags: ['ESP32', 'WiFi', 'MicroPython', 'HTML'],
+  },
+  {
+    numero: 2,
+    title: 'AudioKit ESP32-A1S',
+    description: 'Génère des sons, explore le codec ES8388 et joue une gamme musicale avec l\'AudioKit AI-Thinker.',
+    href: '/ateliers/audiokit-esp32/',
+    level: 'intermediaire' as const,
+    duration: '3h',
+    tags: ['ESP32-A1S', 'I2S', 'ES8388', 'Audio'],
+  },
+  {
+    numero: 3,
+    title: 'Écran tactile ESP32-S3',
+    description: 'Crée une interface graphique interactive sur un écran Waveshare Touch LCD.',
+    href: '/ateliers/ecran-tactile-esp32/',
+    level: 'intermediaire' as const,
+    duration: '3h',
+    tags: ['ESP32-S3', 'SPI', 'Tactile', 'UI'],
+  },
+  {
+    numero: 4,
+    title: 'RFID & Escape Game',
+    description: 'Badge RFID, serrures électroniques, déclencheurs — crée les enigmes d\'un escape game réel.',
+    href: '/ateliers/rfid-escape-game/',
+    level: 'intermediaire' as const,
+    duration: '3h',
+    tags: ['RFID', 'ESP32', 'SPI', 'GPIO'],
+  },
+];
+
+const prochainsDates = [
+  { date: 'Sam. 5 Avril 2026', atelier: 'Serveur web ESP32', places: 2 },
+  { date: 'Sam. 19 Avril 2026', atelier: 'AudioKit ESP32', places: 4 },
+  { date: 'Sam. 3 Mai 2026', atelier: 'Serveur web ESP32', places: 6 },
+];
+
+const stats = [
+  { value: '40+', label: 'cartes ESP32', icon: '⚡' },
+  { value: '6', label: 'participants max', icon: '👥' },
+  { value: '20€', label: 'par atelier (3h)', icon: '🎯' },
+  { value: '100%', label: 'pratique', icon: '🔧' },
+];
+---
+
+<Layout
+  title="Apprends l'électronique en faisant"
+  description="Fablab en Ardèche — Ateliers MicroPython et ESP32 pour débutants. Objets connectés, sons, écrans tactiles, robotique. 20€ / 3h, 6 personnes max."
+>
+  <!-- ======== HERO ======== -->
+  <section class="relative overflow-hidden hero-pattern min-h-[88vh] flex items-center">
+
+    <!-- Grille de fond décorative -->
+    <div class="absolute inset-0 opacity-[0.03]" aria-hidden="true">
+      <svg width="100%" height="100%">
+        <defs>
+          <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="currentColor" stroke-width="1"/>
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#grid)" />
+      </svg>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 relative z-10">
+      <div class="max-w-3xl">
+
+        <!-- Badge d'intro -->
+        <div class="inline-flex items-center gap-2 bg-primary/10 text-primary border border-primary/20 rounded-full px-4 py-1.5 text-sm font-medium mb-8 animate-fade-in">
+          <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+          Fablab en Ardèche · Ateliers ouverts
+        </div>
+
+        <!-- Titre principal -->
+        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight mb-6 animate-fade-in animate-delay-1">
+          Apprends l'électronique
+          <span class="gradient-text block">en faisant des choses</span>
+          qui s'allument, sonnent et réagissent
+        </h1>
+
+        <p class="text-lg text-base-content/65 leading-relaxed mb-10 max-w-2xl animate-fade-in animate-delay-2">
+          Des ateliers pratiques en Ardèche pour créer des projets réels avec l'<strong class="text-base-content/90">ESP32</strong> et <strong class="text-base-content/90">MicroPython</strong>. Pas de prérequis, juste de la curiosité.
+        </p>
+
+        <!-- CTA -->
+        <div class="flex flex-wrap gap-4 animate-fade-in animate-delay-3">
+          <a href="/ateliers/" class="btn btn-primary btn-lg gap-2 glow">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+            Voir les ateliers
+          </a>
+          <a href="/cours/" class="btn btn-ghost btn-lg gap-2 border border-base-200/60">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+            </svg>
+            Cours théoriques
+          </a>
+        </div>
+
+        <!-- Stats -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-16 animate-fade-in animate-delay-4">
+          {stats.map(stat => (
+            <div class="rounded-xl bg-base-200/40 border border-base-200/60 px-4 py-3 text-center">
+              <div class="text-xl mb-0.5">{stat.icon}</div>
+              <div class="text-2xl font-black text-base-content">{stat.value}</div>
+              <div class="text-xs text-base-content/50">{stat.label}</div>
+            </div>
+          ))}
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Décoration droite (écran de code) -->
+    <div class="absolute right-0 top-1/2 -translate-y-1/2 hidden xl:block w-96 mr-8 opacity-80 animate-fade-in animate-delay-4">
+      <div class="rounded-2xl bg-[#1a1b26] border border-white/8 p-5 shadow-2xl">
+        <div class="flex gap-1.5 mb-4">
+          <div class="w-3 h-3 rounded-full bg-[#ff5f57]"></div>
+          <div class="w-3 h-3 rounded-full bg-[#ffbd2e]"></div>
+          <div class="w-3 h-3 rounded-full bg-[#28c840]"></div>
+        </div>
+        <pre class="text-xs font-mono leading-relaxed"><code><span class="text-purple-400">from</span> <span class="text-white">machine</span> <span class="text-purple-400">import</span> <span class="text-white">Pin</span>
+<span class="text-purple-400">import</span> <span class="text-white">network</span><span class="text-white">,</span> <span class="text-white">socket</span>
+
+<span class="text-green-400"># Crée un point d'accès WiFi</span>
+<span class="text-blue-400">ap</span> <span class="text-white">=</span> <span class="text-white">network</span><span class="text-white">.</span><span class="text-yellow-400">WLAN</span><span class="text-white">(</span><span class="text-white">network</span><span class="text-white">.</span><span class="text-white">AP_IF</span><span class="text-white">)</span>
+<span class="text-blue-400">ap</span><span class="text-white">.</span><span class="text-yellow-400">active</span><span class="text-white">(</span><span class="text-orange-400">True</span><span class="text-white">)</span>
+<span class="text-blue-400">ap</span><span class="text-white">.</span><span class="text-yellow-400">config</span><span class="text-white">(</span>
+  <span class="text-white">essid</span><span class="text-white">=</span><span class="text-green-300">'ESP32-Fablab'</span><span class="text-white">,</span>
+  <span class="text-white">password</span><span class="text-white">=</span><span class="text-green-300">'micropython'</span>
+<span class="text-white">)</span>
+
+<span class="text-green-400"># LED connectée à GPIO2</span>
+<span class="text-blue-400">led</span> <span class="text-white">=</span> <span class="text-yellow-400">Pin</span><span class="text-white">(</span><span class="text-orange-400">2</span><span class="text-white">,</span> <span class="text-white">Pin</span><span class="text-white">.</span><span class="text-white">OUT</span><span class="text-white">)</span>
+
+<span class="text-purple-400">print</span><span class="text-white">(</span><span class="text-green-300">'Serveur prêt ! 🚀'</span><span class="text-white">)</span></code></pre>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ======== 3 PILIERS ======== -->
+  <section class="py-24 bg-base-200/30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+      <div class="text-center mb-16">
+        <h2 class="text-3xl sm:text-4xl font-black mb-4">Tout ce qu'il te faut pour démarrer</h2>
+        <p class="text-base-content/60 max-w-xl mx-auto">Du code au composant, du débutant au maker — une plateforme complète.</p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+        <!-- Ateliers -->
+        <a href="/ateliers/" class="group rounded-2xl border border-base-200/80 bg-base-100/50 p-8 card-hover hover:border-blue-500/30">
+          <div class="w-12 h-12 rounded-xl bg-blue-500/15 flex items-center justify-center mb-6 group-hover:bg-blue-500/25 transition-colors">
+            <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold mb-3 group-hover:text-blue-400 transition-colors">Ateliers pratiques</h3>
+          <p class="text-base-content/60 leading-relaxed text-sm mb-4">
+            4 projets progressifs avec du vrai matériel. Code MicroPython téléchargeable, schémas de câblage, étape par étape.
+          </p>
+          <div class="flex items-center gap-1 text-sm text-blue-400 font-medium">
+            Découvrir les ateliers
+            <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </div>
+        </a>
+
+        <!-- Cours -->
+        <a href="/cours/" class="group rounded-2xl border border-base-200/80 bg-base-100/50 p-8 card-hover hover:border-purple-500/30">
+          <div class="w-12 h-12 rounded-xl bg-purple-500/15 flex items-center justify-center mb-6 group-hover:bg-purple-500/25 transition-colors">
+            <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold mb-3 group-hover:text-purple-400 transition-colors">Cours théoriques</h3>
+          <p class="text-base-content/60 leading-relaxed text-sm mb-4">
+            Protocoles I2C/SPI/I2S, MicroPython vs Arduino, capteurs et actionneurs, IoT et réseau. La théorie au service de la pratique.
+          </p>
+          <div class="flex items-center gap-1 text-sm text-purple-400 font-medium">
+            Explorer les cours
+            <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </div>
+        </a>
+
+        <!-- Documentation -->
+        <a href="/doc/" class="group rounded-2xl border border-base-200/80 bg-base-100/50 p-8 card-hover hover:border-emerald-500/30">
+          <div class="w-12 h-12 rounded-xl bg-emerald-500/15 flex items-center justify-center mb-6 group-hover:bg-emerald-500/25 transition-colors">
+            <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold mb-3 group-hover:text-emerald-400 transition-colors">Documentation</h3>
+          <p class="text-base-content/60 leading-relaxed text-sm mb-4">
+            Fiches de référence : ESP32, ESP32-S3, Pico 2W, M5Stack. Composants, brochages, librairies MicroPython prêtes à l'emploi.
+          </p>
+          <div class="flex items-center gap-1 text-sm text-emerald-400 font-medium">
+            Accéder à la doc
+            <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </div>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ======== ATELIERS ======== -->
+  <section class="py-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+      <div class="flex items-end justify-between mb-12">
+        <div>
+          <p class="text-primary text-sm font-mono font-medium mb-2">// ateliers</p>
+          <h2 class="text-3xl sm:text-4xl font-black">Projets à réaliser</h2>
+        </div>
+        <a href="/ateliers/" class="hidden sm:flex items-center gap-2 text-sm text-base-content/50 hover:text-primary transition-colors">
+          Tous les ateliers
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
+        </a>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        {ateliers.map(atelier => (
+          <AtelierCard {...atelier} />
+        ))}
+      </div>
+
+      <div class="text-center mt-8 sm:hidden">
+        <a href="/ateliers/" class="btn btn-outline btn-sm">Voir tous les ateliers</a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ======== PROCHAINS ATELIERS ======== -->
+  <section class="py-24 bg-base-200/30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+
+        <div>
+          <p class="text-primary text-sm font-mono font-medium mb-2">// agenda</p>
+          <h2 class="text-3xl sm:text-4xl font-black mb-6">Prochains ateliers</h2>
+          <p class="text-base-content/60 leading-relaxed mb-8">
+            Les ateliers se déroulent en présentiel en Ardèche. Petits groupes (6 max), matériel fourni, ambiance détendue. Tu repars avec ton code et les schémas.
+          </p>
+
+          <div class="space-y-3">
+            {prochainsDates.map(session => (
+              <div class="flex items-center justify-between rounded-xl border border-base-200/80 bg-base-100/50 px-5 py-4">
+                <div>
+                  <div class="font-semibold text-sm">{session.atelier}</div>
+                  <div class="text-xs text-base-content/50 mt-0.5">{session.date}</div>
+                </div>
+                <div class="flex items-center gap-3">
+                  <div class={`text-xs font-medium px-2.5 py-1 rounded-full ${session.places <= 2 ? 'bg-warning/15 text-warning' : 'bg-success/15 text-success'}`}>
+                    {session.places} place{session.places > 1 ? 's' : ''} libre{session.places > 1 ? 's' : ''}
+                  </div>
+                  <a href="/a-propos/#inscription" class="btn btn-primary btn-xs">
+                    Réserver
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <!-- Info atelier -->
+        <div class="rounded-2xl border border-primary/20 bg-primary/5 p-8">
+          <h3 class="text-xl font-bold mb-6">Comment ça se passe ?</h3>
+          <div class="space-y-5">
+            {[
+              { step: '01', title: 'Réserve ta place', desc: 'Envoie un message pour réserver. Paiement sur place le jour J.' },
+              { step: '02', title: 'Viens avec ta curiosité', desc: 'Tout le matériel est fourni. Pas besoin d\'expérience préalable.' },
+              { step: '03', title: 'On construit ensemble', desc: 'Câblage, code, tests — 3h pour créer un projet fonctionnel.' },
+              { step: '04', title: 'Tu repars avec tout', desc: 'Le code sur GitHub, les schémas, et un projet qui marche chez toi.' },
+            ].map(item => (
+              <div class="flex gap-4">
+                <div class="font-mono text-primary/50 text-sm font-bold flex-shrink-0 mt-0.5">{item.step}</div>
+                <div>
+                  <div class="font-semibold text-sm mb-1">{item.title}</div>
+                  <div class="text-sm text-base-content/60">{item.desc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div class="mt-8 pt-6 border-t border-primary/20">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="text-2xl font-black">20 €</div>
+                <div class="text-xs text-base-content/50">par personne · 3h · matériel fourni</div>
+              </div>
+              <a href="/a-propos/" class="btn btn-primary">
+                En savoir plus
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ======== APERÇU MicroPython ======== -->
+  <section class="py-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-4">
+        <p class="text-primary text-sm font-mono font-medium mb-2">// micropython</p>
+        <h2 class="text-3xl sm:text-4xl font-black mb-4">Python sur microcontrôleur</h2>
+        <p class="text-base-content/60 max-w-xl mx-auto">
+          MicroPython, c'est Python — la syntaxe que tu connais peut-être déjà, qui tourne directement sur l'ESP32. Simple, lisible, puissant.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-12">
+        {[
+          {
+            title: 'Allumer une LED',
+            code: `from machine import Pin\nfrom time import sleep\n\nled = Pin(2, Pin.OUT)\n\nwhile True:\n    led.on()\n    sleep(0.5)\n    led.off()\n    sleep(0.5)`,
+            badge: 'GPIO',
+            color: 'text-blue-400',
+          },
+          {
+            title: 'Lire un capteur',
+            code: `import dht\nfrom machine import Pin\n\nsensor = dht.DHT22(Pin(4))\nsensor.measure()\n\ntemp = sensor.temperature()\nhum = sensor.humidity()\nprint(f'{temp}°C — {hum}%')`,
+            badge: 'DHT22',
+            color: 'text-purple-400',
+          },
+          {
+            title: 'Publier en MQTT',
+            code: `from umqtt.simple import MQTTClient\n\nclient = MQTTClient(\n    'esp32', 'broker.local'\n)\nclient.connect()\nclient.publish(\n    b'fablab/temp',\n    b'22.5'\n)\nprint('Envoyé !')`,
+            badge: 'MQTT',
+            color: 'text-emerald-400',
+          },
+        ].map(example => (
+          <div class="rounded-2xl bg-[#1a1b26] border border-white/8 overflow-hidden">
+            <div class="flex items-center justify-between px-4 py-3 border-b border-white/8">
+              <span class="text-white/70 text-sm font-medium">{example.title}</span>
+              <span class={`text-xs font-mono font-bold ${example.color}`}>{example.badge}</span>
+            </div>
+            <pre class="p-4 text-xs font-mono text-white/70 leading-relaxed overflow-x-auto"><code>{example.code}</code></pre>
+          </div>
+        ))}
+      </div>
+
+      <div class="text-center mt-10">
+        <a href="/cours/introduction-micropython/" class="btn btn-outline gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+          </svg>
+          Cours Introduction à MicroPython
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ======== CTA FINAL ======== -->
+  <section class="py-24 bg-gradient-to-br from-primary/10 via-base-200/20 to-purple-500/10">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-3xl sm:text-4xl font-black mb-6">
+        Prêt à faire s'allumer ta première LED ?
+      </h2>
+      <p class="text-base-content/60 mb-10 leading-relaxed">
+        Rejoins un atelier en Ardèche ou parcours la documentation pour démarrer chez toi.
+        Tout le code est open source sur GitHub.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="/ateliers/" class="btn btn-primary btn-lg gap-2 glow">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+          </svg>
+          Voir les ateliers
+        </a>
+        <a href="https://github.com/vincent-fablab/fablab-esp32-ateliers" target="_blank" rel="noopener" class="btn btn-ghost btn-lg gap-2 border border-base-200/60">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+          </svg>
+          Code sur GitHub
+        </a>
+      </div>
+    </div>
+  </section>
+
+</Layout>

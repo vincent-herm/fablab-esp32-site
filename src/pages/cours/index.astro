@@ -1,0 +1,131 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const cours = [
+  {
+    href: '/cours/introduction-micropython/',
+    title: 'Introduction à MicroPython',
+    description: 'Python sur microcontrôleur : syntaxe, différences avec le Python classique, premiers pas sur ESP32.',
+    category: 'Bases',
+    color: 'blue',
+    icon: '🐍',
+    ready: true,
+  },
+  {
+    href: '/cours/protocoles-communication/',
+    title: 'Protocoles de communication',
+    description: 'I2C, SPI, UART, I2S — comment les composants communiquent entre eux et avec l\'ESP32.',
+    category: 'Électronique',
+    color: 'purple',
+    icon: '🔗',
+    ready: false,
+  },
+  {
+    href: '/cours/capteurs/',
+    title: 'Capteurs courants',
+    description: 'DHT22 (température), HC-SR04 (distance), MPU6050 (gyroscope), BMP280 (pression)...',
+    category: 'Capteurs',
+    color: 'emerald',
+    icon: '📡',
+    ready: false,
+  },
+  {
+    href: '/cours/actionneurs/',
+    title: 'Actionneurs',
+    description: 'Servomoteurs, moteurs DC, relais, vibreurs — donner du mouvement à tes projets.',
+    category: 'Mécatronique',
+    color: 'orange',
+    icon: '⚙️',
+    ready: false,
+  },
+  {
+    href: '/cours/iot-wifi-mqtt/',
+    title: 'Réseau & IoT avec ESP32',
+    description: 'WiFi, HTTP, MQTT — connecte ton ESP32 à Internet et à d\'autres appareils.',
+    category: 'IoT',
+    color: 'cyan',
+    icon: '🌐',
+    ready: false,
+  },
+  {
+    href: '/cours/audio-esp32/',
+    title: 'Audio sur ESP32',
+    description: 'I2S, codecs, génération de sons, lecture WAV et MP3 — l\'audio pas à pas.',
+    category: 'Audio',
+    color: 'pink',
+    icon: '🎵',
+    ready: false,
+  },
+  {
+    href: '/cours/mecatronique/',
+    title: 'Introduction à la mécatronique',
+    description: 'L\'interface entre mécanique, électronique et informatique — principes fondamentaux.',
+    category: 'Mécatronique',
+    color: 'amber',
+    icon: '🤖',
+    ready: false,
+  },
+];
+
+const colorMap: Record<string, string> = {
+  blue: 'bg-blue-500/10 text-blue-400 border-blue-500/20 hover:border-blue-500/40',
+  purple: 'bg-purple-500/10 text-purple-400 border-purple-500/20 hover:border-purple-500/40',
+  emerald: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 hover:border-emerald-500/40',
+  orange: 'bg-orange-500/10 text-orange-400 border-orange-500/20 hover:border-orange-500/40',
+  cyan: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20 hover:border-cyan-500/40',
+  pink: 'bg-pink-500/10 text-pink-400 border-pink-500/20 hover:border-pink-500/40',
+  amber: 'bg-amber-500/10 text-amber-400 border-amber-500/20 hover:border-amber-500/40',
+};
+---
+
+<Layout
+  title="Cours théoriques"
+  description="7 cours MicroPython : bases Python, protocoles I2C/SPI/I2S, capteurs, actionneurs, IoT, audio sur ESP32."
+>
+  <!-- En-tête -->
+  <section class="py-20 hero-pattern border-b border-base-200/60">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-2xl">
+        <p class="text-purple-400 text-sm font-mono font-medium mb-3">// cours</p>
+        <h1 class="text-4xl sm:text-5xl font-black mb-5">Cours théoriques</h1>
+        <p class="text-base-content/65 text-lg leading-relaxed">
+          La théorie au service de la pratique. Comprends comment fonctionne l'électronique pour mieux créer.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Grille cours -->
+  <section class="py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {cours.map(c => (
+          <a
+            href={c.ready ? c.href : '#'}
+            class={`group rounded-2xl border bg-base-200/20 p-6 card-hover transition-all ${colorMap[c.color]} ${!c.ready ? 'opacity-60 cursor-not-allowed' : ''}`}
+          >
+            <div class="flex items-start justify-between mb-4">
+              <div class="text-3xl">{c.icon}</div>
+              <div class="flex items-center gap-2">
+                <span class="text-xs px-2 py-0.5 rounded-full bg-base-300/50 text-base-content/50 font-medium">
+                  {c.category}
+                </span>
+                {!c.ready && (
+                  <span class="text-xs px-2 py-0.5 rounded-full bg-base-300/50 text-base-content/40">
+                    Bientôt
+                  </span>
+                )}
+              </div>
+            </div>
+            <h3 class="font-bold text-base-content mb-2 group-hover:text-current transition-colors">
+              {c.title}
+            </h3>
+            <p class="text-sm text-base-content/60 leading-relaxed">
+              {c.description}
+            </p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</Layout>

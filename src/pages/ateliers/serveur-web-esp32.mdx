@@ -1,0 +1,190 @@
+---
+title: 'Serveur web avec ESP32'
+description: "Crée un point d'accès WiFi avec l'ESP32, sers une page HTML et contrôle une LED depuis ton navigateur."
+level: 'debutant'
+duration: '3h'
+tags: ['ESP32', 'WiFi', 'MicroPython', 'HTML', 'LED']
+---
+
+import Layout from '../../layouts/Layout.astro';
+import GitHubCodeBlock from '../../components/GitHubCodeBlock.astro';
+import DifficultyBadge from '../../components/DifficultyBadge.astro';
+
+<Layout
+  title="Atelier 01 — Serveur web avec ESP32"
+  description="Crée un point d'accès WiFi avec l'ESP32, sers une page HTML et contrôle une LED depuis ton navigateur."
+>
+
+{/* Navigation */}
+<div class="border-b border-base-200/60 bg-base-200/20">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+    <div class="flex items-center gap-2 text-sm text-base-content/50">
+      <a href="/" class="hover:text-base-content transition-colors">Accueil</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <a href="/ateliers/" class="hover:text-base-content transition-colors">Ateliers</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <span class="text-base-content/80">Serveur web ESP32</span>
+    </div>
+  </div>
+</div>
+
+{/* En-tête atelier */}
+<section class="py-12 hero-pattern border-b border-base-200/60">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center gap-3 mb-6">
+      <span class="font-mono text-primary/60 text-sm font-bold bg-primary/10 px-3 py-1 rounded-lg">ATELIER 01</span>
+      <DifficultyBadge level="debutant" />
+    </div>
+    <h1 class="text-3xl sm:text-4xl font-black mb-4">Serveur web avec ESP32</h1>
+    <p class="text-base-content/65 text-lg leading-relaxed max-w-2xl mb-8">
+      Transforme ton ESP32 en point d'accès WiFi, crée une page HTML et contrôle une LED depuis ton téléphone ou ordinateur. Sans Internet, sans cloud — juste ton ESP32 et un réseau local.
+    </p>
+    <div class="flex flex-wrap gap-4">
+      <div class="flex items-center gap-2 text-sm text-base-content/60">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        3h
+      </div>
+      <div class="flex items-center gap-2 text-sm text-base-content/60">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg>
+        ESP32 classique (2020+)
+      </div>
+      <div class="flex flex-wrap gap-2">
+        {['ESP32', 'WiFi', 'MicroPython', 'HTML', 'LED'].map(tag => (
+          <span class="text-xs px-2.5 py-1 rounded-lg bg-base-200/60 text-base-content/50 font-mono">{tag}</span>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+{/* Contenu principal */}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+## Ce que tu vas créer
+
+À la fin de cet atelier, ton ESP32 sera un **mini-serveur web** qui :
+- Crée son propre réseau WiFi (point d'accès, pas besoin de box)
+- Sert une page HTML avec des boutons ON/OFF
+- Contrôle une LED physique connectée au GPIO2
+
+Tu pourras accéder à la page depuis n'importe quel appareil (téléphone, tablette, ordi) connecté au WiFi de l'ESP32.
+
+---
+
+## Matériel nécessaire
+
+<div class="overflow-x-auto rounded-xl border border-base-200/80 my-6">
+  <table class="table table-zebra w-full">
+    <thead>
+      <tr><th>Composant</th><th>Quantité</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="font-medium">ESP32 (modèle 2020 ou plus récent)</td><td>1</td><td class="text-base-content/60">Fourni en atelier</td></tr>
+      <tr><td class="font-medium">LED (n'importe quelle couleur)</td><td>1</td><td class="text-base-content/60">Fournie en atelier</td></tr>
+      <tr><td class="font-medium">Résistance 220Ω</td><td>1</td><td class="text-base-content/60">Fournie en atelier</td></tr>
+      <tr><td class="font-medium">Câble micro-USB</td><td>1</td><td class="text-base-content/60">Pour programmer l'ESP32</td></tr>
+      <tr><td class="font-medium">Breadboard</td><td>1</td><td class="text-base-content/60">Fournie en atelier</td></tr>
+    </tbody>
+  </table>
+</div>
+
+---
+
+## Schéma de câblage
+
+<div class="rounded-xl border border-base-200/80 bg-base-200/30 p-8 my-6 text-center">
+  <div class="w-16 h-16 rounded-full bg-base-300/60 flex items-center justify-center mx-auto mb-4">
+    <svg class="w-8 h-8 text-base-content/30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+  </div>
+  <p class="text-base-content/50 text-sm">Schéma de câblage à venir</p>
+  <p class="text-base-content/40 text-xs mt-1">ESP32 GPIO2 → Résistance 220Ω → LED → GND</p>
+</div>
+
+> **Câblage rapide :** GPIO2 de l'ESP32 → patte longue (anode +) de la LED → résistance 220Ω → patte courte (cathode -) → GND de l'ESP32.
+
+---
+
+## Le code
+
+<GitHubCodeBlock
+  repo="vincent-fablab/fablab-esp32-ateliers"
+  file="atelier1-serveur-web/main.py"
+  language="python"
+  title="Serveur web MicroPython — main.py"
+/>
+
+---
+
+## Étapes de réalisation
+
+### Étape 1 — Installer MicroPython sur l'ESP32
+
+Si ce n'est pas déjà fait, commence par flasher MicroPython sur ta carte :
+
+1. Télécharge le firmware depuis [micropython.org/download/esp32/](https://micropython.org/download/esp32/)
+2. Installe `esptool` : `pip install esptool`
+3. Flash le firmware :
+
+<div class="rounded-xl overflow-hidden border border-base-200/60 bg-[#1a1b26] my-4">
+  <div class="px-4 py-2 border-b border-white/8 text-white/50 text-xs font-mono">terminal</div>
+  <pre class="p-4 text-xs font-mono text-white/70 leading-relaxed overflow-x-auto"><code>{`# Efface d'abord la mémoire flash
+esptool.py --port /dev/ttyUSB0 erase_flash
+
+# Puis flash MicroPython
+esptool.py --port /dev/ttyUSB0 --baud 460800 write_flash -z 0x1000 esp32-firmware.bin`}</code></pre>
+</div>
+
+### Étape 2 — Câbler la LED
+
+Suis le schéma ci-dessus. La LED intégrée de l'ESP32 est sur **GPIO2** — on peut aussi l'utiliser pour tester sans LED externe.
+
+### Étape 3 — Copier le code
+
+Utilise **Thonny** (recommandé pour les débutants) ou `mpremote` :
+
+<div class="rounded-xl overflow-hidden border border-base-200/60 bg-[#1a1b26] my-4">
+  <div class="px-4 py-2 border-b border-white/8 text-white/50 text-xs font-mono">terminal</div>
+  <pre class="p-4 text-xs font-mono text-white/70 leading-relaxed overflow-x-auto"><code>{`# Avec mpremote
+mpremote cp main.py :main.py
+mpremote reset`}</code></pre>
+</div>
+
+### Étape 4 — Tester
+
+1. L'ESP32 redémarre et crée un réseau WiFi `ESP32-Fablab`
+2. Connecte ton téléphone au réseau (mot de passe : `micropython`)
+3. Ouvre `http://192.168.4.1` dans le navigateur
+4. Clique sur les boutons pour allumer/éteindre la LED !
+
+---
+
+## Pour aller plus loin
+
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6">
+  {[
+    { title: 'Ajouter un capteur', desc: 'Affiche la température d\'un DHT22 sur la page web en temps réel.' },
+    { title: 'Connexion au WiFi de la box', desc: 'Passe en mode STA (station) pour rejoindre ton réseau existant.' },
+    { title: 'Plusieurs LEDs', desc: 'Contrôle 4 LEDs de couleurs différentes depuis la même interface.' },
+  ].map(card => (
+    <div class="rounded-xl border border-base-200/80 bg-base-200/30 p-5">
+      <h4 class="font-semibold text-sm mb-2">{card.title}</h4>
+      <p class="text-xs text-base-content/60">{card.desc}</p>
+    </div>
+  ))}
+</div>
+
+{/* Navigation entre ateliers */}
+<div class="border-t border-base-200/60 pt-10 mt-10 flex justify-between items-center">
+  <div></div>
+  <a href="/ateliers/audiokit-esp32/" class="group flex items-center gap-3 rounded-xl border border-base-200/80 bg-base-200/30 px-5 py-4 hover:border-primary/30 transition-colors">
+    <div class="text-right">
+      <div class="text-xs text-base-content/50 mb-0.5">Atelier suivant</div>
+      <div class="font-semibold text-sm group-hover:text-primary transition-colors">AudioKit ESP32-A1S</div>
+    </div>
+    <svg class="w-5 h-5 text-base-content/40 group-hover:text-primary group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+  </a>
+</div>
+
+</div>
+
+</Layout>

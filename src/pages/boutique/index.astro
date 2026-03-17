@@ -1,0 +1,96 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const kits = [
+  {
+    nom: 'Kit Débutant ESP32',
+    prix: 35,
+    description: 'Tout pour démarrer : ESP32, breadboard, LEDs, résistances, capteur DHT22, câbles jumpers.',
+    contenu: ['1× ESP32 (38 broches)', '1× Breadboard 830 points', '20× LEDs assorties', '20× Résistances 220Ω–10kΩ', '1× DHT22', '30× Câbles jumpers', '1× Câble micro-USB'],
+    badge: 'Débutant',
+    badgeColor: 'badge-success',
+    dataItemId: 'kit-debutant-esp32',
+  },
+  {
+    nom: 'Kit AudioKit ESP32',
+    prix: 65,
+    description: 'La carte AI-Thinker ESP32-A1S avec codec ES8388, micro intégré, connecteur haut-parleur et carte mémoire.',
+    contenu: ['1× ESP32-A1S AudioKit', '1× Haut-parleur 3W/4Ω', '1× Carte microSD 8Go', '1× Câble micro-USB', 'Code MicroPython (GitHub)'],
+    badge: 'Intermédiaire',
+    badgeColor: 'badge-warning',
+    dataItemId: 'kit-audiokit-esp32',
+  },
+  {
+    nom: 'Kit Écran Tactile',
+    prix: 75,
+    description: 'ESP32-S3 avec écran Waveshare Touch LCD 1.28" rond — interface tactile prête à l\'emploi.',
+    contenu: ['1× ESP32-S3 Dev Board', '1× Waveshare 1.28" Round LCD Touch', '1× Câbles de connexion', '1× Câble USB-C', 'Code MicroPython (GitHub)'],
+    badge: 'Intermédiaire',
+    badgeColor: 'badge-warning',
+    dataItemId: 'kit-ecran-tactile',
+  },
+];
+---
+
+<Layout
+  title="Boutique"
+  description="Kits ESP32 prêts à l'emploi pour ateliers MicroPython. Kit débutant, AudioKit, écran tactile."
+>
+  <section class="py-20 hero-pattern border-b border-base-200/60">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <p class="text-pink-400 text-sm font-mono font-medium mb-3">// boutique</p>
+      <h1 class="text-4xl sm:text-5xl font-black mb-5">Kits ESP32</h1>
+      <p class="text-base-content/65 text-lg">Tout le matériel nécessaire pour les ateliers, prêt à l'emploi.</p>
+    </div>
+  </section>
+
+  <section class="py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {kits.map(kit => (
+          <div class="rounded-2xl border border-base-200/80 bg-base-200/20 overflow-hidden flex flex-col">
+            <div class="p-6 flex-1">
+              <div class="flex items-start justify-between mb-4">
+                <span class={`badge ${kit.badgeColor} badge-sm`}>{kit.badge}</span>
+                <div class="text-right">
+                  <div class="text-2xl font-black">{kit.prix}€</div>
+                  <div class="text-xs text-base-content/40">+ frais de port</div>
+                </div>
+              </div>
+              <h2 class="font-bold text-lg mb-3">{kit.nom}</h2>
+              <p class="text-sm text-base-content/60 mb-5 leading-relaxed">{kit.description}</p>
+              <div class="border-t border-base-200/60 pt-4">
+                <div class="text-xs text-base-content/50 font-medium mb-2">Contenu du kit :</div>
+                <ul class="space-y-1.5">
+                  {kit.contenu.map(item => (
+                    <li class="flex items-start gap-2 text-xs text-base-content/60">
+                      <span class="text-success mt-0.5">✓</span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+            <div class="p-6 pt-0">
+              <button
+                class="snipcart-add-item btn btn-primary w-full"
+                data-item-id={kit.dataItemId}
+                data-item-price={kit.prix}
+                data-item-url="/boutique/"
+                data-item-name={kit.nom}
+              >
+                Ajouter au panier
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div class="mt-12 rounded-xl border border-base-200/80 bg-base-200/20 p-6 text-center">
+        <p class="text-base-content/60 text-sm">
+          💡 <strong>Astuce :</strong> Si tu participes à un atelier, tout le matériel est fourni sur place. Ces kits sont pour continuer chez toi.
+        </p>
+      </div>
+    </div>
+  </section>
+</Layout>

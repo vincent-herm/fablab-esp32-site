@@ -1,0 +1,175 @@
+---
+title: 'Introduction à MicroPython'
+description: 'Découvre MicroPython : Python qui tourne directement sur ton ESP32. Syntaxe, modules, différences avec Arduino.'
+---
+
+import Layout from '../../layouts/Layout.astro';
+import DifficultyBadge from '../../components/DifficultyBadge.astro';
+
+<Layout title={frontmatter.title} description={frontmatter.description}>
+
+{/* Breadcrumb */}
+<div class="border-b border-base-200/60 bg-base-200/20">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+    <div class="flex items-center gap-2 text-sm text-base-content/50">
+      <a href="/" class="hover:text-base-content transition-colors">Accueil</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <a href="/cours/" class="hover:text-base-content transition-colors">Cours</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <span class="text-base-content/80">Introduction à MicroPython</span>
+    </div>
+  </div>
+</div>
+
+{/* En-tête */}
+<section class="py-12 hero-pattern border-b border-base-200/60">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-2xl">🐍</span>
+      <span class="text-xs px-2.5 py-1 rounded-full bg-blue-500/15 text-blue-400 font-medium">Bases</span>
+      <DifficultyBadge level="debutant" />
+    </div>
+    <h1 class="text-3xl sm:text-4xl font-black mb-4">Introduction à MicroPython</h1>
+    <p class="text-base-content/65 text-lg leading-relaxed max-w-2xl">
+      Python est maintenant capable de tourner directement sur un microcontrôleur comme l'ESP32. Découvre comment, et pourquoi c'est une révolution pour les débutants.
+    </p>
+  </div>
+</section>
+
+{/* Contenu */}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+## Qu'est-ce que MicroPython ?
+
+MicroPython est une implémentation légère de Python 3, spécialement conçue pour tourner sur des microcontrôleurs avec peu de mémoire (quelques centaines de Ko).
+
+Il a été créé en 2013 par Damien George et est maintenant maintenu par la communauté open source.
+
+### Python vs MicroPython — les différences
+
+<div class="overflow-x-auto rounded-xl border border-base-200/80 my-6">
+  <table class="table w-full">
+    <thead>
+      <tr><th>Aspect</th><th>Python classique</th><th>MicroPython</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="font-medium">Tourne sur</td><td>PC / Mac / Linux</td><td>Microcontrôleur (ESP32, Pico...)</td></tr>
+      <tr><td class="font-medium">RAM disponible</td><td>Des gigaoctets</td><td>320 Ko (ESP32)</td></tr>
+      <tr><td class="font-medium">Syntaxe</td><td>Python 3 complet</td><td>Python 3 (modules limités)</td></tr>
+      <tr><td class="font-medium">Accès matériel</td><td>Limité (via bibliothèques)</td><td>Direct (GPIO, I2C, SPI, ADC...)</td></tr>
+      <tr><td class="font-medium">Vitesse</td><td>Rapide</td><td>Suffisante pour 99% des projets</td></tr>
+    </tbody>
+  </table>
+</div>
+
+## MicroPython vs Arduino (C++)
+
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-6">
+  <div class="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-5">
+    <h4 class="font-bold text-emerald-400 mb-3 flex items-center gap-2"><span>🐍</span> MicroPython — avantages</h4>
+    <ul class="space-y-2 text-sm text-base-content/70">
+      <li class="flex items-start gap-2"><span class="text-emerald-400 mt-0.5">✓</span> Syntaxe claire, lisible, moins d'erreurs</li>
+      <li class="flex items-start gap-2"><span class="text-emerald-400 mt-0.5">✓</span> REPL interactif : teste en temps réel</li>
+      <li class="flex items-start gap-2"><span class="text-emerald-400 mt-0.5">✓</span> Pas de compilation : upload et ça tourne</li>
+      <li class="flex items-start gap-2"><span class="text-emerald-400 mt-0.5">✓</span> Idéal pour les débutants</li>
+    </ul>
+  </div>
+  <div class="rounded-xl border border-orange-500/20 bg-orange-500/5 p-5">
+    <h4 class="font-bold text-orange-400 mb-3 flex items-center gap-2"><span>⚡</span> Arduino (C++) — avantages</h4>
+    <ul class="space-y-2 text-sm text-base-content/70">
+      <li class="flex items-start gap-2"><span class="text-orange-400 mt-0.5">✓</span> Plus rapide (code compilé natif)</li>
+      <li class="flex items-start gap-2"><span class="text-orange-400 mt-0.5">✓</span> Contrôle total du matériel</li>
+      <li class="flex items-start gap-2"><span class="text-orange-400 mt-0.5">✓</span> Grande bibliothèque de librairies</li>
+      <li class="flex items-start gap-2"><span class="text-orange-400 mt-0.5">✓</span> Mieux pour la production industrielle</li>
+    </ul>
+  </div>
+</div>
+
+**Verdict pour nos ateliers :** on utilise MicroPython. La syntaxe Python est plus facile à apprendre, et la plupart de nos projets ne nécessitent pas la performance d'Arduino.
+
+---
+
+## Les modules essentiels
+
+### `machine` — le plus important
+
+```python
+from machine import Pin, ADC, I2C, SPI, UART, PWM
+
+# GPIO digital
+led = Pin(2, Pin.OUT)   # PIN 2 en sortie
+led.on()                # Allumer
+led.off()               # Éteindre
+
+btn = Pin(0, Pin.IN, Pin.PULL_UP)  # Entrée avec pull-up
+print(btn.value())      # Lire l'état
+
+# PWM (signal variable)
+pwm = PWM(Pin(2))
+pwm.freq(1000)          # 1 kHz
+pwm.duty(512)           # 50% (0-1023)
+```
+
+### `network` — WiFi
+
+```python
+import network
+
+# Mode AP (point d'accès)
+ap = network.WLAN(network.AP_IF)
+ap.active(True)
+ap.config(essid='MonESP32', password='12345678')
+
+# Mode STA (rejoindre un réseau)
+sta = network.WLAN(network.STA_IF)
+sta.active(True)
+sta.connect('MonWiFi', 'motdepasse')
+while not sta.isconnected():
+    pass
+print('IP:', sta.ifconfig()[0])
+```
+
+### `time` — temporisation
+
+```python
+import time
+
+time.sleep(1)        # Pause 1 seconde
+time.sleep_ms(500)   # Pause 500 millisecondes
+t = time.ticks_ms()  # Timestamp en ms
+```
+
+---
+
+## Le REPL — ton meilleur outil
+
+Le **REPL** (Read-Eval-Print Loop) est une console interactive où tu peux taper du Python directement sur l'ESP32.
+
+```python
+>>> from machine import Pin
+>>> led = Pin(2, Pin.OUT)
+>>> led.on()    # La LED s'allume !
+>>> led.off()   # La LED s'éteint !
+```
+
+C'est immédiat — pas besoin de compiler ni de rebooter.
+
+---
+
+## Prochaine étape
+
+<div class="rounded-xl border border-primary/20 bg-primary/5 p-6 my-8">
+  <div class="flex items-center justify-between gap-4 flex-wrap">
+    <div>
+      <h4 class="font-bold mb-1">Atelier 01 — Serveur web avec ESP32</h4>
+      <p class="text-sm text-base-content/60">Mets en pratique ce cours avec un vrai projet : un mini-serveur web sur ESP32.</p>
+    </div>
+    <a href="/ateliers/serveur-web-esp32/" class="btn btn-primary btn-sm whitespace-nowrap">
+      Démarrer l'atelier →
+    </a>
+  </div>
+</div>
+
+</div>
+
+</Layout>

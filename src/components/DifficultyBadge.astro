@@ -1,0 +1,34 @@
+---
+export interface Props {
+  level: 'debutant' | 'intermediaire' | 'avance';
+  size?: 'sm' | 'md';
+}
+
+const { level, size = 'md' } = Astro.props;
+
+const config = {
+  debutant: {
+    label: 'Débutant',
+    classes: 'bg-success/15 text-success border-success/30',
+    icon: '●',
+  },
+  intermediaire: {
+    label: 'Intermédiaire',
+    classes: 'bg-warning/15 text-warning border-warning/30',
+    icon: '◆',
+  },
+  avance: {
+    label: 'Avancé',
+    classes: 'bg-error/15 text-error border-error/30',
+    icon: '▲',
+  },
+};
+
+const { label, classes, icon } = config[level];
+const sizeClasses = size === 'sm' ? 'text-xs px-2 py-0.5' : 'text-xs px-3 py-1';
+---
+
+<span class={`inline-flex items-center gap-1.5 rounded-full border font-medium ${classes} ${sizeClasses}`}>
+  <span class="text-[8px]">{icon}</span>
+  {label}
+</span>
