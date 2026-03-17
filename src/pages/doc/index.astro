@@ -1,23 +1,23 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import { url } from '../../utils/url';
+import { siteUrl } from '../../utils/url';
 
 const boards = [
-  { name: 'ESP32 classique', desc: 'La board originale — WiFi + Bluetooth, 38 GPIO', href: url('/doc/boards/esp32/'), badge: 'ESP32' },
-  { name: 'ESP32-S3', desc: 'Version améliorée — plus de GPIO, USB natif', href: url('/doc/boards/esp32-s3/'), badge: 'ESP32-S3' },
-  { name: 'ESP32-A1S AudioKit', desc: 'Codec ES8388, micro, haut-parleurs, boutons', href: url('/doc/boards/esp32-audiokit/'), badge: 'Audio' },
-  { name: 'Raspberry Pi Pico 2W', desc: 'RP2350, WiFi, dual-core — MicroPython officiel', href: url('/doc/boards/pico-2w/'), badge: 'Pico' },
-  { name: 'M5Stack StickC Plus2', desc: 'Écran, batterie, boutons — tout-en-un', href: url('/doc/boards/m5stack-stickc/'), badge: 'M5Stack' },
-  { name: 'Waveshare Touch LCD', desc: 'Écrans tactiles pour ESP32-S3', href: url('/doc/boards/waveshare-touch-lcd/'), badge: 'Display' },
+  { name: 'ESP32 classique', desc: 'La board originale — WiFi + Bluetooth, 38 GPIO', href: siteUrl('/doc/boards/esp32/'), badge: 'ESP32' },
+  { name: 'ESP32-S3', desc: 'Version améliorée — plus de GPIO, USB natif', href: siteUrl('/doc/boards/esp32-s3/'), badge: 'ESP32-S3' },
+  { name: 'ESP32-A1S AudioKit', desc: 'Codec ES8388, micro, haut-parleurs, boutons', href: siteUrl('/doc/boards/esp32-audiokit/'), badge: 'Audio' },
+  { name: 'Raspberry Pi Pico 2W', desc: 'RP2350, WiFi, dual-core — MicroPython officiel', href: siteUrl('/doc/boards/pico-2w/'), badge: 'Pico' },
+  { name: 'M5Stack StickC Plus2', desc: 'Écran, batterie, boutons — tout-en-un', href: siteUrl('/doc/boards/m5stack-stickc/'), badge: 'M5Stack' },
+  { name: 'Waveshare Touch LCD', desc: 'Écrans tactiles pour ESP32-S3', href: siteUrl('/doc/boards/waveshare-touch-lcd/'), badge: 'Display' },
 ];
 
 const composants = [
-  { name: 'DHT22', desc: 'Température et humidité', protocole: 'GPIO', href: url('/doc/composants/dht22/') },
-  { name: 'HC-SR04', desc: 'Mesure de distance ultrason', protocole: 'GPIO', href: url('/doc/composants/hc-sr04/') },
-  { name: 'MPU6050', desc: 'Accéléromètre + gyroscope', protocole: 'I2C', href: url('/doc/composants/mpu6050/') },
-  { name: 'RC522', desc: 'Lecteur RFID', protocole: 'SPI', href: url('/doc/composants/rc522/') },
-  { name: 'SSD1306', desc: 'Écran OLED 128×64', protocole: 'I2C', href: url('/doc/composants/ssd1306/') },
-  { name: 'ES8388', desc: 'Codec audio stéréo', protocole: 'I2C+I2S', href: url('/doc/composants/es8388/') },
+  { name: 'DHT22', desc: 'Température et humidité', protocole: 'GPIO', href: siteUrl('/doc/composants/dht22/') },
+  { name: 'HC-SR04', desc: 'Mesure de distance ultrason', protocole: 'GPIO', href: siteUrl('/doc/composants/hc-sr04/') },
+  { name: 'MPU6050', desc: 'Accéléromètre + gyroscope', protocole: 'I2C', href: siteUrl('/doc/composants/mpu6050/') },
+  { name: 'RC522', desc: 'Lecteur RFID', protocole: 'SPI', href: siteUrl('/doc/composants/rc522/') },
+  { name: 'SSD1306', desc: 'Écran OLED 128×64', protocole: 'I2C', href: siteUrl('/doc/composants/ssd1306/') },
+  { name: 'ES8388', desc: 'Codec audio stéréo', protocole: 'I2C+I2S', href: siteUrl('/doc/composants/es8388/') },
 ];
 
 const protocoleColors: Record<string, string> = {

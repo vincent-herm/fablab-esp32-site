@@ -1,14 +1,14 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import AtelierCard from '../../components/AtelierCard.astro';
-import { url } from '../../utils/url';
+import { siteUrl } from '../../utils/url';
 
 const ateliers = [
   {
     numero: 1,
     title: 'Serveur web avec ESP32',
     description: 'Crée un point d\'accès WiFi, sers une page HTML et contrôle une LED depuis ton navigateur.',
-    href: url('/ateliers/serveur-web-esp32/'),
+    href: siteUrl('/ateliers/serveur-web-esp32/'),
     level: 'debutant' as const,
     duration: '3h',
     tags: ['ESP32', 'WiFi', 'MicroPython', 'HTML', 'LED'],
@@ -17,7 +17,7 @@ const ateliers = [
     numero: 2,
     title: 'AudioKit ESP32-A1S',
     description: 'Génère des sons, explore le codec ES8388 et joue une gamme musicale avec la carte AI-Thinker AudioKit.',
-    href: url('/ateliers/audiokit-esp32/'),
+    href: siteUrl('/ateliers/audiokit-esp32/'),
     level: 'intermediaire' as const,
     duration: '3h',
     tags: ['ESP32-A1S', 'I2S', 'ES8388', 'Audio', 'Codec'],
@@ -26,7 +26,7 @@ const ateliers = [
     numero: 3,
     title: 'Écran tactile ESP32-S3',
     description: 'Crée une interface graphique interactive sur un écran Waveshare Touch LCD.',
-    href: url('/ateliers/ecran-tactile-esp32/'),
+    href: siteUrl('/ateliers/ecran-tactile-esp32/'),
     level: 'intermediaire' as const,
     duration: '3h',
     tags: ['ESP32-S3', 'SPI', 'Tactile', 'UI', 'Waveshare'],
@@ -35,7 +35,7 @@ const ateliers = [
     numero: 4,
     title: 'RFID & Escape Game',
     description: 'Badge RFID, serrures électroniques et déclencheurs — crée les énigmes d\'un vrai escape game.',
-    href: url('/ateliers/rfid-escape-game/'),
+    href: siteUrl('/ateliers/rfid-escape-game/'),
     level: 'intermediaire' as const,
     duration: '3h',
     tags: ['RFID', 'RC522', 'SPI', 'GPIO', 'Escape game'],
@@ -85,7 +85,7 @@ const ateliers = [
         <p class="text-base-content/60 mb-8">
           ESP32, câbles, composants — tu n'as besoin que de ta curiosité. Tu repars avec le code sur GitHub et les schémas.
         </p>
-        <a href={url('/a-propos/')} class="btn btn-primary gap-2">
+        <a href={siteUrl('/a-propos/')} class="btn btn-primary gap-2">
           Réserver un atelier
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>

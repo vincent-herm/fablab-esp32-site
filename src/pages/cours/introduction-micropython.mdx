@@ -5,16 +5,16 @@ description: 'Découvre MicroPython : Python qui tourne directement sur ton ESP3
 
 import Layout from '../../layouts/Layout.astro';
 import DifficultyBadge from '../../components/DifficultyBadge.astro';
-import { url } from '../../utils/url';
+import { siteUrl } from '../../utils/url';
 
 <Layout title={frontmatter.title} description={frontmatter.description}>
 
 <div class="border-b border-base-200/60 bg-base-200/20">
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
     <div class="flex items-center gap-2 text-sm text-base-content/50">
-      <a href={url('/')} class="hover:text-base-content transition-colors">Accueil</a>
+      <a href={siteUrl('/')} class="hover:text-base-content transition-colors">Accueil</a>
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-      <a href={url('/cours/')} class="hover:text-base-content transition-colors">Cours</a>
+      <a href={siteUrl('/cours/')} class="hover:text-base-content transition-colors">Cours</a>
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
       <span class="text-base-content/80">Introduction à MicroPython</span>
     </div>
@@ -160,7 +160,7 @@ Pas besoin de compiler ni de rebooter — idéal pour tester et apprendre.
       <h4 class="font-bold mb-1">Atelier 01 — Serveur web avec ESP32</h4>
       <p class="text-sm text-base-content/60">Mets en pratique ce cours avec un vrai projet.</p>
     </div>
-    <a href={url('/ateliers/serveur-web-esp32/')} class="btn btn-primary btn-sm whitespace-nowrap">
+    <a href={siteUrl('/ateliers/serveur-web-esp32/')} class="btn btn-primary btn-sm whitespace-nowrap">
       Démarrer l'atelier →
     </a>
   </div>

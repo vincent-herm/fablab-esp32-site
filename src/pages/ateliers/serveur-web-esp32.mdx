@@ -9,7 +9,7 @@ tags: ['ESP32', 'WiFi', 'MicroPython', 'HTML', 'LED']
 import Layout from '../../layouts/Layout.astro';
 import GitHubCodeBlock from '../../components/GitHubCodeBlock.astro';
 import DifficultyBadge from '../../components/DifficultyBadge.astro';
-import { url } from '../../utils/url';
+import { siteUrl } from '../../utils/url';
 
 <Layout
   title="Atelier 01 — Serveur web avec ESP32"
@@ -20,9 +20,9 @@ import { url } from '../../utils/url';
 <div class="border-b border-base-200/60 bg-base-200/20">
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
     <div class="flex items-center gap-2 text-sm text-base-content/50">
-      <a href={url('/')} class="hover:text-base-content transition-colors">Accueil</a>
+      <a href={siteUrl('/')} class="hover:text-base-content transition-colors">Accueil</a>
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-      <a href={url('/ateliers/')} class="hover:text-base-content transition-colors">Ateliers</a>
+      <a href={siteUrl('/ateliers/')} class="hover:text-base-content transition-colors">Ateliers</a>
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
       <span class="text-base-content/80">Serveur web ESP32</span>
     </div>
@@ -143,7 +143,7 @@ GPIO2 → résistance 220Ω → LED (anode) → LED (cathode) → GND
 </div>
 
 <div class="border-t border-base-200/60 pt-10 mt-10 flex justify-end">
-  <a href={url('/ateliers/audiokit-esp32/')} class="group flex items-center gap-3 rounded-xl border border-base-200/80 bg-base-200/30 px-5 py-4 hover:border-primary/30 transition-colors">
+  <a href={siteUrl('/ateliers/audiokit-esp32/')} class="group flex items-center gap-3 rounded-xl border border-base-200/80 bg-base-200/30 px-5 py-4 hover:border-primary/30 transition-colors">
     <div class="text-right">
       <div class="text-xs text-base-content/50 mb-0.5">Atelier suivant</div>
       <div class="font-semibold text-sm group-hover:text-primary transition-colors">AudioKit ESP32-A1S</div>
