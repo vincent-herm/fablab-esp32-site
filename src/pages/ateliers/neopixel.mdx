@@ -1,0 +1,151 @@
+---
+title: 'LED RGB et NeoPixel'
+description: "Anime un bandeau de LED RGB WS2812 avec MicroPython : couleurs, défilement, arc-en-ciel et effets aléatoires."
+level: 'debutant'
+duration: '3h'
+tags: ['ESP32', 'NeoPixel', 'WS2812', 'RGB', 'Animations']
+---
+
+import Layout from '../../layouts/Layout.astro';
+import GitHubCodeBlock from '../../components/GitHubCodeBlock.astro';
+import DifficultyBadge from '../../components/DifficultyBadge.astro';
+import { siteUrl } from '../../utils/url';
+
+<Layout title="Atelier 02 — LED RGB et NeoPixel" description="Anime un bandeau de LED RGB WS2812 avec MicroPython.">
+
+<div class="border-b border-base-200/60 bg-base-200/20">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+    <div class="flex items-center gap-2 text-sm text-base-content/50">
+      <a href={siteUrl('/')} class="hover:text-base-content transition-colors">Accueil</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <a href={siteUrl('/ateliers/')} class="hover:text-base-content transition-colors">Ateliers</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <span class="text-base-content/80">LED RGB et NeoPixel</span>
+    </div>
+  </div>
+</div>
+
+<section class="py-12 hero-pattern border-b border-base-200/60">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center gap-3 mb-6">
+      <span class="font-mono text-primary/60 text-sm font-bold bg-primary/10 px-3 py-1 rounded-lg">ATELIER 02</span>
+      <DifficultyBadge level="debutant" />
+    </div>
+    <h1 class="text-3xl sm:text-4xl font-black mb-4">LED RGB et NeoPixel</h1>
+    <p class="text-base-content/65 text-lg leading-relaxed max-w-2xl mb-8">
+      Prends le contrôle d'un bandeau de 8 LED RGB WS2812. Couleurs sur mesure, animations de défilement, arc-en-ciel automatique — tout ça avec un seul fil de données.
+    </p>
+    <div class="flex flex-wrap gap-4">
+      <div class="flex items-center gap-2 text-sm text-base-content/60">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        3h
+      </div>
+      <div class="flex flex-wrap gap-2">
+        {['ESP32', 'NeoPixel', 'WS2812', 'RGB', 'Animations'].map(tag => (
+          <span class="text-xs px-2.5 py-1 rounded-lg bg-base-200/60 text-base-content/50 font-mono">{tag}</span>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mdx-content">
+
+## Ce que tu vas créer
+
+Un bandeau NeoPixel qui propose 6 animations différentes. Le bouton BOOT de l'ESP32 fait défiler les modes :
+- Défilement bleu / rouge
+- Arc-en-ciel automatique
+- Scintillement aléatoire
+- Remplissage progressif
+
+---
+
+## Matériel nécessaire
+
+<div class="overflow-x-auto rounded-xl border border-base-200/80 my-6">
+  <table class="table table-zebra w-full">
+    <thead>
+      <tr><th>Composant</th><th>Quantité</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="font-medium">ESP32</td><td>1</td><td class="text-base-content/60">Fourni en atelier</td></tr>
+      <tr><td class="font-medium">Bandeau NeoPixel WS2812</td><td>1 (8 LEDs)</td><td class="text-base-content/60">Fourni en atelier</td></tr>
+      <tr><td class="font-medium">Condensateur 1000 µF</td><td>1</td><td class="text-base-content/60">Protection contre les pics de courant</td></tr>
+      <tr><td class="font-medium">Résistance 300-500 Ω</td><td>1</td><td class="text-base-content/60">Sur le fil DATA</td></tr>
+      <tr><td class="font-medium">Câble micro-USB</td><td>1</td><td class="text-base-content/60">Fourni en atelier</td></tr>
+    </tbody>
+  </table>
+</div>
+
+## Connexions
+
+<div class="rounded-xl overflow-hidden border border-base-200/60 bg-[#1a1b26] my-4">
+  <div class="px-4 py-2 border-b border-white/8 text-white/50 text-xs font-mono">câblage</div>
+  <pre class="p-4 text-xs font-mono text-white/70 leading-relaxed"><code>{`ESP32 5V   ──── NeoPixel 5V
+ESP32 GND  ──── NeoPixel GND
+ESP32 G26  ──── résistance 300Ω ──── NeoPixel DIN`}</code></pre>
+</div>
+
+---
+
+## Le code
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="atelier2-neopixel/main.py"
+  language="python"
+  title="NeoPixel MicroPython — main.py"
+/>
+
+---
+
+## Comment ça marche
+
+### Couleurs RGB
+
+Chaque LED NeoPixel est contrôlée par un triplet `(rouge, vert, bleu)`, chaque valeur de 0 à 255 :
+
+```python
+np[0] = (255, 0, 0)    # rouge pur
+np[1] = (0, 255, 0)    # vert pur
+np[2] = (0, 0, 255)    # bleu pur
+np[3] = (255, 165, 0)  # orange
+np[4] = (128, 0, 128)  # violet
+np.write()             # envoyer vers les LEDs
+```
+
+### La fonction arc-en-ciel
+
+La fonction `roue(pos)` convertit un nombre de 0 à 255 en couleur arc-en-ciel, permettant de faire défiler toutes les teintes en boucle.
+
+---
+
+## Pour aller plus loin
+
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6">
+  {[
+    { title: 'Contrôle par boutons', desc: 'Utilise 3 boutons pour choisir la couleur rouge/vert/bleu en temps réel.' },
+    { title: 'Réagir au son', desc: 'Branche un micro et fais pulser les LEDs selon le volume ambiant.' },
+    { title: 'Bandeau plus long', desc: 'Adapte le code pour 30, 60 ou 144 LEDs — change juste N.' },
+  ].map(card => (
+    <div class="rounded-xl border border-base-200/80 bg-base-200/30 p-5">
+      <h4 class="font-semibold text-sm mb-2">{card.title}</h4>
+      <p class="text-xs text-base-content/60">{card.desc}</p>
+    </div>
+  ))}
+</div>
+
+<div class="border-t border-base-200/60 pt-10 mt-10 flex items-center justify-between">
+  <a href={siteUrl('/ateliers/serveur-web-esp32/')} class="group flex items-center gap-3 rounded-xl border border-base-200/80 bg-base-200/30 px-5 py-4 hover:border-primary/30 transition-colors">
+    <svg class="w-5 h-5 text-base-content/40 group-hover:text-primary group-hover:-translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+    <div><div class="text-xs text-base-content/50 mb-0.5">Atelier précédent</div><div class="font-semibold text-sm group-hover:text-primary transition-colors">Serveur web ESP32</div></div>
+  </a>
+  <a href={siteUrl('/ateliers/station-meteo/')} class="group flex items-center gap-3 rounded-xl border border-base-200/80 bg-base-200/30 px-5 py-4 hover:border-primary/30 transition-colors">
+    <div class="text-right"><div class="text-xs text-base-content/50 mb-0.5">Atelier suivant</div><div class="font-semibold text-sm group-hover:text-primary transition-colors">Station météo</div></div>
+    <svg class="w-5 h-5 text-base-content/40 group-hover:text-primary group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+  </a>
+</div>
+
+</div>
+</Layout>

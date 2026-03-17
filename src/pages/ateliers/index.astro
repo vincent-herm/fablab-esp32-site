@@ -15,37 +15,73 @@ const ateliers = [
   },
   {
     numero: 2,
-    title: 'AudioKit ESP32-A1S',
-    description: 'Génère des sons, explore le codec ES8388 et joue une gamme musicale avec la carte AI-Thinker AudioKit.',
-    href: siteUrl('/ateliers/audiokit-esp32/'),
-    level: 'intermediaire' as const,
+    title: 'LED RGB et NeoPixel',
+    description: 'Anime un bandeau de LED RGB WS2812 : couleurs, défilement, arc-en-ciel et effets aléatoires.',
+    href: siteUrl('/ateliers/neopixel/'),
+    level: 'debutant' as const,
     duration: '3h',
-    tags: ['ESP32-A1S', 'I2S', 'ES8388', 'Audio', 'Codec'],
+    tags: ['ESP32', 'NeoPixel', 'WS2812', 'RGB', 'Animations'],
   },
   {
     numero: 3,
-    title: 'Écran tactile ESP32-S3',
-    description: 'Crée une interface graphique interactive sur un écran Waveshare Touch LCD.',
-    href: siteUrl('/ateliers/ecran-tactile-esp32/'),
-    level: 'intermediaire' as const,
+    title: 'Station météo',
+    description: 'Mesure la température avec un DS18B20 et affiche les données sur un écran OLED SSD1306.',
+    href: siteUrl('/ateliers/station-meteo/'),
+    level: 'debutant' as const,
     duration: '3h',
-    tags: ['ESP32-S3', 'SPI', 'Tactile', 'UI', 'Waveshare'],
+    tags: ['ESP32', 'DS18B20', 'OLED', 'I2C', '1-Wire'],
   },
   {
     numero: 4,
-    title: 'RFID & Escape Game',
-    description: 'Badge RFID, serrures électroniques et déclencheurs — crée les énigmes d\'un vrai escape game.',
-    href: siteUrl('/ateliers/rfid-escape-game/'),
+    title: 'Lumière automatique',
+    description: 'Une cellule LDR détecte l\'obscurité et allume une LED en PWM — plus il fait sombre, plus c\'est lumineux.',
+    href: siteUrl('/ateliers/lumiere-auto/'),
+    level: 'debutant' as const,
+    duration: '3h',
+    tags: ['ESP32', 'ADC', 'PWM', 'LDR', 'Automatisme'],
+  },
+  {
+    numero: 5,
+    title: 'Clavier musical',
+    description: '4 boutons jouent des notes sur un buzzer. Mode libre ou mélodie automatique — Frère Jacques inclus !',
+    href: siteUrl('/ateliers/clavier-musical/'),
+    level: 'debutant' as const,
+    duration: '3h',
+    tags: ['ESP32', 'PWM', 'Buzzer', 'Musique', 'Boutons'],
+  },
+  {
+    numero: 6,
+    title: 'Mesure de distance',
+    description: 'Le capteur ultrason HC-SR04 mesure la distance et affiche une barre de progression sur l\'OLED.',
+    href: siteUrl('/ateliers/distance/'),
     level: 'intermediaire' as const,
     duration: '3h',
-    tags: ['RFID', 'RC522', 'SPI', 'GPIO', 'Escape game'],
+    tags: ['ESP32', 'HC-SR04', 'Ultrason', 'OLED', 'Timing'],
+  },
+  {
+    numero: 7,
+    title: 'Minuterie et séquenceur',
+    description: 'Minuterie réglable, séquenceur de LEDs et simulation de feux de circulation — la machine à états en pratique.',
+    href: siteUrl('/ateliers/minuterie/'),
+    level: 'intermediaire' as const,
+    duration: '3h',
+    tags: ['ESP32', 'Machine à états', 'LED', 'Temps réel', 'Boutons'],
+  },
+  {
+    numero: 8,
+    title: 'Badge RFID',
+    description: 'Un lecteur RC522 identifie les badges. Accès accordé = LED verte. Badge inconnu = alarme sonore.',
+    href: siteUrl('/ateliers/rfid/'),
+    level: 'intermediaire' as const,
+    duration: '3h',
+    tags: ['ESP32', 'RFID', 'RC522', 'SPI', 'Sécurité'],
   },
 ];
 ---
 
 <Layout
   title="Ateliers pratiques"
-  description="4 ateliers MicroPython progressifs en Ardèche. ESP32, AudioKit, écran tactile, RFID. Code téléchargeable, matériel fourni, 20€/3h."
+  description="8 ateliers MicroPython pour débutants en Ardèche. ESP32, NeoPixel, capteurs, RFID, son. Code sur GitHub, matériel fourni, 20€/3h."
 >
   <section class="py-20 hero-pattern border-b border-base-200/60">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -58,7 +94,7 @@ const ateliers = [
         <div class="flex flex-wrap gap-3 mt-8">
           <div class="inline-flex items-center gap-2 bg-base-200/60 rounded-full px-4 py-2 text-sm">
             <span class="w-2 h-2 rounded-full bg-success"></span>
-            4 ateliers disponibles
+            8 ateliers disponibles
           </div>
           <div class="inline-flex items-center gap-2 bg-base-200/60 rounded-full px-4 py-2 text-sm font-semibold">
             20€ / 3h · 6 personnes max

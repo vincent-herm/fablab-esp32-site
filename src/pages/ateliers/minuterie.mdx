@@ -1,0 +1,191 @@
+---
+title: 'Minuterie et séquenceur'
+description: "Minuterie réglable, séquenceur de LEDs et simulation de feux de circulation — la machine à états en pratique."
+level: 'intermediaire'
+duration: '3h'
+tags: ['ESP32', 'Machine à états', 'LED', 'Temps réel', 'Boutons']
+---
+
+import Layout from '../../layouts/Layout.astro';
+import GitHubCodeBlock from '../../components/GitHubCodeBlock.astro';
+import DifficultyBadge from '../../components/DifficultyBadge.astro';
+import { siteUrl } from '../../utils/url';
+
+<Layout title="Atelier 07 — Minuterie et séquenceur" description="Minuterie réglable, séquenceur de LEDs et simulation de feux de circulation.">
+
+<div class="border-b border-base-200/60 bg-base-200/20">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+    <div class="flex items-center gap-2 text-sm text-base-content/50">
+      <a href={siteUrl('/')} class="hover:text-base-content transition-colors">Accueil</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <a href={siteUrl('/ateliers/')} class="hover:text-base-content transition-colors">Ateliers</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <span class="text-base-content/80">Minuterie et séquenceur</span>
+    </div>
+  </div>
+</div>
+
+<section class="py-12 hero-pattern border-b border-base-200/60">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center gap-3 mb-6">
+      <span class="font-mono text-primary/60 text-sm font-bold bg-primary/10 px-3 py-1 rounded-lg">ATELIER 07</span>
+      <DifficultyBadge level="intermediaire" />
+    </div>
+    <h1 class="text-3xl sm:text-4xl font-black mb-4">Minuterie et séquenceur</h1>
+    <p class="text-base-content/65 text-lg leading-relaxed max-w-2xl mb-8">
+      Minuterie réglable, séquenceur de LEDs et simulation de feux de circulation — découvre le concept de machine à états, la clé de tout programme embarqué robuste.
+    </p>
+    <div class="flex flex-wrap gap-4">
+      <div class="flex items-center gap-2 text-sm text-base-content/60">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        3h
+      </div>
+      <div class="flex flex-wrap gap-2">
+        {['ESP32', 'Machine à états', 'LED', 'Temps réel', 'Boutons'].map(tag => (
+          <span class="text-xs px-2.5 py-1 rounded-lg bg-base-200/60 text-base-content/50 font-mono">{tag}</span>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mdx-content">
+
+## Ce que tu vas créer
+
+Un programme en trois modes sélectionnables :
+- **Minuterie** : BP+ augmente le temps, BP- le diminue, un bip final indique la fin
+- **Séquenceur** : les 3 LEDs s'allument en cascade selon un rythme réglable
+- **Feux de circulation** : simulation complète rouge → orange → vert avec les durées réelles
+
+---
+
+## Matériel nécessaire
+
+<div class="overflow-x-auto rounded-xl border border-base-200/80 my-6">
+  <table class="table table-zebra w-full">
+    <thead>
+      <tr><th>Composant</th><th>Quantité</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="font-medium">ESP32</td><td>1</td><td class="text-base-content/60">Fourni en atelier</td></tr>
+      <tr><td class="font-medium">LED rouge</td><td>1</td><td class="text-base-content/60">GPIO23</td></tr>
+      <tr><td class="font-medium">LED orange</td><td>1</td><td class="text-base-content/60">GPIO19</td></tr>
+      <tr><td class="font-medium">LED verte</td><td>1</td><td class="text-base-content/60">GPIO18</td></tr>
+      <tr><td class="font-medium">Résistances 220 Ω</td><td>3</td><td class="text-base-content/60">Une par LED</td></tr>
+      <tr><td class="font-medium">Boutons poussoirs</td><td>3</td><td class="text-base-content/60">BP+, BP-, Mode</td></tr>
+      <tr><td class="font-medium">Buzzer passif</td><td>1</td><td class="text-base-content/60">Signal fin de minuterie</td></tr>
+      <tr><td class="font-medium">Câble micro-USB</td><td>1</td><td class="text-base-content/60">Fourni en atelier</td></tr>
+    </tbody>
+  </table>
+</div>
+
+## Connexions
+
+<div class="rounded-xl overflow-hidden border border-base-200/60 bg-[#1a1b26] my-4">
+  <div class="px-4 py-2 border-b border-white/8 text-white/50 text-xs font-mono">câblage</div>
+  <pre class="p-4 text-xs font-mono text-white/70 leading-relaxed"><code>{`LEDs (avec résistance 220Ω en série) :
+  LED rouge   ──── ESP32 GPIO23
+  LED orange  ──── ESP32 GPIO19
+  LED verte   ──── ESP32 GPIO18
+
+Boutons (pull-up interne, actif à l'état bas) :
+  BP+    ──── ESP32 GPIO25 ──── GND
+  BP-    ──── ESP32 GPIO26 ──── GND
+  Mode   ──── ESP32 GPIO0  ──── GND (bouton BOOT)
+
+Buzzer :
+  Buzzer ──── ESP32 GPIO5`}</code></pre>
+</div>
+
+---
+
+## Le code
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="atelier7-minuterie/main.py"
+  language="python"
+  title="Minuterie et séquenceur MicroPython — main.py"
+/>
+
+---
+
+## Comment ça marche
+
+### Le patron machine à états
+
+Une machine à états est la façon professionnelle de gérer plusieurs comportements sans que le programme se bloque. On stocke l'état courant dans une variable, et la boucle principale réagit en fonction :
+
+```python
+import time
+
+# États possibles
+ETAT_MINUTERIE  = 0
+ETAT_SEQUENCEUR = 1
+ETAT_FEUX       = 2
+
+etat = ETAT_MINUTERIE
+temps_depart = time.ticks_ms()
+
+while True:
+    maintenant = time.ticks_ms()
+    elapsed = time.ticks_diff(maintenant, temps_depart)
+
+    if etat == ETAT_MINUTERIE:
+        gerer_minuterie(elapsed)
+    elif etat == ETAT_SEQUENCEUR:
+        gerer_sequenceur(elapsed)
+    elif etat == ETAT_FEUX:
+        gerer_feux(elapsed)
+
+    # Lire les boutons sans bloquer
+    if not btn_mode.value():
+        etat = (etat + 1) % 3
+        temps_depart = time.ticks_ms()
+        time.sleep_ms(200)    # anti-rebond
+```
+
+### Minuterie non bloquante avec ticks_ms
+
+L'astuce clé : ne jamais utiliser `time.sleep()` dans la boucle principale. On compare des timestamps pour savoir si le temps est écoulé :
+
+```python
+def gerer_minuterie(elapsed):
+    restant = duree_ms - elapsed
+    if restant <= 0:
+        bip_fin()
+    else:
+        afficher_temps(restant // 1000)   # convertir en secondes
+```
+
+---
+
+## Pour aller plus loin
+
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6">
+  {[
+    { title: 'Chronomètre avec OLED', desc: 'Ajoute un écran OLED pour afficher le temps restant en grand — centièmes de seconde inclus.' },
+    { title: 'Minuterie WiFi par smartphone', desc: 'Crée un serveur web sur l\'ESP32 pour régler et lancer la minuterie depuis ton téléphone.' },
+    { title: 'Alarme avec buzzer mélodique', desc: 'Remplace le bip de fin par une mélodie complète jouée sur le buzzer passif.' },
+  ].map(card => (
+    <div class="rounded-xl border border-base-200/80 bg-base-200/30 p-5">
+      <h4 class="font-semibold text-sm mb-2">{card.title}</h4>
+      <p class="text-xs text-base-content/60">{card.desc}</p>
+    </div>
+  ))}
+</div>
+
+<div class="border-t border-base-200/60 pt-10 mt-10 flex items-center justify-between">
+  <a href={siteUrl('/ateliers/distance/')} class="group flex items-center gap-3 rounded-xl border border-base-200/80 bg-base-200/30 px-5 py-4 hover:border-primary/30 transition-colors">
+    <svg class="w-5 h-5 text-base-content/40 group-hover:text-primary group-hover:-translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+    <div><div class="text-xs text-base-content/50 mb-0.5">Atelier précédent</div><div class="font-semibold text-sm group-hover:text-primary transition-colors">Mesure de distance</div></div>
+  </a>
+  <a href={siteUrl('/ateliers/rfid/')} class="group flex items-center gap-3 rounded-xl border border-base-200/80 bg-base-200/30 px-5 py-4 hover:border-primary/30 transition-colors">
+    <div class="text-right"><div class="text-xs text-base-content/50 mb-0.5">Atelier suivant</div><div class="font-semibold text-sm group-hover:text-primary transition-colors">Badge RFID</div></div>
+    <svg class="w-5 h-5 text-base-content/40 group-hover:text-primary group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+  </a>
+</div>
+
+</div>
+</Layout>

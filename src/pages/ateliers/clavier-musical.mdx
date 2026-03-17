@@ -1,0 +1,180 @@
+---
+title: 'Clavier musical'
+description: "4 boutons jouent des notes de musique sur un buzzer. Mode libre ou mélodie automatique — Frère Jacques inclus !"
+level: 'debutant'
+duration: '3h'
+tags: ['ESP32', 'PWM', 'Buzzer', 'Musique', 'Boutons']
+---
+
+import Layout from '../../layouts/Layout.astro';
+import GitHubCodeBlock from '../../components/GitHubCodeBlock.astro';
+import DifficultyBadge from '../../components/DifficultyBadge.astro';
+import { siteUrl } from '../../utils/url';
+
+<Layout title="Atelier 05 — Clavier musical" description="4 boutons jouent des notes de musique sur un buzzer. Mode libre ou mélodie automatique.">
+
+<div class="border-b border-base-200/60 bg-base-200/20">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+    <div class="flex items-center gap-2 text-sm text-base-content/50">
+      <a href={siteUrl('/')} class="hover:text-base-content transition-colors">Accueil</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <a href={siteUrl('/ateliers/')} class="hover:text-base-content transition-colors">Ateliers</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <span class="text-base-content/80">Clavier musical</span>
+    </div>
+  </div>
+</div>
+
+<section class="py-12 hero-pattern border-b border-base-200/60">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center gap-3 mb-6">
+      <span class="font-mono text-primary/60 text-sm font-bold bg-primary/10 px-3 py-1 rounded-lg">ATELIER 05</span>
+      <DifficultyBadge level="debutant" />
+    </div>
+    <h1 class="text-3xl sm:text-4xl font-black mb-4">Clavier musical</h1>
+    <p class="text-base-content/65 text-lg leading-relaxed max-w-2xl mb-8">
+      4 boutons jouent des notes de musique sur un buzzer passif. Mode libre pour improviser, mode mélodie pour jouer Frère Jacques automatiquement.
+    </p>
+    <div class="flex flex-wrap gap-4">
+      <div class="flex items-center gap-2 text-sm text-base-content/60">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        3h
+      </div>
+      <div class="flex flex-wrap gap-2">
+        {['ESP32', 'PWM', 'Buzzer', 'Musique', 'Boutons'].map(tag => (
+          <span class="text-xs px-2.5 py-1 rounded-lg bg-base-200/60 text-base-content/50 font-mono">{tag}</span>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mdx-content">
+
+## Ce que tu vas créer
+
+Un mini-clavier musical avec deux modes :
+- **Mode libre** : chaque bouton joue une note (Do, Ré, Mi, Sol) tant qu'il est appuyé
+- **Mode mélodie** : l'ESP32 joue Frère Jacques automatiquement en boucle
+- Le bouton BOOT sur GPIO0 bascule entre les deux modes
+
+---
+
+## Matériel nécessaire
+
+<div class="overflow-x-auto rounded-xl border border-base-200/80 my-6">
+  <table class="table table-zebra w-full">
+    <thead>
+      <tr><th>Composant</th><th>Quantité</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="font-medium">ESP32</td><td>1</td><td class="text-base-content/60">Fourni en atelier</td></tr>
+      <tr><td class="font-medium">Buzzer passif</td><td>1</td><td class="text-base-content/60">Passif (pas actif) — contrôlé par PWM</td></tr>
+      <tr><td class="font-medium">Boutons poussoirs</td><td>4</td><td class="text-base-content/60">Notes Do, Ré, Mi, Sol</td></tr>
+      <tr><td class="font-medium">Résistances 10 kΩ</td><td>4</td><td class="text-base-content/60">Pull-down pour chaque bouton</td></tr>
+      <tr><td class="font-medium">Câble micro-USB</td><td>1</td><td class="text-base-content/60">Fourni en atelier</td></tr>
+    </tbody>
+  </table>
+</div>
+
+## Connexions
+
+<div class="rounded-xl overflow-hidden border border-base-200/60 bg-[#1a1b26] my-4">
+  <div class="px-4 py-2 border-b border-white/8 text-white/50 text-xs font-mono">câblage</div>
+  <pre class="p-4 text-xs font-mono text-white/70 leading-relaxed"><code>{`Buzzer passif :
+  ESP32 GPIO5 ──── Buzzer + ──── Buzzer - ──── GND
+
+Boutons (avec résistance 10kΩ pull-down vers GND) :
+  BP1 (Do)  ──── ESP32 GPIO25
+  BP2 (Ré)  ──── ESP32 GPIO26
+  BP3 (Mi)  ──── ESP32 GPIO27
+  BP4 (Sol) ──── ESP32 GPIO14
+
+Bouton mode :
+  ESP32 GPIO0 ──── bouton BOOT intégré`}</code></pre>
+</div>
+
+---
+
+## Le code
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="atelier5-clavier-musical/main.py"
+  language="python"
+  title="Clavier musical MicroPython — main.py"
+/>
+
+---
+
+## Comment ça marche
+
+### Dictionnaire de notes
+
+Chaque note musicale correspond à une fréquence précise en Hertz. On stocke tout ça dans un dictionnaire :
+
+```python
+NOTES = {
+    'Do':  262,
+    'Re':  294,
+    'Mi':  330,
+    'Fa':  349,
+    'Sol': 392,
+    'La':  440,
+    'Si':  494,
+    'Do2': 523,
+}
+```
+
+### La fonction jouer_note
+
+Le buzzer passif est contrôlé par PWM : on lui envoie un signal à la fréquence voulue, et il vibre pour produire le son correspondant.
+
+```python
+from machine import PWM, Pin
+
+buzzer = PWM(Pin(5))
+
+def jouer_note(freq, duree_ms=200):
+    if freq == 0:
+        buzzer.duty(0)      # silence
+    else:
+        buzzer.freq(freq)
+        buzzer.duty(512)    # 50% duty cycle = volume max
+    time.sleep_ms(duree_ms)
+    buzzer.duty(0)          # couper le son
+
+# Jouer Do
+jouer_note(NOTES['Do'], 300)
+```
+
+---
+
+## Pour aller plus loin
+
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6">
+  {[
+    { title: 'Ajouter un écran OLED', desc: 'Affiche le nom de la note jouée sur un écran OLED — parfait pour apprendre le solfège.' },
+    { title: 'Enregistrer une mélodie', desc: 'Enregistre les touches appuyées dans une liste et rejoue-les : ton propre séquenceur !' },
+    { title: 'Contrôle par capteur de distance', desc: 'Utilise un HC-SR04 pour jouer des notes selon la distance de ta main — instrument theremin.' },
+  ].map(card => (
+    <div class="rounded-xl border border-base-200/80 bg-base-200/30 p-5">
+      <h4 class="font-semibold text-sm mb-2">{card.title}</h4>
+      <p class="text-xs text-base-content/60">{card.desc}</p>
+    </div>
+  ))}
+</div>
+
+<div class="border-t border-base-200/60 pt-10 mt-10 flex items-center justify-between">
+  <a href={siteUrl('/ateliers/lumiere-auto/')} class="group flex items-center gap-3 rounded-xl border border-base-200/80 bg-base-200/30 px-5 py-4 hover:border-primary/30 transition-colors">
+    <svg class="w-5 h-5 text-base-content/40 group-hover:text-primary group-hover:-translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+    <div><div class="text-xs text-base-content/50 mb-0.5">Atelier précédent</div><div class="font-semibold text-sm group-hover:text-primary transition-colors">Lumière automatique</div></div>
+  </a>
+  <a href={siteUrl('/ateliers/distance/')} class="group flex items-center gap-3 rounded-xl border border-base-200/80 bg-base-200/30 px-5 py-4 hover:border-primary/30 transition-colors">
+    <div class="text-right"><div class="text-xs text-base-content/50 mb-0.5">Atelier suivant</div><div class="font-semibold text-sm group-hover:text-primary transition-colors">Mesure de distance</div></div>
+    <svg class="w-5 h-5 text-base-content/40 group-hover:text-primary group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+  </a>
+</div>
+
+</div>
+</Layout>

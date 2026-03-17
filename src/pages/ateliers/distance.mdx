@@ -1,0 +1,183 @@
+---
+title: 'Mesure de distance'
+description: "Le capteur ultrason HC-SR04 mesure la distance d'un obstacle et affiche une barre de progression sur l'écran OLED."
+level: 'intermediaire'
+duration: '3h'
+tags: ['ESP32', 'HC-SR04', 'Ultrason', 'OLED', 'Timing']
+---
+
+import Layout from '../../layouts/Layout.astro';
+import GitHubCodeBlock from '../../components/GitHubCodeBlock.astro';
+import DifficultyBadge from '../../components/DifficultyBadge.astro';
+import { siteUrl } from '../../utils/url';
+
+<Layout title="Atelier 06 — Mesure de distance" description="Le capteur ultrason HC-SR04 mesure la distance d'un obstacle et affiche une barre de progression sur l'écran OLED.">
+
+<div class="border-b border-base-200/60 bg-base-200/20">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+    <div class="flex items-center gap-2 text-sm text-base-content/50">
+      <a href={siteUrl('/')} class="hover:text-base-content transition-colors">Accueil</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <a href={siteUrl('/ateliers/')} class="hover:text-base-content transition-colors">Ateliers</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <span class="text-base-content/80">Mesure de distance</span>
+    </div>
+  </div>
+</div>
+
+<section class="py-12 hero-pattern border-b border-base-200/60">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center gap-3 mb-6">
+      <span class="font-mono text-primary/60 text-sm font-bold bg-primary/10 px-3 py-1 rounded-lg">ATELIER 06</span>
+      <DifficultyBadge level="intermediaire" />
+    </div>
+    <h1 class="text-3xl sm:text-4xl font-black mb-4">Mesure de distance</h1>
+    <p class="text-base-content/65 text-lg leading-relaxed max-w-2xl mb-8">
+      Le capteur ultrason HC-SR04 mesure la distance d'un obstacle et affiche une barre de progression sur l'écran OLED. Une LED et un buzzer alertent en cas de proximité.
+    </p>
+    <div class="flex flex-wrap gap-4">
+      <div class="flex items-center gap-2 text-sm text-base-content/60">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        3h
+      </div>
+      <div class="flex flex-wrap gap-2">
+        {['ESP32', 'HC-SR04', 'Ultrason', 'OLED', 'Timing'].map(tag => (
+          <span class="text-xs px-2.5 py-1 rounded-lg bg-base-200/60 text-base-content/50 font-mono">{tag}</span>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mdx-content">
+
+## Ce que tu vas créer
+
+Un système de détection de proximité qui :
+- Mesure la distance en centimètres avec le HC-SR04 (2 cm à 4 m)
+- Affiche la valeur et une barre de progression sur l'écran OLED
+- Fait clignoter une LED et émettre un bip plus rapide quand un obstacle est proche
+
+---
+
+## Matériel nécessaire
+
+<div class="overflow-x-auto rounded-xl border border-base-200/80 my-6">
+  <table class="table table-zebra w-full">
+    <thead>
+      <tr><th>Composant</th><th>Quantité</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="font-medium">ESP32</td><td>1</td><td class="text-base-content/60">Fourni en atelier</td></tr>
+      <tr><td class="font-medium">Capteur HC-SR04</td><td>1</td><td class="text-base-content/60">Alimentation 5V, signal ECHO en 5V !</td></tr>
+      <tr><td class="font-medium">Résistances pont diviseur</td><td>1 kΩ + 2 kΩ</td><td class="text-base-content/60">Adapter le 5V de ECHO vers 3.3V</td></tr>
+      <tr><td class="font-medium">Écran OLED SSD1306 128x64</td><td>1</td><td class="text-base-content/60">Interface I2C</td></tr>
+      <tr><td class="font-medium">LED + résistance 220 Ω</td><td>1</td><td class="text-base-content/60">Indicateur de proximité</td></tr>
+      <tr><td class="font-medium">Buzzer passif</td><td>1</td><td class="text-base-content/60">Alerte sonore</td></tr>
+      <tr><td class="font-medium">Câble micro-USB</td><td>1</td><td class="text-base-content/60">Fourni en atelier</td></tr>
+    </tbody>
+  </table>
+</div>
+
+## Connexions
+
+<div class="rounded-xl overflow-hidden border border-base-200/60 bg-[#1a1b26] my-4">
+  <div class="px-4 py-2 border-b border-white/8 text-white/50 text-xs font-mono">câblage</div>
+  <pre class="p-4 text-xs font-mono text-white/70 leading-relaxed"><code>{`HC-SR04 :
+  HC-SR04 VCC  ──── ESP32 5V (VIN)
+  HC-SR04 GND  ──── ESP32 GND
+  HC-SR04 TRIG ──── ESP32 GPIO12
+  HC-SR04 ECHO ──── résistance 1kΩ ──┬──── ESP32 GPIO14
+                                      └──── résistance 2kΩ ──── GND
+  (pont diviseur 5V → 3.3V obligatoire sur ECHO)
+
+OLED SSD1306 :
+  OLED SDA ──── ESP32 GPIO21
+  OLED SCL ──── ESP32 GPIO22`}</code></pre>
+</div>
+
+---
+
+## Le code
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="atelier6-distance/main.py"
+  language="python"
+  title="Mesure de distance MicroPython — main.py"
+/>
+
+---
+
+## Comment ça marche
+
+### La fonction mesurer_cm
+
+Le HC-SR04 fonctionne en envoyant une impulsion ultrasonique et en mesurant le temps de retour de l'écho. La fonction `time_pulse_us` de MicroPython mesure précisément ce temps :
+
+```python
+from machine import Pin, time_pulse_us
+import time
+
+trig = Pin(12, Pin.OUT)
+echo = Pin(14, Pin.IN)
+
+def mesurer_cm():
+    # Envoyer impulsion TRIG de 10µs
+    trig.value(0)
+    time.sleep_us(2)
+    trig.value(1)
+    time.sleep_us(10)
+    trig.value(0)
+
+    # Mesurer la durée de l'écho
+    duree = time_pulse_us(echo, 1, 30000)  # timeout 30ms
+
+    if duree < 0:
+        return None   # pas d'écho (hors portée)
+
+    # Vitesse du son : 343 m/s = 0.0343 cm/µs
+    # Diviser par 2 car aller-retour
+    distance_cm = duree * 0.0343 / 2
+    return round(distance_cm, 1)
+```
+
+### Afficher une barre de progression sur l'OLED
+
+```python
+def barre_progression(oled, valeur, maxi, x, y, largeur, hauteur):
+    rempli = int(valeur / maxi * largeur)
+    oled.rect(x, y, largeur, hauteur, 1)          # contour
+    oled.fill_rect(x, y, rempli, hauteur, 1)      # remplissage
+```
+
+---
+
+## Pour aller plus loin
+
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6">
+  {[
+    { title: 'Radar de recul voiture', desc: 'Monte le HC-SR04 à l\'arrière d\'un véhicule RC et fais biper plus vite à l\'approche d\'un obstacle.' },
+    { title: 'Mesure de vitesse', desc: 'Utilise deux capteurs espacés pour calculer la vitesse d\'un objet qui passe devant.' },
+    { title: 'Niveau d\'eau dans un réservoir', desc: 'Pointe le capteur vers le bas pour mesurer le niveau d\'eau — envoie une alerte WiFi quand c\'est vide.' },
+  ].map(card => (
+    <div class="rounded-xl border border-base-200/80 bg-base-200/30 p-5">
+      <h4 class="font-semibold text-sm mb-2">{card.title}</h4>
+      <p class="text-xs text-base-content/60">{card.desc}</p>
+    </div>
+  ))}
+</div>
+
+<div class="border-t border-base-200/60 pt-10 mt-10 flex items-center justify-between">
+  <a href={siteUrl('/ateliers/clavier-musical/')} class="group flex items-center gap-3 rounded-xl border border-base-200/80 bg-base-200/30 px-5 py-4 hover:border-primary/30 transition-colors">
+    <svg class="w-5 h-5 text-base-content/40 group-hover:text-primary group-hover:-translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+    <div><div class="text-xs text-base-content/50 mb-0.5">Atelier précédent</div><div class="font-semibold text-sm group-hover:text-primary transition-colors">Clavier musical</div></div>
+  </a>
+  <a href={siteUrl('/ateliers/minuterie/')} class="group flex items-center gap-3 rounded-xl border border-base-200/80 bg-base-200/30 px-5 py-4 hover:border-primary/30 transition-colors">
+    <div class="text-right"><div class="text-xs text-base-content/50 mb-0.5">Atelier suivant</div><div class="font-semibold text-sm group-hover:text-primary transition-colors">Minuterie et séquenceur</div></div>
+    <svg class="w-5 h-5 text-base-content/40 group-hover:text-primary group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+  </a>
+</div>
+
+</div>
+</Layout>

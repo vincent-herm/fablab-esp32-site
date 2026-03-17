@@ -1,0 +1,184 @@
+---
+title: 'Badge RFID'
+description: "Un lecteur RC522 identifie les badges. Accès accordé = LED verte. Badge inconnu = alarme sonore."
+level: 'intermediaire'
+duration: '3h'
+tags: ['ESP32', 'RFID', 'RC522', 'SPI', 'Sécurité']
+---
+
+import Layout from '../../layouts/Layout.astro';
+import GitHubCodeBlock from '../../components/GitHubCodeBlock.astro';
+import DifficultyBadge from '../../components/DifficultyBadge.astro';
+import { siteUrl } from '../../utils/url';
+
+<Layout title="Atelier 08 — Badge RFID" description="Un lecteur RC522 identifie les badges. Accès accordé = LED verte. Badge inconnu = alarme sonore.">
+
+<div class="border-b border-base-200/60 bg-base-200/20">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+    <div class="flex items-center gap-2 text-sm text-base-content/50">
+      <a href={siteUrl('/')} class="hover:text-base-content transition-colors">Accueil</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <a href={siteUrl('/ateliers/')} class="hover:text-base-content transition-colors">Ateliers</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <span class="text-base-content/80">Badge RFID</span>
+    </div>
+  </div>
+</div>
+
+<section class="py-12 hero-pattern border-b border-base-200/60">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center gap-3 mb-6">
+      <span class="font-mono text-primary/60 text-sm font-bold bg-primary/10 px-3 py-1 rounded-lg">ATELIER 08</span>
+      <DifficultyBadge level="intermediaire" />
+    </div>
+    <h1 class="text-3xl sm:text-4xl font-black mb-4">Badge RFID</h1>
+    <p class="text-base-content/65 text-lg leading-relaxed max-w-2xl mb-8">
+      Un lecteur RC522 identifie les badges par leur identifiant unique. Accès accordé : LED verte et bip de bienvenue. Badge inconnu : LED rouge et alarme sonore.
+    </p>
+    <div class="flex flex-wrap gap-4">
+      <div class="flex items-center gap-2 text-sm text-base-content/60">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        3h
+      </div>
+      <div class="flex flex-wrap gap-2">
+        {['ESP32', 'RFID', 'RC522', 'SPI', 'Sécurité'].map(tag => (
+          <span class="text-xs px-2.5 py-1 rounded-lg bg-base-200/60 text-base-content/50 font-mono">{tag}</span>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mdx-content">
+
+## Ce que tu vas créer
+
+Un système de contrôle d'accès par badge RFID :
+- **Mode enrôlement** : présente un badge pour l'enregistrer dans la liste autorisée
+- **Mode lecture** : chaque badge présenté est comparé à la liste
+- Accès accordé → LED verte + bip court
+- Badge refusé → LED rouge + alarme
+
+---
+
+## Matériel nécessaire
+
+<div class="overflow-x-auto rounded-xl border border-base-200/80 my-6">
+  <table class="table table-zebra w-full">
+    <thead>
+      <tr><th>Composant</th><th>Quantité</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="font-medium">ESP32</td><td>1</td><td class="text-base-content/60">Fourni en atelier</td></tr>
+      <tr><td class="font-medium">Module RC522</td><td>1</td><td class="text-base-content/60">Alimentation 3.3V UNIQUEMENT</td></tr>
+      <tr><td class="font-medium">Badges / cartes RFID</td><td>3 à 5</td><td class="text-base-content/60">Fréquence 13.56 MHz (Mifare)</td></tr>
+      <tr><td class="font-medium">LED verte</td><td>1</td><td class="text-base-content/60">Accès accordé</td></tr>
+      <tr><td class="font-medium">LED rouge</td><td>1</td><td class="text-base-content/60">Accès refusé</td></tr>
+      <tr><td class="font-medium">Résistances 220 Ω</td><td>2</td><td class="text-base-content/60">Une par LED</td></tr>
+      <tr><td class="font-medium">Buzzer passif</td><td>1</td><td class="text-base-content/60">Feedback sonore</td></tr>
+      <tr><td class="font-medium">Câble micro-USB</td><td>1</td><td class="text-base-content/60">Fourni en atelier</td></tr>
+    </tbody>
+  </table>
+</div>
+
+## Connexions
+
+<div class="rounded-xl overflow-hidden border border-base-200/60 bg-[#1a1b26] my-4">
+  <div class="px-4 py-2 border-b border-white/8 text-white/50 text-xs font-mono">câblage</div>
+  <pre class="p-4 text-xs font-mono text-white/70 leading-relaxed"><code>{`RC522 (bus SPI) — ATTENTION : 3.3V UNIQUEMENT, jamais 5V !
+  RC522 VCC  ──── ESP32 3.3V
+  RC522 GND  ──── ESP32 GND
+  RC522 SCK  ──── ESP32 GPIO18
+  RC522 MOSI ──── ESP32 GPIO23
+  RC522 MISO ──── ESP32 GPIO19
+  RC522 SDA  ──── ESP32 GPIO5   (Chip Select)
+  RC522 RST  ──── ESP32 GPIO22
+
+LEDs (avec résistance 220Ω) :
+  LED verte ──── ESP32 GPIO2
+  LED rouge ──── ESP32 GPIO4
+
+Buzzer :
+  Buzzer    ──── ESP32 GPIO15`}</code></pre>
+</div>
+
+---
+
+## Le code
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="atelier8-rfid/main.py"
+  language="python"
+  title="Badge RFID MicroPython — main.py"
+/>
+
+---
+
+## Comment ça marche
+
+### Convertir l'UID en chaîne lisible
+
+Chaque carte RFID possède un identifiant unique (UID) de 4 à 7 octets. On le convertit en chaîne hexadécimale pour le stocker et le comparer :
+
+```python
+def uid_vers_str(uid):
+    """Convertit une liste d'octets en chaîne hex lisible."""
+    return ':'.join('{:02X}'.format(b) for b in uid)
+
+# Exemple : [0xDE, 0xAD, 0xBE, 0xEF] → "DE:AD:BE:EF"
+```
+
+### La fonction d'enrôlement
+
+Le mode enrôlement permet d'ajouter facilement de nouveaux badges sans modifier le code :
+
+```python
+badges_autorises = []
+
+def enrolement(rdr):
+    """Attend un badge et l'ajoute à la liste autorisée."""
+    print("Présente le badge à enrôler...")
+    while True:
+        stat, tag_type = rdr.request(rdr.REQIDL)
+        if stat == rdr.OK:
+            stat, uid = rdr.anticoll()
+            if stat == rdr.OK:
+                uid_str = uid_vers_str(uid)
+                if uid_str not in badges_autorises:
+                    badges_autorises.append(uid_str)
+                    print(f"Badge enrôlé : {uid_str}")
+                else:
+                    print(f"Badge déjà enrôlé : {uid_str}")
+                return uid_str
+```
+
+---
+
+## Pour aller plus loin
+
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6">
+  {[
+    { title: 'Verrou magnétique 12V', desc: 'Pilote un verrou électromagnétique via un relais pour créer une vraie porte à badge.' },
+    { title: 'Comptage des passages', desc: 'Enregistre chaque passage avec un horodatage — affiché sur OLED ou envoyé par WiFi.' },
+    { title: 'Journalisation WiFi', desc: 'Envoie chaque événement (badge + heure) vers un serveur ou une feuille Google Sheets.' },
+  ].map(card => (
+    <div class="rounded-xl border border-base-200/80 bg-base-200/30 p-5">
+      <h4 class="font-semibold text-sm mb-2">{card.title}</h4>
+      <p class="text-xs text-base-content/60">{card.desc}</p>
+    </div>
+  ))}
+</div>
+
+<div class="border-t border-base-200/60 pt-10 mt-10 flex items-center justify-between">
+  <a href={siteUrl('/ateliers/minuterie/')} class="group flex items-center gap-3 rounded-xl border border-base-200/80 bg-base-200/30 px-5 py-4 hover:border-primary/30 transition-colors">
+    <svg class="w-5 h-5 text-base-content/40 group-hover:text-primary group-hover:-translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+    <div><div class="text-xs text-base-content/50 mb-0.5">Atelier précédent</div><div class="font-semibold text-sm group-hover:text-primary transition-colors">Minuterie et séquenceur</div></div>
+  </a>
+  <div class="rounded-xl border border-base-200/40 bg-base-200/10 px-5 py-4 opacity-40 cursor-not-allowed">
+    <div class="text-right"><div class="text-xs text-base-content/50 mb-0.5">Atelier suivant</div><div class="font-semibold text-sm text-base-content/40">Bientôt disponible</div></div>
+  </div>
+</div>
+
+</div>
+</Layout>
