@@ -1,6 +1,6 @@
 ---
 title: 'Introduction à MicroPython'
-description: 'Découvre MicroPython : Python qui tourne directement sur ton ESP32. Syntaxe, modules, différences avec Arduino.'
+description: 'Découvre MicroPython : Python qui tourne directement sur ton ESP32. Histoire, syntaxe, modules, Thonny, système de fichiers.'
 ---
 
 import Layout from '../../layouts/Layout.astro';
@@ -30,7 +30,7 @@ import { siteUrl } from '../../utils/url';
     </div>
     <h1 class="text-3xl sm:text-4xl font-black mb-4">Introduction à MicroPython</h1>
     <p class="text-base-content/65 text-lg leading-relaxed max-w-2xl">
-      Python qui tourne directement sur un microcontrôleur comme l'ESP32. Découvre comment, et pourquoi c'est une révolution pour les débutants.
+      Python qui tourne directement sur un microcontrôleur comme l'ESP32. Histoire, fonctionnement, modules essentiels, et premiers pas avec Thonny.
     </p>
   </div>
 </section>
@@ -39,122 +39,266 @@ import { siteUrl } from '../../utils/url';
 
 ## Qu'est-ce que MicroPython ?
 
-MicroPython est une implémentation légère de Python 3, conçue pour tourner sur des microcontrôleurs avec peu de mémoire. Créé en 2013 par Damien George, maintenu par la communauté open source.
+MicroPython est une implémentation **légère et efficace de Python 3**, conçue spécifiquement pour tourner sur des microcontrôleurs et dans des environnements contraints. C'est du vrai Python — pas un sous-ensemble simplifié ou un langage "inspiré de" — mais une version taillée pour tenir dans quelques centaines de kilooctets de mémoire.
+
+### Naissance du projet — Damien George, 2013
+
+Tout commence avec **Damien George**, un physicien australien passionné de robotique. En 2013, il s'attaque à un défi apparemment impossible : faire tourner Python sur un microcontrôleur. Python est réputé pour être gourmand en mémoire — les implémentations classiques nécessitent des mégaoctets de RAM. Les microcontrôleurs en ont des centaines de kilooctets, parfois moins.
+
+Il lance en 2013 une campagne Kickstarter pour financer le développement et la fabrication d'une première carte dédiée, la **pyboard**. La campagne est un succès. MicroPython est rendu open source sous licence MIT.
+
+Aujourd'hui, le projet est maintenu par **George Robotics Limited** et une communauté mondiale de contributeurs. Il fonctionne sur des dizaines de cartes différentes : ESP32, ESP8266, Raspberry Pi Pico, STM32, et bien d'autres.
+
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 my-8">
+  {[
+    { chiffre: '2013', label: 'Année de création', sub: 'par Damien George' },
+    { chiffre: '256 Ko', label: 'Code minimum', sub: 'pour faire tourner MicroPython' },
+    { chiffre: '16 Ko', label: 'RAM minimum', sub: 'au strict nécessaire' },
+    { chiffre: '18 500+', label: 'Tests automatisés', sub: '99,2% de couverture' },
+  ].map(item => (
+    <div class="rounded-xl border border-base-200/80 bg-base-200/20 p-4 text-center">
+      <div class="text-xl font-black text-primary mb-1">{item.chiffre}</div>
+      <div class="font-bold text-xs mb-0.5">{item.label}</div>
+      <div class="text-xs text-base-content/40">{item.sub}</div>
+    </div>
+  ))}
+</div>
+
+### Ce que MicroPython embarque
+
+MicroPython n'est pas un simple interpréteur. Il intègre :
+
+- Un **compilateur Python complet** — ton code est compilé en bytecode avant d'être exécuté
+- Un **REPL** (_Read-Eval-Print Loop_) avec historique, complétion par tabulation et auto-indentation
+- La gestion des **entiers de précision arbitraire**, des **closures**, des **list comprehensions**, des **générateurs** et des **exceptions** — les mêmes qu'en Python desktop
+- Un **ramasse-miettes** (garbage collector) pour la gestion automatique de la mémoire
+- Le **multithreading** via le module `_thread`
+- La compatibilité avec **Python 3.4** pour la syntaxe, avec des fonctionnalités sélectionnées des versions suivantes
+
+---
 
 ### Python vs MicroPython
 
 <div class="overflow-x-auto rounded-xl border border-base-200/80 my-6">
   <table class="table w-full">
     <thead>
-      <tr><th>Aspect</th><th>Python classique</th><th>MicroPython</th></tr>
+      <tr><th>Aspect</th><th>Python classique (CPython)</th><th>MicroPython</th></tr>
     </thead>
     <tbody>
-      <tr><td class="font-medium">Tourne sur</td><td>PC / Mac / Linux</td><td>Microcontrôleur (ESP32, Pico...)</td></tr>
-      <tr><td class="font-medium">RAM disponible</td><td>Des gigaoctets</td><td>320 Ko (ESP32)</td></tr>
-      <tr><td class="font-medium">Syntaxe</td><td>Python 3 complet</td><td>Python 3 (modules limités)</td></tr>
-      <tr><td class="font-medium">Accès matériel</td><td>Limité</td><td>Direct (GPIO, I2C, SPI, ADC...)</td></tr>
+      <tr><td class="font-medium">Tourne sur</td><td>PC / Mac / Linux / serveur</td><td>Microcontrôleur (ESP32, Pico…)</td></tr>
+      <tr><td class="font-medium">RAM typique</td><td>Des gigaoctets</td><td>128 Ko à 8 Mo selon la carte</td></tr>
+      <tr><td class="font-medium">RAM minimum</td><td>~50 Mo (avec OS)</td><td>16 Ko (bare-metal)</td></tr>
+      <tr><td class="font-medium">Syntaxe</td><td>Python 3 complet</td><td>Python 3.4 + sélection</td></tr>
+      <tr><td class="font-medium">Accès matériel</td><td>Via des bibliothèques complexes</td><td>Direct : GPIO, I2C, SPI, ADC, PWM…</td></tr>
+      <tr><td class="font-medium">Démarrage</td><td>~1 seconde (avec OS)</td><td>~50 ms (bare-metal)</td></tr>
+      <tr><td class="font-medium">Licence</td><td>PSF License (libre)</td><td>MIT (libre)</td></tr>
     </tbody>
   </table>
 </div>
+
+---
 
 ## MicroPython vs Arduino (C++)
 
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-6">
   <div class="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-5">
-    <h4 class="font-bold text-emerald-400 mb-3">🐍 MicroPython — avantages</h4>
+    <h4 class="font-bold text-emerald-400 mb-3">🐍 MicroPython — pourquoi c'est bien</h4>
     <ul class="space-y-2 text-sm text-base-content/70">
-      <li class="flex gap-2"><span class="text-emerald-400">✓</span> Syntaxe claire, moins d'erreurs</li>
-      <li class="flex gap-2"><span class="text-emerald-400">✓</span> REPL interactif — teste en temps réel</li>
-      <li class="flex gap-2"><span class="text-emerald-400">✓</span> Pas de compilation</li>
-      <li class="flex gap-2"><span class="text-emerald-400">✓</span> Idéal pour les débutants</li>
+      <li class="flex gap-2"><span class="text-emerald-400">✓</span> Syntaxe claire et lisible — moins d'erreurs de parenthèses ou de point-virgules</li>
+      <li class="flex gap-2"><span class="text-emerald-400">✓</span> REPL interactif — teste une instruction sans recompiler</li>
+      <li class="flex gap-2"><span class="text-emerald-400">✓</span> Pas de compilation — tu modifies, tu testes, immédiatement</li>
+      <li class="flex gap-2"><span class="text-emerald-400">✓</span> Fonctions avancées : listes, dictionnaires, exceptions, classes</li>
+      <li class="flex gap-2"><span class="text-emerald-400">✓</span> Même langage que sur PC — ta formation Python desktop est réutilisable</li>
+      <li class="flex gap-2"><span class="text-emerald-400">✓</span> Idéal pour débuter et pour prototyper rapidement</li>
     </ul>
   </div>
   <div class="rounded-xl border border-orange-500/20 bg-orange-500/5 p-5">
-    <h4 class="font-bold text-orange-400 mb-3">⚡ Arduino (C++) — avantages</h4>
+    <h4 class="font-bold text-orange-400 mb-3">⚡ Arduino (C++) — quand c'est mieux</h4>
     <ul class="space-y-2 text-sm text-base-content/70">
-      <li class="flex gap-2"><span class="text-orange-400">✓</span> Plus rapide (code compilé)</li>
-      <li class="flex gap-2"><span class="text-orange-400">✓</span> Contrôle total du matériel</li>
-      <li class="flex gap-2"><span class="text-orange-400">✓</span> Grande bibliothèque</li>
-      <li class="flex gap-2"><span class="text-orange-400">✓</span> Timing précis</li>
+      <li class="flex gap-2"><span class="text-orange-400">✓</span> Exécution plus rapide (code compilé nativement)</li>
+      <li class="flex gap-2"><span class="text-orange-400">✓</span> Timing très précis — interruptions à la microseconde</li>
+      <li class="flex gap-2"><span class="text-orange-400">✓</span> Consommation mémoire minimale</li>
+      <li class="flex gap-2"><span class="text-orange-400">✓</span> Bibliothèques de composants plus nombreuses</li>
+      <li class="flex gap-2"><span class="text-orange-400">✓</span> Incontournable pour les systèmes temps-réel critiques</li>
     </ul>
   </div>
 </div>
 
-**Verdict :** on utilise MicroPython dans nos ateliers. La plupart des projets ne nécessitent pas la performance d'Arduino.
+**En pratique :** pour l'immense majorité des projets fablab — lire des capteurs, piloter des LEDs, se connecter en WiFi, afficher sur un écran — MicroPython est largement suffisant et beaucoup plus accessible. On perd peut-être un facteur 10 en vitesse d'exécution par rapport au C++, mais l'ESP32 à 240 MHz a largement de la marge.
 
 ---
 
-## Les modules essentiels
+## Les cartes compatibles
 
-### `machine` — contrôle du matériel
+MicroPython tourne sur une grande variété de microcontrôleurs. Les principales familles :
+
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 my-6">
+  {[
+    { nom: 'ESP32 / ESP32-S2 / ESP32-S3', icon: '⭐', desc: 'Notre carte principale — WiFi + BLE intégrés, très bon rapport qualité/prix. Le port MicroPython ESP32 est mature et bien maintenu.', color: 'border-primary/20 bg-primary/5' },
+    { nom: 'Raspberry Pi Pico / Pico 2 (RP2040 / RP2350)', icon: '🍓', desc: 'Support MicroPython officiel développé par la Fondation Raspberry Pi. Documentation exemplaire. PIO (Programmable I/O) pour des protocoles matériels personnalisés.', color: 'border-pink-500/20 bg-pink-500/5' },
+    { nom: 'ESP8266', icon: '📶', desc: 'Le prédécesseur de l\'ESP32 — un seul cœur, moins de GPIO, mais très petit et peu cher. Encore populaire pour les projets IoT simples.', color: 'border-blue-500/20 bg-blue-500/5' },
+    { nom: 'STM32 / pyboard', icon: '🔬', desc: 'La carte originale de Damien George. Très robuste, utilisée dans des contextes industriels. Base historique de MicroPython.', color: 'border-violet-500/20 bg-violet-500/5' },
+  ].map(item => (
+    <div class={`rounded-xl border p-4 ${item.color}`}>
+      <div class="flex items-center gap-2 mb-2">
+        <span class="text-lg">{item.icon}</span>
+        <span class="font-bold text-sm">{item.nom}</span>
+      </div>
+      <p class="text-xs text-base-content/60 leading-relaxed">{item.desc}</p>
+    </div>
+  ))}
+</div>
+
+---
+
+## Les modules MicroPython sur l'ESP32
+
+### `machine` — accès direct au matériel
+
+C'est le module central. Il donne accès à tout le matériel de la carte :
 
 ```python
-from machine import Pin, PWM, ADC
+from machine import Pin, PWM, ADC, I2C, SPI, UART
 
-# GPIO digital
+# Sortie numérique (LED)
 led = Pin(2, Pin.OUT)
-led.on()   # Allumer
-led.off()  # Éteindre
+led.on()
+led.off()
+led.value(not led.value())   # bascule
 
-# Bouton avec pull-up
-btn = Pin(0, Pin.IN, Pin.PULL_UP)
-print(btn.value())  # 0 = appuyé
+# Entrée numérique (bouton)
+btn = Pin(25, Pin.IN)
+print(btn.value())           # 0 ou 1
 
-# PWM (signal variable — pour servos, luminosité)
-pwm = PWM(Pin(2))
-pwm.freq(1000)   # 1 kHz
-pwm.duty(512)    # 50% (plage 0-1023)
+# PWM — signal à fréquence et rapport cyclique variables
+pwm = PWM(Pin(2), freq=500)
+pwm.duty(512)                # 50% de 0 à 1023
+
+# ADC — mesure de tension analogique
+adc = ADC(Pin(35))
+adc.atten(ADC.ATTN_11DB)     # plage 0–3.6 V
+raw = adc.read()             # 0 à 4095 (12 bits)
+
+# Fréquence CPU
+import machine
+machine.freq(240_000_000)    # 240 MHz (maximum de l'ESP32)
+print(machine.freq())        # affiche la fréquence actuelle
 ```
 
-### `network` — WiFi
+### `network` — WiFi et connexion
 
 ```python
 import network
 
-# Mode AP — l'ESP32 crée son propre réseau
+# Mode Station — se connecter à un routeur WiFi
+sta = network.WLAN(network.STA_IF)
+sta.active(True)
+sta.connect('NomDuReseau', 'motdepasse')
+while not sta.isconnected():
+    pass
+print('Connecté — IP :', sta.ifconfig()[0])
+
+# Mode Access Point — l'ESP32 crée son propre réseau
 ap = network.WLAN(network.AP_IF)
 ap.active(True)
 ap.config(essid='MonESP32', password='12345678')
-
-# Mode STA — rejoindre un réseau existant
-sta = network.WLAN(network.STA_IF)
-sta.active(True)
-sta.connect('MonWiFi', 'motdepasse')
-while not sta.isconnected():
-    pass
-print('IP:', sta.ifconfig()[0])
+print('AP actif — IP :', ap.ifconfig()[0])
 ```
 
-### `time` — temporisation
+### `time` — temporisation et mesure du temps
 
 ```python
-import time
+from time import sleep, sleep_ms, sleep_us, ticks_ms, ticks_us
 
-time.sleep(1)        # Pause 1 seconde
-time.sleep_ms(500)   # Pause 500 ms
-t = time.ticks_ms()  # Compteur en ms
+sleep(1)           # attendre 1 seconde
+sleep_ms(500)      # attendre 500 millisecondes
+sleep_us(100)      # attendre 100 microsecondes
+
+# Mesure du temps écoulé
+t0 = ticks_ms()
+# ... code à mesurer ...
+delta = ticks_ms() - t0
+print("Durée :", delta, "ms")
 ```
+
+### `esp32` — fonctions spécifiques à l'ESP32
+
+```python
+from esp32 import hall_sensor, raw_temperature
+
+print("Température interne du chip :", raw_temperature(), "°F")
+print("Capteur Hall (champ magnétique) :", hall_sensor())
+```
+
+### `neopixel` — LED WS2812 adressables
+
+```python
+from neopixel import NeoPixel
+from machine import Pin
+
+np = NeoPixel(Pin(26), 8)    # 8 LEDs sur la broche 26
+np[0] = (255, 0, 0)          # LED 0 en rouge
+np[3] = (0, 255, 100)        # LED 3 en vert-cyan
+np.write()                   # envoyer le tout d'un coup
+```
+
+### Autres modules utiles
+
+<div class="overflow-x-auto rounded-xl border border-base-200/80 my-6">
+  <table class="table w-full">
+    <thead>
+      <tr><th>Module</th><th>Usage</th></tr>
+    </thead>
+    <tbody>
+      {[
+        ['os', 'Système de fichiers : lister, créer, supprimer des fichiers'],
+        ['gc', 'Gestionnaire mémoire : gc.collect(), gc.mem_free()'],
+        ['math', 'Fonctions mathématiques : sin(), cos(), sqrt(), pi…'],
+        ['random', 'Nombres aléatoires : randint(), random(), choice()'],
+        ['json', 'Sérialisation JSON : json.dumps(), json.loads()'],
+        ['struct', 'Conversion de données binaires (protocoles matériels)'],
+        ['_thread', 'Multithreading : exécuter plusieurs fonctions en parallèle'],
+        ['onewire + ds18x20', 'Capteur de température DS18B20 (bus 1-Wire)'],
+        ['dht', 'Capteur température + humidité DHT11 / DHT22'],
+      ].map(([mod, usage]) => (
+        <tr>
+          <td class="font-mono text-xs text-primary">{mod}</td>
+          <td class="text-sm text-base-content/70">{usage}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
 
 ---
 
-## Le REPL — ton meilleur outil
+## Le REPL — ton meilleur outil pour apprendre
 
-Le **REPL** est une console interactive directe sur l'ESP32. Connecte-toi avec Thonny et tape :
+Le **REPL** (_Read-Eval-Print Loop_) est une console interactive directe sur l'ESP32. Tu tapes une instruction, elle s'exécute immédiatement sur la carte, et tu vois le résultat — sans compiler, sans transférer de fichier.
 
 ```python
 >>> from machine import Pin
 >>> led = Pin(2, Pin.OUT)
->>> led.on()    # La LED s'allume instantanément !
+>>> led.on()        # La LED s'allume instantanément !
 >>> led.off()
+>>> 2 + 2
+4
+>>> [x**2 for x in range(5)]
+[0, 1, 4, 9, 16]
 ```
 
-Pas besoin de compiler ni de rebooter — idéal pour tester et apprendre.
+Le REPL de MicroPython inclut :
+- **Historique** : flèche ↑ pour rappeler les commandes précédentes
+- **Complétion** : `Tab` pour compléter les noms de fonctions et d'attributs
+- **Auto-indentation** : les blocs `if`, `for`, `while` s'indentent automatiquement
+- **Ctrl+C** : interrompre le programme en cours
+- **Ctrl+D** : soft reset (relance `boot.py` puis `main.py`)
 
 ---
 
 ## Thonny — l'IDE recommandé
 
-**Thonny** est l'environnement de développement recommandé pour MicroPython. Gratuit, simple, et conçu pour les débutants — il intègre déjà Python 3, pas d'installation supplémentaire.
+**Thonny** est l'environnement de développement (IDE) recommandé pour débuter avec MicroPython. Il est gratuit, multiplateforme, et a été conçu spécifiquement pour l'enseignement. Il intègre déjà Python 3 — pas besoin d'installation supplémentaire.
 
 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6">
   {[
@@ -166,6 +310,22 @@ Pas besoin de compiler ni de rebooter — idéal pour tester et apprendre.
       <div class="font-bold text-sm mb-1">{item.os}</div>
       <div class="text-xs text-base-content/55 mb-2">{item.note}</div>
       <a href={item.lien} target="_blank" class="text-xs text-primary font-medium hover:underline">Télécharger sur thonny.org →</a>
+    </div>
+  ))}
+</div>
+
+### Les zones de l'interface
+
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-6">
+  {[
+    { zone: 'Éditeur (haut)', desc: 'Tu écris ton programme ici. Le code n\'est pas encore sur l\'ESP32 — il est dans Thonny.', color: 'border-blue-500/20 bg-blue-500/5' },
+    { zone: 'Shell / REPL (bas)', desc: 'Console interactive directe sur l\'ESP32. Résultat immédiat. Parfait pour tester une idée en 10 secondes.', color: 'border-emerald-500/20 bg-emerald-500/5' },
+    { zone: 'Gestionnaire de fichiers', desc: 'View → Files. Gauche = ton ordi, Droite = ESP32. Glisser-déposer, clic-droit, upload/download.', color: 'border-purple-500/20 bg-purple-500/5' },
+    { zone: 'Barre d\'outils', desc: 'Boutons Run ▶ (F5), Stop ■, nouveau fichier, ouvrir, sauvegarder — et connexion/déconnexion de la carte.', color: 'border-orange-500/20 bg-orange-500/5' },
+  ].map(item => (
+    <div class={`rounded-xl border p-4 ${item.color}`}>
+      <div class="font-bold text-sm mb-1">{item.zone}</div>
+      <p class="text-xs text-base-content/60">{item.desc}</p>
     </div>
   ))}
 </div>
@@ -187,10 +347,27 @@ Pas besoin de compiler ni de rebooter — idéal pour tester et apprendre.
 </div>
 
 <div class="rounded-xl border border-amber-500/20 bg-amber-500/5 p-4 my-4">
-  <p class="text-sm text-base-content/70"><strong class="text-amber-400">Port non visible ?</strong> Il faut parfois installer un driver. Cartes avec puce CH340 : <strong>driver CH340</strong>. Cartes avec CP2102 : <strong>driver Silicon Labs CP210x</strong>.</p>
+  <p class="text-sm text-base-content/70"><strong class="text-amber-400">Port non visible ?</strong> Il faut parfois installer un driver USB. Cartes avec puce <strong>CH340</strong> : driver CH340G. Cartes avec <strong>CP2102</strong> : driver Silicon Labs CP210x. Les deux sont gratuits.</p>
 </div>
 
-### Raccourcis essentiels
+### Opérations courantes
+
+<div class="space-y-3 my-4">
+  {[
+    { titre: 'Exécuter un script sans sauvegarder', desc: 'F5 ou bouton ▶. Le script tourne sur l\'ESP32 mais n\'est pas stocké. Si tu débranches, il disparaît.' },
+    { titre: 'Sauvegarder sur l\'ESP32 (permanent)', desc: 'Fichier → Sauvegarder sous → choisir « MicroPython device » → nommer le fichier main.py. Il se relancera automatiquement au prochain démarrage.' },
+    { titre: 'Transférer des fichiers', desc: 'View → Files. Clic droit sur un fichier dans la partie gauche (ton ordi) → Upload to /. Il apparaît dans la partie droite (ESP32).' },
+    { titre: 'Arrêter le programme en cours', desc: 'Ctrl + C dans le Shell. Ou bouton Stop ■.' },
+    { titre: 'Soft reset', desc: 'Ctrl + D dans le Shell. L\'ESP32 repart depuis le début — relance boot.py puis main.py.' },
+  ].map(item => (
+    <div class="rounded-xl border border-base-200/80 bg-base-200/10 p-4">
+      <div class="font-bold text-sm mb-1">{item.titre}</div>
+      <div class="text-sm text-base-content/60">{item.desc}</div>
+    </div>
+  ))}
+</div>
+
+### Raccourcis clavier essentiels
 
 <div class="overflow-x-auto rounded-xl border border-base-200/80 my-4">
   <table class="table w-full">
@@ -200,9 +377,13 @@ Pas besoin de compiler ni de rebooter — idéal pour tester et apprendre.
         ['Exécuter le script', 'F5'],
         ['Arrêter le programme', 'Ctrl + C (dans le Shell)'],
         ['Soft reset — relance boot.py puis main.py', 'Ctrl + D (dans le Shell)'],
-        ['Sauvegarder sur l\'ESP32', 'Fichier → Sauvegarder sous → MicroPython device'],
+        ['Nouveau fichier', 'Ctrl + N'],
+        ['Ouvrir un fichier', 'Ctrl + O'],
+        ['Sauvegarder', 'Ctrl + S'],
         ['Gestionnaire de fichiers', 'View → Files'],
+        ['Commenter / décommenter', 'Ctrl + F1'],
         ['Autocomplétion', 'Tab'],
+        ['Zoom avant / arrière', 'Ctrl + + / Ctrl + -'],
       ].map(([action, raccourci]) => (
         <tr>
           <td class="text-sm">{action}</td>
@@ -215,56 +396,123 @@ Pas besoin de compiler ni de rebooter — idéal pour tester et apprendre.
 
 ### Flasher MicroPython sur une nouvelle carte
 
-Si ta carte est neuve ou si MicroPython n'y est pas installé, Thonny peut le faire :
-**Outils → Configurer l'interpréteur → Install or update MicroPython** → choisir la variante (ESP32 / ESP32-S3 / Pico) → Install.
+Si ta carte est neuve ou si MicroPython n'y est pas installé :
+
+1. Brancher l'ESP32 en USB
+2. **Outils → Configurer l'interpréteur → clic sur "Install or update MicroPython"**
+3. Sélectionner la variante : **ESP32** / ESP32-S3 / Pico selon ta carte
+4. Cliquer sur **Install** — Thonny télécharge et flash le firmware automatiquement
+5. Une fois terminé, redémarrer Thonny et se connecter normalement
+
+<div class="rounded-xl border border-primary/20 bg-primary/5 p-5 my-6">
+  <div class="flex items-center justify-between gap-4 flex-wrap">
+    <div>
+      <h4 class="font-bold mb-1">Guide complet Thonny</h4>
+      <p class="text-sm text-base-content/60">Toutes les fonctionnalités en détail : interface, gestion des fichiers, REPL avancé.</p>
+    </div>
+    <a href={siteUrl('/doc/thonny/')} class="btn btn-primary btn-sm whitespace-nowrap">
+      Voir la fiche →
+    </a>
+  </div>
+</div>
 
 ---
 
-## Gérer les fichiers sur l'ESP32
+## Le système de fichiers de l'ESP32
 
-L'ESP32 possède un système de fichiers (Flash 4 Mo). Deux fichiers sont exécutés **automatiquement** à chaque démarrage :
+L'ESP32 possède une mémoire Flash de 4 Mo dont une partie est réservée à un système de fichiers accessible depuis MicroPython. Tu peux y stocker des scripts, des bibliothèques, des données de configuration, des fichiers texte…
+
+Deux fichiers ont un rôle spécial et sont exécutés **automatiquement** à chaque démarrage :
 
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-6">
   <div class="rounded-xl border border-primary/20 bg-primary/5 p-5">
-    <h3 class="font-bold font-mono mb-2">boot.py</h3>
-    <p class="text-sm text-base-content/60 leading-relaxed">S'exécute en premier. Réservé à la configuration : connexion WiFi, initialisation matérielle. Léger de préférence. Si absent, ignoré.</p>
+    <h3 class="font-bold font-mono text-primary mb-2">boot.py</h3>
+    <p class="text-sm text-base-content/60 leading-relaxed">S'exécute en <strong>premier</strong>, juste après le reset. Réservé à la configuration système : connexion WiFi, initialisation matérielle, paramètres globaux. Doit rester léger — une erreur ici empêche le reste de démarrer. Si absent, ignoré.</p>
   </div>
   <div class="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-5">
-    <h3 class="font-bold font-mono mb-2">main.py</h3>
-    <p class="text-sm text-base-content/60 leading-relaxed">Ton programme principal. S'exécute après boot.py. Si absent, l'ESP32 attend dans le REPL. C'est le fichier que tu crées pour tes projets.</p>
+    <h3 class="font-bold font-mono text-emerald-400 mb-2">main.py</h3>
+    <p class="text-sm text-base-content/60 leading-relaxed">S'exécute <strong>après</strong> boot.py. C'est ton programme principal. Si absent, l'ESP32 reste en attente dans le REPL. C'est le fichier que tu crées pour tous tes projets.</p>
   </div>
 </div>
 
 **Ordre de démarrage :** reset → `boot.py` → `main.py` → REPL (si main.py absent ou terminé)
 
-### Le module `os` — gérer les fichiers depuis le REPL
+### Organiser ses fichiers
+
+La bonne pratique est de créer un dossier `/lib` pour les modules tiers — MicroPython l'ajoute automatiquement au chemin de recherche :
+
+```
+/                    ← racine de la Flash
+├── boot.py          ← config WiFi, init
+├── main.py          ← programme principal
+├── lib/             ← bibliothèques tierces
+│   ├── ssd1306.py   ← driver écran OLED
+│   └── ds18x20.py   ← driver DS18B20
+└── data/            ← données de ton projet
+    └── config.txt   ← paramètres
+```
+
+### Gérer les fichiers depuis le REPL
 
 ```python
 import os
 
-os.listdir()           # ['boot.py', 'main.py', 'lib']
-os.mkdir('lib')        # créer un dossier
-os.remove('old.py')    # supprimer un fichier
-os.rename('a.py', 'b.py')  # renommer
-os.stat('main.py')     # taille, dates
+# Lister les fichiers
+os.listdir()               # ['boot.py', 'main.py', 'lib']
+os.listdir('/lib')         # contenu du dossier lib
+
+# Créer / supprimer / renommer
+os.mkdir('data')           # créer un dossier
+os.remove('old.py')        # supprimer un fichier
+os.rename('a.py', 'b.py') # renommer ou déplacer
+
+# Infos sur un fichier
+stat = os.stat('main.py')
+print("Taille :", stat[6], "octets")
+
+# Dossier courant
+os.getcwd()                # '/'
+os.chdir('/lib')           # changer de dossier
+```
+
+### Lire et écrire des fichiers
+
+```python
+# Écrire un fichier de configuration
+with open('config.txt', 'w') as f:
+    f.write('ssid=MonWiFi\n')
+    f.write('password=secret\n')
+
+# Lire ce fichier
+with open('config.txt', 'r') as f:
+    contenu = f.read()
+    print(contenu)
+
+# Supprimer le fichier
+os.remove('config.txt')
 ```
 
 ### Mémoire disponible
 
 ```python
 import os, gc
-gc.collect()
-print("RAM libre :", gc.mem_free(), "octets")   # ex : 120000 octets
 
+# Mémoire RAM
+gc.collect()                          # libérer ce qui peut l'être
+print("RAM libre :", gc.mem_free(), "octets")
+print("RAM utilisée :", gc.mem_alloc(), "octets")
+
+# Espace Flash
 fs = os.statvfs('/')
-print("Flash libre :", fs[3] * fs[0], "octets sur", fs[2] * fs[0], "octets")
+bloc = fs[0]
+print("Flash libre :", fs[3] * bloc, "octets sur", fs[2] * bloc, "octets")
 ```
 
 <div class="rounded-xl border border-primary/20 bg-primary/5 p-5 my-6">
   <div class="flex items-center justify-between gap-4 flex-wrap">
     <div>
       <h4 class="font-bold mb-1">Référence complète des commandes OS</h4>
-      <p class="text-sm text-base-content/60">Tous les exemples pratiques : arborescence, lecture/écriture de fichiers, vider la carte.</p>
+      <p class="text-sm text-base-content/60">Tous les exemples pratiques : arborescence, lecture/écriture, vider la carte, bonnes pratiques.</p>
     </div>
     <a href={siteUrl('/doc/micropython-os/')} class="btn btn-primary btn-sm whitespace-nowrap">
       Voir la fiche →
@@ -279,11 +527,11 @@ print("Flash libre :", fs[3] * fs[0], "octets sur", fs[2] * fs[0], "octets")
 <div class="rounded-xl border border-primary/20 bg-primary/5 p-6 my-8">
   <div class="flex items-center justify-between gap-4 flex-wrap">
     <div>
-      <h4 class="font-bold mb-1">Atelier 01 — Serveur web avec ESP32</h4>
-      <p class="text-sm text-base-content/60">Mets en pratique ce cours avec un vrai projet.</p>
+      <h4 class="font-bold mb-1">GPIO, PWM et NeoPixel</h4>
+      <p class="text-sm text-base-content/60">Contrôle des LEDs, lecture de boutons, luminosité et effets RGB — les premières briques du code embarqué.</p>
     </div>
-    <a href={siteUrl('/ateliers/serveur-web-esp32/')} class="btn btn-primary btn-sm whitespace-nowrap">
-      Démarrer l'atelier →
+    <a href={siteUrl('/cours/gpio-pwm/')} class="btn btn-primary btn-sm whitespace-nowrap">
+      Cours suivant →
     </a>
   </div>
 </div>
