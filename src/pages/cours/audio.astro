@@ -1,0 +1,159 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import DifficultyBadge from '../../components/DifficultyBadge.astro';
+import GitHubCodeBlock from '../../components/GitHubCodeBlock.astro';
+import { siteUrl } from '../../utils/url';
+
+const REPO = 'vincent-herm/fablab-esp32-ateliers';
+const title = 'Audio sur ESP32';
+const description = 'Générer des sons avec le PWM sur ESP32 en MicroPython : buzzer, fréquences, notes musicales et gammes.';
+---
+<Layout title={title} description={description}>
+
+<div class="border-b border-base-200/60 bg-base-200/20">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+    <div class="flex items-center gap-2 text-sm text-base-content/50">
+      <a href={siteUrl('/')} class="hover:text-base-content transition-colors">Accueil</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <a href={siteUrl('/cours/')} class="hover:text-base-content transition-colors">Cours</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <span class="text-base-content/80">Audio sur ESP32</span>
+    </div>
+  </div>
+</div>
+
+<section class="py-12 hero-pattern border-b border-base-200/60">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-2xl">🎵</span>
+      <span class="text-xs px-2.5 py-1 rounded-full bg-amber-500/15 text-amber-400 font-medium">Audio</span>
+      <DifficultyBadge level="intermediaire" />
+    </div>
+    <h1 class="text-3xl sm:text-4xl font-black mb-4">Audio sur ESP32</h1>
+    <p class="text-base-content/65 text-lg leading-relaxed max-w-2xl">
+      Générer des sons avec le PWM : buzzer, fréquences, notes musicales et gammes. De la physique du son à la musique programmée.
+    </p>
+  </div>
+</section>
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+  <!-- THÉORIE LONGUE -->
+  <section class="mb-20 prose-section">
+
+    <h2 class="text-2xl font-black mb-6 mt-12">Générer un son avec le PWM</h2>
+
+    <p class="text-base-content/80 leading-relaxed mb-4">Un haut-parleur ou buzzer connecté sur une broche PWM vibre à la fréquence du signal généré. Si la fréquence est entre <strong>20 Hz et 20 000 Hz</strong>, le son est audible.</p>
+
+    <div class="rounded-xl border border-blue-500/20 bg-blue-500/5 p-5 my-6">
+      <h4 class="font-bold text-blue-400 mb-2">💡 Rapport cyclique faible</h4>
+      <p class="text-sm text-base-content/70">Un rapport cyclique de ~4% est volontairement faible : la membrane est poussée brièvement, puis relâchée longtemps. C'est suffisant pour produire le son sans risquer de surchauffe.</p>
+    </div>
+
+    <h2 class="text-2xl font-black mb-6 mt-12">Notes musicales — la gamme tempérée</h2>
+
+    <p class="text-base-content/80 leading-relaxed mb-4">En musique occidentale, le <strong>La3 (A4) = 440 Hz</strong> est la fréquence de référence (le diapason). Les 12 notes d'une octave forment une <em>suite géométrique</em> : chaque demi-ton multiplie la fréquence par <strong>2^(1/12) ≈ 1,0595</strong>.</p>
+
+    <p class="text-base-content/80 leading-relaxed mb-4">Après 12 demi-tons : fréquence × 2 = octave supérieure. La4 = 880 Hz, La5 = 1760 Hz…</p>
+
+    <h3 class="text-xl font-bold mb-4 mt-8">Les gammes musicales</h3>
+
+    <div class="overflow-x-auto rounded-xl border border-base-200/80 my-6">
+      <table class="table w-full">
+        <thead>
+          <tr><th>Gamme</th><th>Intervalles</th><th>Couleur</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="font-medium">Majeure</td><td class="font-mono text-xs">[0,2,4,5,7,9,11,12]</td><td>Joyeuse</td></tr>
+          <tr><td class="font-medium">Éolienne</td><td class="font-mono text-xs">[0,2,3,5,7,8,10,12]</td><td>Mélancolique</td></tr>
+          <tr><td class="font-medium">Lydienne</td><td class="font-mono text-xs">[0,2,4,6,7,9,11,12]</td><td>Aérienne</td></tr>
+          <tr><td class="font-medium">Dorienne</td><td class="font-mono text-xs">[0,2,3,5,7,9,10,12]</td><td>Jazzy</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="rounded-xl border border-blue-500/20 bg-blue-500/5 p-5 my-6">
+      <h4 class="font-bold text-blue-400 mb-2">💡 L'effet swing</h4>
+      <p class="text-sm text-base-content/70">Le <strong>swing</strong> alterne des durées longues et courtes entre les notes, créant un effet rythmique. Par exemple, alterner 300 ms et 150 ms entre chaque note transforme une gamme monotone en mélodie vivante.</p>
+    </div>
+
+  </section>
+
+  <hr class="border-base-200/60 my-12" />
+  <h2 class="text-2xl font-black mb-2">Exemples commentés</h2>
+  <p class="text-base-content/60 mb-10">Chaque exemple est précédé de son contexte. Le code est affiché directement — bouton copier + lien GitHub disponibles.</p>
+
+  <div class="space-y-14">
+
+    <!-- AUDIO ET SON -->
+    <div>
+      <h3 class="text-xl font-black mb-1 flex items-center gap-2">
+        <span>🎵</span> Audio et son
+      </h3>
+      <p class="text-sm text-base-content/50 mb-8">Buzzer, fréquences, notes musicales et gammes.</p>
+
+      <div class="space-y-10">
+
+        <div>
+          <h4 class="font-bold mb-3 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center text-xs font-black shrink-0">1</span>
+            Générer un son avec le PWM
+          </h4>
+          <div class="rounded-xl border border-amber-500/20 bg-amber-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
+            <p>Un haut-parleur ou buzzer connecté sur une broche PWM vibre à la fréquence du signal généré. Si la fréquence est entre <strong>20 Hz et 20 000 Hz</strong>, le son est audible.</p>
+            <pre class="bg-base-300/30 rounded p-3 text-xs mt-2 overflow-x-auto"><code>from machine import Pin, PWM
+hp = PWM(Pin(5))
+hp.duty(40)         # rapport cyclique ~4% (suffit pour un son correct)
+hp.freq(1000)       # fréquence : 1000 Hz
+sleep(1)
+hp.deinit()         # arrêter le PWM et libérer la broche</code></pre>
+            <p class="mt-2">Un rapport cyclique de ~4% est volontairement faible : la membrane est poussée brièvement, puis relâchée longtemps. C'est suffisant pour produire le son sans risquer de surchauffe.</p>
+          </div>
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/audio/haut-parleur-son.py" title="haut-parleur-son.py — Son simple — choix de la fréquence" />
+        </div>
+
+        <div>
+          <h4 class="font-bold mb-3 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center text-xs font-black shrink-0">2</span>
+            Notes musicales — la gamme tempérée
+          </h4>
+          <div class="rounded-xl border border-amber-500/20 bg-amber-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
+            <p>En musique occidentale, le <strong>La3 (A4) = 440 Hz</strong> est la fréquence de référence (le diapason). Les 12 notes d'une octave forment une <em>suite géométrique</em> : chaque demi-ton multiplie la fréquence par <strong>2^(1/12) ≈ 1,0595</strong>.</p>
+            <p class="mt-2">Après 12 demi-tons : fréquence × 2 = octave supérieure. La4 = 880 Hz, La5 = 1760 Hz…</p>
+            <pre class="bg-base-300/30 rounded p-3 text-xs mt-2 overflow-x-auto"><code># Générer les 13 notes d'une octave (La4 = 880 Hz)
+liste_freq = [int(2**(x/12)*880) for x in range(0, 13)]
+# [880, 932, 988, 1047, 1109, 1175, 1245, 1319, 1397, 1480, 1568, 1661, 1760]</code></pre>
+            <p class="mt-2">Une <strong>gamme</strong> est une sélection de 7 notes dans l'octave. Chaque gamme produit une couleur émotionnelle différente :</p>
+            <ul class="list-disc list-inside mt-1 space-y-0.5 text-xs">
+              <li>Majeure [0,2,4,5,7,9,11,12] → joyeuse</li>
+              <li>Éolienne [0,2,3,5,7,8,10,12] → mélancolique</li>
+              <li>Lydienne [0,2,4,6,7,9,11,12] → aérienne</li>
+              <li>Dorienne [0,2,3,5,7,9,10,12] → jazzy</li>
+            </ul>
+            <p class="mt-2">Le <strong>swing</strong> (<em>haut-parleur-13-notes.py</em>) alterne des durées longues et courtes entre les notes, créant un effet rythmique.</p>
+          </div>
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/audio/haut-parleur-13-notes.py" title="haut-parleur-13-notes.py — Gamme de 13 notes avec swing" />
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/audio/haut-parleur-gamme.py" title="haut-parleur-gamme.py — Plusieurs gammes musicales" />
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Prochaine étape -->
+  <div class="rounded-xl border border-primary/20 bg-primary/5 p-6 my-12">
+    <div class="flex items-center justify-between gap-4 flex-wrap">
+      <div>
+        <h4 class="font-bold mb-1">Programmation orientée objet</h4>
+        <p class="text-sm text-base-content/60">Classes, objets, constructeurs et héritage en MicroPython.</p>
+      </div>
+      <a href={siteUrl('/cours/poo/')} class="btn btn-primary btn-sm whitespace-nowrap">
+        Cours suivant →
+      </a>
+    </div>
+  </div>
+
+</div>
+
+</Layout>

@@ -1,0 +1,442 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import DifficultyBadge from '../../components/DifficultyBadge.astro';
+import GitHubCodeBlock from '../../components/GitHubCodeBlock.astro';
+import { siteUrl } from '../../utils/url';
+
+const REPO = 'vincent-herm/fablab-esp32-ateliers';
+const title = 'GPIO, PWM et NeoPixel';
+const description = 'Contrôle des LEDs, boutons et LED RGB avec MicroPython : GPIO numérique, PWM et bandeaux NeoPixel WS2812.';
+---
+<Layout title={title} description={description}>
+
+<div class="border-b border-base-200/60 bg-base-200/20">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+    <div class="flex items-center gap-2 text-sm text-base-content/50">
+      <a href={siteUrl('/')} class="hover:text-base-content transition-colors">Accueil</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <a href={siteUrl('/cours/')} class="hover:text-base-content transition-colors">Cours</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <span class="text-base-content/80">GPIO, PWM et NeoPixel</span>
+    </div>
+  </div>
+</div>
+
+<section class="py-12 hero-pattern border-b border-base-200/60">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-2xl">💡</span>
+      <span class="text-xs px-2.5 py-1 rounded-full bg-orange-500/15 text-orange-400 font-medium">Actionneurs</span>
+      <DifficultyBadge level="debutant" />
+    </div>
+    <h1 class="text-3xl sm:text-4xl font-black mb-4">GPIO, PWM et NeoPixel</h1>
+    <p class="text-base-content/65 text-lg leading-relaxed max-w-2xl">
+      Les sorties numériques de l'ESP32 : allumer une LED, lire un bouton, contrôler la luminosité avec PWM et créer des effets de couleur avec les LED RGB WS2812.
+    </p>
+  </div>
+</section>
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+  <!-- THÉORIE LONGUE -->
+  <section class="mb-20 prose-section">
+
+    <h2 class="text-2xl font-black mb-6 mt-12">GPIO numérique — sorties</h2>
+
+    <p class="text-base-content/80 leading-relaxed mb-4">Le GPIO (General Purpose Input/Output) est la façon la plus simple d'interagir avec le monde physique. Un pin peut être mis à <code>1</code> (3.3 V) ou <code>0</code> (0 V).</p>
+
+    <h3 class="text-xl font-bold mb-4 mt-8">GPIO numérique — entrées (boutons)</h3>
+
+    <p class="text-base-content/80 leading-relaxed mb-4">Pour lire un bouton, on configure le pin en entrée. La résistance pull-up interne évite le pin "flottant" quand le bouton est relâché.</p>
+
+    <div class="rounded-xl border border-amber-500/20 bg-amber-500/5 p-5 my-6">
+      <h4 class="font-bold text-amber-400 mb-2">⚠️ Logique inversée</h4>
+      <p class="text-sm text-base-content/70">Avec PULL_UP, la logique est inversée : <code>0</code> = appuyé, <code>1</code> = relâché. Le bouton connecte le pin à GND quand il est pressé.</p>
+    </div>
+
+    <h3 class="text-xl font-bold mb-4 mt-8">PWM — Pulse Width Modulation</h3>
+
+    <p class="text-base-content/80 leading-relaxed mb-4">Le PWM simule une sortie analogique en faisant varier la largeur des impulsions. Utilisé pour la luminosité des LEDs, les servomoteurs, les sons.</p>
+
+    <div class="overflow-x-auto rounded-xl border border-base-200/80 my-6">
+      <table class="table w-full">
+        <thead>
+          <tr><th>Paramètre</th><th>Valeur</th><th>Effet</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="font-mono">freq</td><td>100 – 40 000 Hz</td><td>Fréquence du signal</td></tr>
+          <tr><td class="font-mono">duty</td><td>0 – 1023</td><td>Rapport cyclique (0 = éteint, 1023 = plein)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4 class="font-bold mb-3 mt-6">Correction de luminosité (courbe gamma)</h4>
+    <p class="text-base-content/80 leading-relaxed mb-4">L'œil humain ne perçoit pas la luminosité de façon linéaire. Une correction quadratique donne un rendu plus naturel.</p>
+
+    <h3 class="text-xl font-bold mb-4 mt-8">NeoPixel — LED RGB WS2812</h3>
+
+    <p class="text-base-content/80 leading-relaxed mb-4">Les NeoPixel (WS2812) sont des LED RGB adressables en série. Un seul fil de données contrôle autant de LED que tu veux.</p>
+
+    <h3 class="text-xl font-bold mb-4 mt-8">Résumé des pins ESP32</h3>
+
+    <div class="overflow-x-auto rounded-xl border border-base-200/80 my-6">
+      <table class="table table-zebra w-full">
+        <thead>
+          <tr><th>Pin</th><th>Usage typique</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="font-mono">2</td><td>LED intégrée / sortie</td><td>LED bleue sur la plupart des boards</td></tr>
+          <tr><td class="font-mono">0</td><td>Bouton BOOT / entrée</td><td>PULL_UP interne</td></tr>
+          <tr><td class="font-mono">26</td><td>NeoPixel</td><td>Données WS2812</td></tr>
+          <tr><td class="font-mono">5</td><td>Buzzer / son</td><td>PWM à 50-4000 Hz</td></tr>
+          <tr><td class="font-mono">18, 19, 23</td><td>LEDs supplémentaires</td><td>Carte ENIM</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </section>
+
+  <hr class="border-base-200/60 my-12" />
+  <h2 class="text-2xl font-black mb-2">Exemples commentés</h2>
+  <p class="text-base-content/60 mb-10">Chaque exemple est précédé de son contexte. Le code est affiché directement — bouton copier + lien GitHub disponibles.</p>
+
+  <div class="space-y-14">
+
+    <!-- GPIO NUMÉRIQUE -->
+    <div>
+      <h3 class="text-xl font-black mb-1 flex items-center gap-2">
+        <span>💡</span> GPIO numérique
+      </h3>
+      <p class="text-sm text-base-content/50 mb-8">LEDs, boutons, minuteries — les bases des entrées/sorties numériques.</p>
+
+      <div class="space-y-10">
+
+        <div>
+          <h4 class="font-bold mb-3 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-xs font-black shrink-0">1</span>
+            La sortie numérique — allumer et faire clignoter une LED
+          </h4>
+          <div class="rounded-xl border border-blue-500/20 bg-blue-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
+            <p>Une broche GPIO (<em>General Purpose Input/Output</em>) peut être configurée en <strong>sortie</strong> ou en <strong>entrée</strong>. En MicroPython, la classe <code>Pin</code> du module <code>machine</code> gère tout cela :</p>
+            <ul class="list-disc list-inside mt-2 space-y-1">
+              <li><code>led = Pin(2, Pin.OUT)</code> — crée l'objet LED sur la broche 2 en sortie</li>
+              <li><code>led.value(1)</code> — met la broche à 3,3V (LED allumée)</li>
+              <li><code>led.value(0)</code> — met la broche à 0V (LED éteinte)</li>
+              <li><code>led.value(not led.value())</code> — bascule l'état (inverse)</li>
+            </ul>
+            <p class="mt-2">Pour clignoter à 1 Hz (période de 1 s), on allume 0,5 s puis on éteint 0,5 s avec <code>sleep(0.5)</code>. La boucle <code>while True</code> fait tourner ça en continu. La boucle <code>for a in range(6)</code> fait clignoter exactement 3 fois (6 basculements) puis s'arrête.</p>
+            <p class="mt-2">La mesure du temps de clignotement (<em>led-temps.py</em>) révèle que l'ESP32 peut basculer la LED environ 50 000 fois par seconde, soit ~20 µs par cycle.</p>
+          </div>
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/gpio/led.py" title="led.py — LED qui clignote à 1 Hz" />
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/gpio/led-3-fois.py" title="led-3-fois.py — Clignote 3 fois puis s'arrête" />
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/gpio/led-temps.py" title="led-temps.py — Mesure le temps de 10 000 clignotements" />
+        </div>
+
+        <div>
+          <h4 class="font-bold mb-3 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-xs font-black shrink-0">2</span>
+            L'entrée numérique — lire un bouton poussoir
+          </h4>
+          <div class="rounded-xl border border-blue-500/20 bg-blue-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
+            <p>L'entrée numérique lit un état logique : 0 ou 1. Le bouton poussoir, quand il est appuyé, connecte la broche à 3,3V → la valeur lue passe à 1. Relâché, la broche est à 0V → valeur 0.</p>
+            <ul class="list-disc list-inside mt-2 space-y-1">
+              <li><code>bp = Pin(25, Pin.IN)</code> — broche 25 configurée en entrée</li>
+              <li><code>bp.value()</code> — retourne 0 (relâché) ou 1 (appuyé)</li>
+              <li><code>led.value(bp.value())</code> — la LED suit directement l'état du bouton</li>
+            </ul>
+            <p class="mt-2"><strong>Attention :</strong> dans <em>led-stop.py</em>, la lecture du bouton a lieu toutes les 0,5 s (pendant le <code>sleep</code>). Si l'appui et le relâchement se produisent tous les deux pendant ce délai, l'appui est raté. Il faut appuyer assez longtemps pour être sûr d'être lu.</p>
+          </div>
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/gpio/led-bouton.py" title="led-bouton.py — LED contrôlée par un bouton" />
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/gpio/led-stop.py" title="led-stop.py — Bouton stop/reprendre" />
+        </div>
+
+        <div>
+          <h4 class="font-bold mb-3 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-xs font-black shrink-0">3</span>
+            Le temporisateur d'éclairage
+          </h4>
+          <div class="rounded-xl border border-blue-500/20 bg-blue-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
+            <p>Un <strong>temporisateur d'éclairage</strong> allume la LED lors de l'appui sur un bouton, puis l'éteint automatiquement après 2 secondes. C'est le cas typique d'une minuterie de couloir.</p>
+            <p class="mt-2">Le principe du compteur décrémenté :</p>
+            <ul class="list-disc list-inside mt-2 space-y-1">
+              <li>À chaque appui : <code>compt = 20</code></li>
+              <li>À chaque itération de 0,1 s : <code>compt = compt - 1</code></li>
+              <li>La LED est allumée si <code>compt &gt; 0</code>, soit pendant 20 × 0,1 s = 2 s</li>
+            </ul>
+            <p class="mt-2"><em>tempo-eclairage.py</em> est la version de base avec <code>sleep(0.1)</code> bloquant. <em>tempo-eclairage-optimise.py</em> est la version non-bloquante : la boucle tourne sans sleep, elle utilise <code>ticks_ms()</code> pour mesurer les 100 ms écoulés. Résultat : le programme peut faire autre chose en même temps.</p>
+          </div>
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/gpio/tempo-eclairage.py" title="tempo-eclairage.py — LED s'éteint après 2 secondes" />
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/gpio/tempo-eclairage-optimise.py" title="tempo-eclairage-optimise.py — Version non-bloquante avec ticks_ms()" />
+        </div>
+
+      </div>
+    </div>
+
+    <!-- PWM -->
+    <div>
+      <h3 class="text-xl font-black mb-1 flex items-center gap-2">
+        <span>🔆</span> PWM
+      </h3>
+      <p class="text-sm text-base-content/50 mb-8">Variation de luminosité, servomoteurs et signaux analogiques simulés.</p>
+
+      <div class="space-y-10">
+
+        <div>
+          <h4 class="font-bold mb-3 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-orange-500/20 text-orange-400 flex items-center justify-center text-xs font-black shrink-0">1</span>
+            Le signal PWM et le rapport cyclique
+          </h4>
+          <div class="rounded-xl border border-orange-500/20 bg-orange-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
+            <p>Le <strong>PWM</strong> (<em>Pulse Width Modulation</em> — modulation de largeur d'impulsions) simule une tension variable en faisant osciller très rapidement une sortie numérique entre 0 V et 3,3 V. La fréquence est suffisamment élevée (500 Hz typiquement) pour que l'œil ne voie pas le clignotement, mais perçoive une luminosité intermédiaire.</p>
+            <p class="mt-2">Le <strong>rapport cyclique</strong> (<em>duty</em>) fixe la proportion de temps à l'état haut dans chaque période :</p>
+            <ul class="list-disc list-inside mt-2 space-y-1">
+              <li><code>duty = 0</code> → toujours à 0V → LED éteinte</li>
+              <li><code>duty = 512</code> → 50% du temps à 3,3V → luminosité moyenne</li>
+              <li><code>duty = 1023</code> → toujours à 3,3V → LED à plein</li>
+            </ul>
+            <pre class="bg-base-300/30 rounded p-3 text-xs mt-2 overflow-x-auto"><code>from machine import Pin, PWM
+led = PWM(Pin(2, Pin.OUT), 500)  # fréquence 500 Hz
+for i in range(0, 1024, 10):    # de 0 à 1023
+    led.duty(i)
+    sleep(0.01)</code></pre>
+          </div>
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/pwm/pwm.py" title="pwm.py — Variation de luminosité linéaire" />
+        </div>
+
+        <div>
+          <h4 class="font-bold mb-3 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-orange-500/20 text-orange-400 flex items-center justify-center text-xs font-black shrink-0">2</span>
+            La correction gamma — perception non-linéaire
+          </h4>
+          <div class="rounded-xl border border-orange-500/20 bg-orange-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
+            <p>Si vous avez testé <em>pwm.py</em>, vous avez observé que la LED passe de sombre à brillant très vite au début, puis évolue peu à la fin. Ce n'est pas un bug : c'est la physiologie humaine.</p>
+            <p class="mt-2"><strong>Notre œil perçoit la luminosité de façon logarithmique</strong>, non linéaire. La différence entre 0 et 100 semble énorme, alors que la différence entre 900 et 1000 est quasiment imperceptible.</p>
+            <p class="mt-2">La <strong>correction gamma</strong> applique une courbe pour compenser :</p>
+            <pre class="bg-base-300/30 rounded p-3 text-xs mt-2 overflow-x-auto"><code>def correction(i, coef):
+    return int((i / 1023) ** coef * 1023)
+# coef = 2 : parabole douce
+# coef = 3.5 : rendu encore plus naturel</code></pre>
+            <p class="mt-2">Avec cette correction, la variation perçue est régulière et agréable sur toute la plage.</p>
+          </div>
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/pwm/pwm-correction.py" title="pwm-correction.py — Correction gamma perceptuelle" />
+        </div>
+
+        <div>
+          <h4 class="font-bold mb-3 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-orange-500/20 text-orange-400 flex items-center justify-center text-xs font-black shrink-0">3</span>
+            Application — fade-in sur appui bouton
+          </h4>
+          <div class="rounded-xl border border-orange-500/20 bg-orange-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
+            <p>On combine PWM et bouton pour créer un allumage progressif :</p>
+            <ol class="list-decimal list-inside mt-2 space-y-1">
+              <li>On attend l'appui puis le relâchement du bouton</li>
+              <li>La LED monte progressivement de 0 à 1023 (fade-in)</li>
+              <li>On attend un second appui + relâchement</li>
+              <li>La LED descend de 1023 à 0 (fade-out)</li>
+            </ol>
+            <p class="mt-2">C'est une solution <strong>bloquante</strong> : les boucles <code>while not bp.value(): pass</code> et <code>while bp.value(): pass</code> figent le reste du programme pendant l'attente. Ce sera résolu plus loin avec la détection de fronts.</p>
+          </div>
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/pwm/pwm-allume-bp.py" title="pwm-allume-bp.py — Fade-in progressif sur appui bouton" />
+        </div>
+
+      </div>
+    </div>
+
+    <!-- NEOPIXEL -->
+    <div>
+      <h3 class="text-xl font-black mb-1 flex items-center gap-2">
+        <span>🌈</span> NeoPixel RGB
+      </h3>
+      <p class="text-sm text-base-content/50 mb-8">LED WS2812 adressables — couleurs, animations et effets.</p>
+
+      <div class="space-y-10">
+
+        <div>
+          <h4 class="font-bold mb-3 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center text-xs font-black shrink-0">1</span>
+            Les LED WS2812 — principe et synthèse additive
+          </h4>
+          <div class="rounded-xl border border-purple-500/20 bg-purple-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
+            <p>Les LED <strong>WS2812</strong> (aussi appelées NeoPixel) sont des LED RGB <em>adressables</em> : chaque LED contient trois LEDs (Rouge, Vert, Bleu) et une puce de contrôle. On peut les chaîner en série sur un seul fil de données (DIN → DOUT → …).</p>
+            <p class="mt-2">La couleur est obtenue par <strong>synthèse additive</strong> — en mélangeant les trois composantes de 0 à 255 :</p>
+            <ul class="list-disc list-inside mt-2 space-y-1">
+              <li><code>(255, 0, 0)</code> → rouge pur</li>
+              <li><code>(0, 255, 0)</code> → vert pur</li>
+              <li><code>(0, 0, 255)</code> → bleu pur</li>
+              <li><code>(255, 255, 0)</code> → jaune (rouge + vert)</li>
+              <li><code>(255, 255, 255)</code> → blanc</li>
+              <li><code>(0, 0, 0)</code> → éteint</li>
+            </ul>
+            <pre class="bg-base-300/30 rounded p-3 text-xs mt-2 overflow-x-auto"><code>from neopixel import NeoPixel
+np = NeoPixel(Pin(26), 8)  # 8 LEDs sur la broche 26
+np[0] = (255, 0, 0)        # LED 0 en rouge
+np[3] = (0, 100, 200)      # LED 3 en bleu-cyan
+np.write()                 # IMPORTANT : envoie tout le buffer</code></pre>
+            <p class="mt-2"><strong>Important :</strong> <code>np.write()</code> envoie toutes les couleurs d'un seul coup. Rien n'est visible avant cet appel.</p>
+          </div>
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/neopixel/neopixel.py" title="neopixel.py — Couleur unique sur toutes les LEDs" />
+        </div>
+
+        <div>
+          <h4 class="font-bold mb-3 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center text-xs font-black shrink-0">2</span>
+            Animations — défilement, comptage, aléatoire
+          </h4>
+          <div class="rounded-xl border border-purple-500/20 bg-purple-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
+            <p>Les animations NeoPixel reposent sur la mise à jour du buffer à chaque cycle de la boucle principale :</p>
+            <ul class="list-disc list-inside mt-2 space-y-1">
+              <li><strong>Défilement :</strong> à chaque cycle, on décale les couleurs d'un cran et on place une nouvelle couleur en tête</li>
+              <li><strong>Comptage au bouton :</strong> chaque appui allume une LED de plus (de 0 à 8) — on utilise la détection de front montant</li>
+              <li><strong>Aléatoire :</strong> <code>random.randint(0, 7)</code> choisit une LED au hasard à chaque cycle</li>
+            </ul>
+          </div>
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/neopixel/neopixel-defilement.py" title="neopixel-defilement.py — Défilement de gauche à droite" />
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/neopixel/neopixel-x-allumes.py" title="neopixel-x-allumes.py — Nombre de LEDs contrôlé par bouton" />
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/neopixel/neopixel-random.py" title="neopixel-random.py — Activation aléatoire" />
+        </div>
+
+        <div>
+          <h4 class="font-bold mb-3 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center text-xs font-black shrink-0">3</span>
+            Arc-en-ciel et distribution uniforme
+          </h4>
+          <div class="rounded-xl border border-purple-500/20 bg-purple-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
+            <p>L'<strong>arc-en-ciel</strong> répartit les teintes uniformément sur le cercle chromatique (0° à 360°). On convertit la teinte HSV en RGB puis on décale l'ensemble à chaque cycle pour créer le mouvement.</p>
+            <p class="mt-2">Le <strong>tirage aléatoire uniforme</strong> est plus subtil qu'il n'y paraît : si on tire simplement un nombre entre 0 et 7, certaines valeurs reviennent plus souvent que d'autres selon la distribution du générateur. L'exemple <em>tirage-aleatoire.py</em> illustre comment vérifier et garantir une distribution véritablement uniforme.</p>
+          </div>
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/neopixel/neopixel-rainbow.py" title="neopixel-rainbow.py — Arc-en-ciel défilant" />
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/neopixel/tirage-aleatoire.py" title="tirage-aleatoire.py — Distribution aléatoire uniforme" />
+        </div>
+
+      </div>
+    </div>
+
+    <!-- BOUTONS -->
+    <div>
+      <h3 class="text-xl font-black mb-1 flex items-center gap-2">
+        <span>🔘</span> Boutons et comptage
+      </h3>
+      <p class="text-sm text-base-content/50 mb-8">Lecture d'entrées numériques, anti-rebond, comptage et touch capacitif.</p>
+
+      <div class="space-y-10">
+
+        <div>
+          <h4 class="font-bold mb-3 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-xs font-black shrink-0">1</span>
+            Lecture simple et le piège du comptage naïf
+          </h4>
+          <div class="rounded-xl border border-blue-500/20 bg-blue-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
+            <p>Lire l'état d'un bouton est simple. Compter les appuis l'est beaucoup moins. Le premier réflexe (qui <strong>ne fonctionne pas</strong>) est d'incrémenter le compteur à chaque itération pendant l'appui :</p>
+            <pre class="bg-base-300/30 rounded p-3 text-xs mt-2 overflow-x-auto"><code>if bp.value():
+    compt = compt + 1  # PROBLÈME : s'incrémente des centaines de fois !</code></pre>
+            <p class="mt-2">Le problème : un appui d'une demi-seconde sur un bouton, avec une boucle qui tourne à 50 Hz, provoque 25 incrémentations au lieu d'une seule. C'est ce que le fichier <em>comptage-NFP.py</em> illustre (NFP = <em>Ne Fonctionne Pas</em>).</p>
+          </div>
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/boutons/lecture-bp.py" title="lecture-bp.py — Lecture simple d'un bouton" />
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/boutons/comptage-NFP.py" title="comptage-NFP.py — Comptage naïf — illustre le problème" />
+        </div>
+
+        <div>
+          <h4 class="font-bold mb-3 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-xs font-black shrink-0">2</span>
+            La solution bloquante
+          </h4>
+          <div class="rounded-xl border border-blue-500/20 bg-blue-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
+            <p>La version <strong>bloquante</strong> résout le problème en attendant d'abord l'appui, puis le relâchement, puis en incrémentant :</p>
+            <pre class="bg-base-300/30 rounded p-3 text-xs mt-2 overflow-x-auto"><code>while not bp.value(): pass  # attendre l'appui
+compt = compt + 1           # incrémenter une seule fois
+while bp.value(): pass      # attendre le relâchement</code></pre>
+            <p class="mt-2">Ça fonctionne — mais le programme est <strong>bloqué</strong> pendant toute la durée de l'attente. Impossible de faire clignoter une LED ou d'effectuer une autre tâche en même temps.</p>
+          </div>
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/boutons/comptage-bloquant.py" title="comptage-bloquant.py — Comptage — version bloquante" />
+        </div>
+
+        <div>
+          <h4 class="font-bold mb-3 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-xs font-black shrink-0">3</span>
+            La détection de front montant — version non-bloquante
+          </h4>
+          <div class="rounded-xl border border-blue-500/20 bg-blue-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
+            <p>La solution non-bloquante repose sur la <strong>détection de front montant</strong> : on ne compte qu'au moment précis où le bouton passe de 0 à 1 (l'instant de l'appui), pas pendant tout l'appui.</p>
+            <p class="mt-2">Le principe est de mémoriser l'état précédent :</p>
+            <pre class="bg-base-300/30 rounded p-3 text-xs mt-2 overflow-x-auto"><code>ancien_etat = bp.value()    # mémorisation initiale
+
+for cycle in range(500):    # boucle de 10 s (500 × 20 ms)
+    etat = bp.value()
+    if not ancien_etat and etat:   # front montant : 0→1
+        compt = compt + 1
+    sleep(0.02)             # temps de cycle fixe : 20 ms
+    ancien_etat = etat      # mémoriser pour le prochain cycle</code></pre>
+            <p class="mt-2"><strong>Théorème de Shannon :</strong> pour ne rater aucun appui, la fréquence d'échantillonnage doit être au moins 2 fois supérieure à la fréquence maximale du signal. Avec 50 lectures/seconde (20 ms), on peut détecter jusqu'à 25 appuis/seconde — largement suffisant.</p>
+            <p class="mt-2">Le temps de cycle est <strong>fixe et déterminé</strong> : 20 ms, quoi qu'il se passe. Le programme ne se bloque jamais.</p>
+          </div>
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/boutons/comptage-ok.py" title="comptage-ok.py — Comptage — version non-bloquante (front montant)" />
+        </div>
+
+        <div>
+          <h4 class="font-bold mb-3 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-xs font-black shrink-0">4</span>
+            Multi-tâches avec les threads
+          </h4>
+          <div class="rounded-xl border border-blue-500/20 bg-blue-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
+            <p>Les <strong>threads</strong> permettent d'exécuter plusieurs fonctions en parallèle. Même si une fonction est bloquante, les autres threads continuent de tourner.</p>
+            <pre class="bg-base-300/30 rounded p-3 text-xs mt-2 overflow-x-auto"><code>import _thread
+
+def comptage():      # fonction bloquante
+    while True:
+        while not bpA.value(): pass
+        compt += 1
+
+def clignotement():  # autre fonction bloquante
+    while True:
+        led.value(not led.value())
+        sleep(0.5)
+
+_thread.start_new_thread(clignotement, ())
+_thread.start_new_thread(comptage, ())</code></pre>
+            <p class="mt-2">Les deux fonctions tournent en parallèle. La LED clignote pendant que le comptage attend l'appui.</p>
+          </div>
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/boutons/comptage-thread.py" title="comptage-thread.py — Comptage avec thread — multitâche" />
+        </div>
+
+        <div>
+          <h4 class="font-bold mb-3 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-xs font-black shrink-0">5</span>
+            Le capteur capacitif (TouchPad)
+          </h4>
+          <div class="rounded-xl border border-blue-500/20 bg-blue-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
+            <p>L'ESP32 dispose de 10 broches pouvant être configurées comme <strong>capteurs capacitifs</strong>. La valeur lue varie selon la capacité détectée sur la broche :</p>
+            <ul class="list-disc list-inside mt-2 space-y-1">
+              <li>Sans contact : valeur <strong>&gt; 150</strong></li>
+              <li>Doigt posé : valeur <strong>&lt; 60</strong></li>
+            </ul>
+            <pre class="bg-base-300/30 rounded p-3 text-xs mt-2 overflow-x-auto"><code>from machine import TouchPad, Pin
+tp1 = TouchPad(Pin(15))
+valeur = tp1.read()        # ex : 200 sans contact, 40 au toucher</code></pre>
+            <p class="mt-2">Pour compter les appuis, on applique le même principe de front montant qu'avec un bouton classique, en utilisant un seuil de comparaison : <code>etat = tp1.read() &lt; 100</code> renvoie True si touché, False sinon.</p>
+          </div>
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/boutons/touchpad.py" title="touchpad.py — Capteur capacitif (touch)" />
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/boutons/touchpad-comptage-bloquant.py" title="touchpad-comptage-bloquant.py — Comptage touch — version bloquante" />
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/boutons/touchpad-comptage-ok.py" title="touchpad-comptage-ok.py — Comptage touch — version non-bloquante" />
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Prochaine étape -->
+  <div class="rounded-xl border border-primary/20 bg-primary/5 p-6 my-12">
+    <div class="flex items-center justify-between gap-4 flex-wrap">
+      <div>
+        <h4 class="font-bold mb-1">Capteurs et afficheurs</h4>
+        <p class="text-sm text-base-content/60">ADC, OLED SSD1306 et capteur de température DS18B20.</p>
+      </div>
+      <a href={siteUrl('/cours/capteurs-afficheurs/')} class="btn btn-primary btn-sm whitespace-nowrap">
+        Cours suivant →
+      </a>
+    </div>
+  </div>
+
+</div>
+
+</Layout>

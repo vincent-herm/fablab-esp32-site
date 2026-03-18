@@ -1,0 +1,280 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import DifficultyBadge from '../../components/DifficultyBadge.astro';
+import GitHubCodeBlock from '../../components/GitHubCodeBlock.astro';
+import { siteUrl } from '../../utils/url';
+
+const REPO = 'vincent-herm/fablab-esp32-ateliers';
+const title = 'Capteurs et afficheurs';
+const description = "Lire des valeurs analogiques avec l'ADC de l'ESP32, afficher des données sur un écran OLED SSD1306 et mesurer la température avec le DS18B20.";
+---
+<Layout title={title} description={description}>
+
+<div class="border-b border-base-200/60 bg-base-200/20">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+    <div class="flex items-center gap-2 text-sm text-base-content/50">
+      <a href={siteUrl('/')} class="hover:text-base-content transition-colors">Accueil</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <a href={siteUrl('/cours/')} class="hover:text-base-content transition-colors">Cours</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <span class="text-base-content/80">Capteurs et afficheurs</span>
+    </div>
+  </div>
+</div>
+
+<section class="py-12 hero-pattern border-b border-base-200/60">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-2xl">📡</span>
+      <span class="text-xs px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-400 font-medium">Capteurs</span>
+      <DifficultyBadge level="intermediaire" />
+    </div>
+    <h1 class="text-3xl sm:text-4xl font-black mb-4">Capteurs et afficheurs</h1>
+    <p class="text-base-content/65 text-lg leading-relaxed max-w-2xl">
+      Mesure des grandeurs physiques avec l'ADC de l'ESP32, visualise des données sur un écran OLED SSD1306 et intègre un capteur de température numérique DS18B20.
+    </p>
+  </div>
+</section>
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+  <!-- THÉORIE LONGUE -->
+  <section class="mb-20 prose-section">
+
+    <h2 class="text-2xl font-black mb-6 mt-12">ADC — Entrées analogiques</h2>
+
+    <p class="text-base-content/80 leading-relaxed mb-4">L'ESP32 dispose de 18 canaux ADC 12 bits. La valeur renvoyée va de <strong>0</strong> (0 V) à <strong>4095</strong> (3.3 V).</p>
+
+    <div class="rounded-xl border border-amber-500/20 bg-amber-500/5 p-5 my-6">
+      <h4 class="font-bold text-amber-400 mb-2">⚠️ Attention : ADC2 incompatible WiFi</h4>
+      <p class="text-sm text-base-content/70">Les pins ADC2 (GPIO 0, 2, 4, 12-15, 25-27) ne fonctionnent pas quand le WiFi est actif. Pour des mesures fiables avec WiFi, utilise uniquement ADC1 (GPIO 32-39).</p>
+    </div>
+
+    <h3 class="text-xl font-bold mb-4 mt-8">OLED SSD1306 — Afficheur I2C</h3>
+
+    <p class="text-base-content/80 leading-relaxed mb-4">Le SSD1306 est un afficheur OLED 128×64 pixels, communiquant en I2C. Le module <code>ssd1306</code> est inclus dans MicroPython pour ESP32.</p>
+
+    <div class="overflow-x-auto rounded-xl border border-base-200/80 my-6">
+      <table class="table w-full">
+        <thead>
+          <tr><th>Pin SSD1306</th><th>Pin ESP32</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="font-mono">VCC</td><td>3.3 V</td><td>Alimentation</td></tr>
+          <tr><td class="font-mono">GND</td><td>GND</td><td>Masse</td></tr>
+          <tr><td class="font-mono">SDA</td><td>GPIO 21</td><td>Données I2C</td></tr>
+          <tr><td class="font-mono">SCL</td><td>GPIO 22</td><td>Horloge I2C</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="text-xl font-bold mb-4 mt-8">DS18B20 — Température numérique 1-Wire</h3>
+
+    <p class="text-base-content/80 leading-relaxed mb-4">Le DS18B20 mesure la température de -55 à +125 °C avec une précision de ±0.5 °C. Il communique sur un seul fil (1-Wire).</p>
+
+    <div class="overflow-x-auto rounded-xl border border-base-200/80 my-6">
+      <table class="table w-full">
+        <thead>
+          <tr><th>Pin DS18B20</th><th>Connexion</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>GND (broche 1)</td><td>GND</td></tr>
+          <tr><td>DATA (broche 2)</td><td>GPIO 27 + résistance 4.7 kΩ vers 3.3 V</td></tr>
+          <tr><td>VDD (broche 3)</td><td>3.3 V</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="text-xl font-bold mb-4 mt-8">Résumé des connexions</h3>
+
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6">
+      <div class="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4">
+        <h4 class="font-bold text-emerald-400 mb-2 text-sm">ADC (analogique)</h4>
+        <ul class="text-xs text-base-content/70 space-y-1">
+          <li>GPIO 32-39 → ADC1 (WiFi OK)</li>
+          <li>GPIO 0-27 → ADC2 (sans WiFi)</li>
+          <li>Résolution : 12 bits (0-4095)</li>
+        </ul>
+      </div>
+      <div class="rounded-xl border border-purple-500/20 bg-purple-500/5 p-4">
+        <h4 class="font-bold text-purple-400 mb-2 text-sm">I2C (OLED)</h4>
+        <ul class="text-xs text-base-content/70 space-y-1">
+          <li>SDA → GPIO 21</li>
+          <li>SCL → GPIO 22</li>
+          <li>Adresse : 0x3C</li>
+        </ul>
+      </div>
+      <div class="rounded-xl border border-blue-500/20 bg-blue-500/5 p-4">
+        <h4 class="font-bold text-blue-400 mb-2 text-sm">1-Wire (DS18B20)</h4>
+        <ul class="text-xs text-base-content/70 space-y-1">
+          <li>DATA → GPIO 27</li>
+          <li>Résistance 4.7 kΩ vers 3.3 V</li>
+          <li>Plusieurs capteurs possibles</li>
+        </ul>
+      </div>
+    </div>
+
+  </section>
+
+  <hr class="border-base-200/60 my-12" />
+  <h2 class="text-2xl font-black mb-2">Exemples commentés</h2>
+  <p class="text-base-content/60 mb-10">Chaque exemple est précédé de son contexte. Le code est affiché directement — bouton copier + lien GitHub disponibles.</p>
+
+  <div class="space-y-14">
+
+    <!-- ENTRÉES ANALOGIQUES -->
+    <div>
+      <h3 class="text-xl font-black mb-1 flex items-center gap-2">
+        <span>📊</span> Entrées analogiques
+      </h3>
+      <p class="text-sm text-base-content/50 mb-8">ADC 12 bits, potentiomètre, cellule photo, capteur LM35.</p>
+
+      <div class="space-y-10">
+
+        <div>
+          <h4 class="font-bold mb-3 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-yellow-500/20 text-yellow-400 flex items-center justify-center text-xs font-black shrink-0">1</span>
+            Le convertisseur Analogique/Numérique (ADC)
+          </h4>
+          <div class="rounded-xl border border-yellow-500/20 bg-yellow-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
+            <p>Plusieurs broches de l'ESP32 peuvent mesurer une tension analogique entre 0 et 3,3 V. Le <strong>convertisseur ADC</strong> (<em>Analog-to-Digital Converter</em>) transforme cette tension en nombre entier.</p>
+            <p class="mt-2">La <strong>résolution</strong> détermine la précision :</p>
+            <ul class="list-disc list-inside mt-2 space-y-1">
+              <li><strong>9 bits</strong> : 2⁹ = 512 valeurs, de 0 à 511. Résolution : 3,3 / 512 ≈ 6,4 mV</li>
+              <li><strong>12 bits</strong> : 2¹² = 4096 valeurs, de 0 à 4095. Résolution : 3,3 / 4096 ≈ 0,8 mV</li>
+            </ul>
+            <pre class="bg-base-300/30 rounded p-3 text-xs mt-2 overflow-x-auto"><code>from machine import ADC, Pin
+adc = ADC(Pin(35))
+adc.atten(ADC.ATTN_11DB)   # plage 0 à 3.6 V
+adc.width(ADC.WIDTH_9BIT)  # résolution 9 bits (0 à 511)
+raw = adc.read()
+tension = raw * 3.3 / 511  # conversion en volts</code></pre>
+          </div>
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/analogique/entree-analogique.py" title="entree-analogique.py — Lecture ADC et conversion en tension" />
+        </div>
+
+        <div>
+          <h4 class="font-bold mb-3 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-yellow-500/20 text-yellow-400 flex items-center justify-center text-xs font-black shrink-0">2</span>
+            Potentiomètre et cellule photo-électrique (LDR)
+          </h4>
+          <div class="rounded-xl border border-yellow-500/20 bg-yellow-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
+            <p>Un <strong>potentiomètre</strong> est une résistance variable : sa rotation fait varier la tension de 0 à 3,3 V. La valeur lue (0 à 511) peut être mappée vers n'importe quelle plage, par exemple : <code>raw / 64</code> donne 0 à 7,98 → contrôle du nombre de NeoPixels allumés.</p>
+            <p class="mt-2">Une <strong>LDR</strong> (<em>Light Dependent Resistor</em>, cellule photo-électrique) varie avec la lumière : 100 Ω éclairée, 500 kΩ dans l'obscurité. Montée en pont diviseur de tension avec une résistance fixe, la tension varie avec l'éclairement. On compare à un seuil pour détecter l'obscurité :</p>
+            <pre class="bg-base-300/30 rounded p-3 text-xs mt-2 overflow-x-auto"><code>tension = adc.read() * 3.3 / 512
+led.value(tension &lt; 2.0)   # allume LED si sombre</code></pre>
+          </div>
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/analogique/entree-analogique-neopixel.py" title="entree-analogique-neopixel.py — Potentiomètre contrôle les NeoPixels" />
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/analogique/cellule-photo.py" title="cellule-photo.py — LDR — LED s'allume dans l'obscurité" />
+        </div>
+
+      </div>
+    </div>
+
+    <!-- AFFICHEUR OLED -->
+    <div>
+      <h3 class="text-xl font-black mb-1 flex items-center gap-2">
+        <span>🖥️</span> Afficheur OLED
+      </h3>
+      <p class="text-sm text-base-content/50 mb-8">SSD1306 128×64 — texte, formes, graphiques et courbes.</p>
+
+      <div class="space-y-10">
+
+        <div>
+          <h4 class="font-bold mb-3 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-violet-500/20 text-violet-400 flex items-center justify-center text-xs font-black shrink-0">1</span>
+            Connexion I2C et commandes de base
+          </h4>
+          <div class="rounded-xl border border-violet-500/20 bg-violet-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
+            <p>L'écran OLED SSD1306 (128 × 64 pixels, monochrome) communique avec l'ESP32 via le bus <strong>I2C</strong> (2 fils : SCL sur broche 22, SDA sur broche 21). La bibliothèque <code>ssd1306.py</code> doit être chargée sur l'ESP32 au préalable (elle n'est pas incluse par défaut dans MicroPython).</p>
+            <pre class="bg-base-300/30 rounded p-3 text-xs mt-2 overflow-x-auto"><code>from machine import I2C, Pin
+from ssd1306 import SSD1306_I2C
+i2c = I2C(-1, Pin(22), Pin(21))
+display = SSD1306_I2C(128, 64, i2c)
+
+display.fill(0)                        # effacer l'écran (0 = noir)
+display.text("Bonjour !", 1, 10, 1)   # texte blanc en (x=1, y=10)
+display.pixel(64, 32, 1)              # pixel blanc au centre
+display.hline(0, 0, 128, 1)           # ligne horizontale en haut
+display.rect(4, 4, 60, 28, 1)         # rectangle vide
+display.fill_rect(4, 36, 20, 15, 1)   # rectangle plein
+display.show()                         # OBLIGATOIRE : envoyer le buffer à l'écran</code></pre>
+            <p class="mt-2"><strong>Important :</strong> <code>display.show()</code> est l'appel qui transfère le buffer en mémoire vers l'écran physique. Rien n'est visible avant cet appel. Chaque modification du buffer doit être suivie d'un <code>show()</code>.</p>
+          </div>
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/oled/oled-base.py" title="oled-base.py — Texte, formes et commandes de base" />
+        </div>
+
+        <div>
+          <h4 class="font-bold mb-3 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-violet-500/20 text-violet-400 flex items-center justify-center text-xs font-black shrink-0">2</span>
+            Applications — affichage temps réel et courbes
+          </h4>
+          <div class="rounded-xl border border-violet-500/20 bg-violet-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
+            <p>L'OLED est particulièrement utile pour les projets <strong>autonomes sans ordinateur</strong> : afficher des mesures, des graphiques ou des menus sans avoir besoin du port série.</p>
+            <p class="mt-2"><em>mesure-vitesse-OLED.py</em> affiche en temps réel la vitesse calculée entre deux capteurs — le résultat apparaît directement sur l'écran de la carte.</p>
+            <p class="mt-2">Pour les courbes (<em>sinus.py</em>), on calcule y = sin(α) et on adapte l'échelle : la fonction <code>adaptEchelle(y, -1, 1, 60, 4)</code> transforme la valeur y (entre -1 et 1) en coordonnée pixel (entre 60 et 4, car l'axe y de l'écran est inversé) :</p>
+            <pre class="bg-base-300/30 rounded p-3 text-xs mt-2 overflow-x-auto"><code>def adaptEchelle(e, e1, e2, s1, s2):
+    return (e - e1) * (s2 - s1) / (e2 - e1) + s1</code></pre>
+          </div>
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/oled/mesure-vitesse-OLED.py" title="mesure-vitesse-OLED.py — Mesure de vitesse affichée en temps réel" />
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/oled/sinus.py" title="sinus.py — Tracé sinus et courbes de Lissajous" />
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TEMPÉRATURE DS18B20 -->
+    <div>
+      <h3 class="text-xl font-black mb-1 flex items-center gap-2">
+        <span>🌡️</span> Température DS18B20
+      </h3>
+      <p class="text-sm text-base-content/50 mb-8">Capteur 1-Wire numérique — un ou plusieurs sur le même fil.</p>
+
+      <div class="space-y-10">
+
+        <div>
+          <h4 class="font-bold mb-3 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs font-black shrink-0">1</span>
+            Le bus 1-Wire et le capteur numérique
+          </h4>
+          <div class="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
+            <p>Le <strong>DS18B20</strong> est un thermomètre numérique <em>intelligent</em> : il embarque son propre convertisseur et communique via le protocole <strong>1-Wire</strong> (un seul fil de données + masse). Contrairement à un capteur analogique, le signal transmis est numérique, donc insensible aux perturbations électriques même sur des câbles de plusieurs mètres.</p>
+            <p class="mt-2">Points clés :</p>
+            <ul class="list-disc list-inside mt-2 space-y-1">
+              <li>Chaque capteur possède un <strong>code ROM unique</strong> sur 8 octets gravé en usine</li>
+              <li>Grâce à ce code, plusieurs capteurs peuvent coexister sur la <strong>même broche</strong></li>
+              <li>Une résistance de tirage de 4,7 kΩ est nécessaire entre +3,3V et le fil de données</li>
+            </ul>
+            <pre class="bg-base-300/30 rounded p-3 text-xs mt-2 overflow-x-auto"><code>from onewire import OneWire
+from ds18x20 import DS18X20
+ds = DS18X20(OneWire(Pin(27)))
+roms = ds.scan()             # trouver tous les capteurs
+ds.convert_temp()            # déclencher la mesure
+sleep_ms(500)                # attendre la conversion (750 ms max)
+temp = ds.read_temp(roms[0]) # lire le résultat en °C</code></pre>
+          </div>
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/temperature/capteur-DS18B20.py" title="capteur-DS18B20.py — Un seul capteur DS18B20" />
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/temperature/ensemble-DS18B20.py" title="ensemble-DS18B20.py — Plusieurs capteurs sur un fil" />
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Prochaine étape -->
+  <div class="rounded-xl border border-primary/20 bg-primary/5 p-6 my-12">
+    <div class="flex items-center justify-between gap-4 flex-wrap">
+      <div>
+        <h4 class="font-bold mb-1">Programmation temps réel</h4>
+        <p class="text-sm text-base-content/60">Timing précis, séquenceurs non-bloquants et interruptions.</p>
+      </div>
+      <a href={siteUrl('/cours/programmation-temps-reel/')} class="btn btn-primary btn-sm whitespace-nowrap">
+        Cours suivant →
+      </a>
+    </div>
+  </div>
+
+</div>
+
+</Layout>

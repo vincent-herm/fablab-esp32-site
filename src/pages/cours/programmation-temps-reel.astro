@@ -1,0 +1,328 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import DifficultyBadge from '../../components/DifficultyBadge.astro';
+import GitHubCodeBlock from '../../components/GitHubCodeBlock.astro';
+import { siteUrl } from '../../utils/url';
+
+const REPO = 'vincent-herm/fablab-esp32-ateliers';
+const title = 'Programmation temps réel';
+const description = 'Timing précis avec ticks_ms, boucles non-bloquantes, séquenceurs et interruptions sur ESP32 avec MicroPython.';
+---
+<Layout title={title} description={description}>
+
+<div class="border-b border-base-200/60 bg-base-200/20">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+    <div class="flex items-center gap-2 text-sm text-base-content/50">
+      <a href={siteUrl('/')} class="hover:text-base-content transition-colors">Accueil</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <a href={siteUrl('/cours/')} class="hover:text-base-content transition-colors">Cours</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <span class="text-base-content/80">Programmation temps réel</span>
+    </div>
+  </div>
+</div>
+
+<section class="py-12 hero-pattern border-b border-base-200/60">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-2xl">⏱️</span>
+      <span class="text-xs px-2.5 py-1 rounded-full bg-cyan-500/15 text-cyan-400 font-medium">Avancé</span>
+      <DifficultyBadge level="intermediaire" />
+    </div>
+    <h1 class="text-3xl sm:text-4xl font-black mb-4">Programmation temps réel</h1>
+    <p class="text-base-content/65 text-lg leading-relaxed max-w-2xl">
+      Comment écrire du code qui gère plusieurs tâches simultanément sans se bloquer — timing précis, boucles rapides, séquenceurs et interruptions.
+    </p>
+  </div>
+</section>
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+  <!-- THÉORIE LONGUE -->
+  <section class="mb-20 prose-section">
+
+    <h2 class="text-2xl font-black mb-6 mt-12">Le problème du code bloquant</h2>
+
+    <p class="text-base-content/80 leading-relaxed mb-4">Avec <code>time.sleep()</code>, ton programme est <strong>bloqué</strong> — il ne peut rien faire d'autre pendant la pause. C'est acceptable pour des projets simples, mais impossible dès qu'on veut réagir à plusieurs événements.</p>
+
+    <h2 class="text-2xl font-black mb-6 mt-12">Mesure du temps avec <code>ticks_ms()</code></h2>
+
+    <p class="text-base-content/80 leading-relaxed mb-4">La solution : mémoriser l'heure du dernier événement et <strong>vérifier</strong> si le délai est écoulé sans attendre.</p>
+
+    <div class="rounded-xl border border-blue-500/20 bg-blue-500/5 p-5 my-6">
+      <h4 class="font-bold text-blue-400 mb-2">💡 Pourquoi ticks_diff() ?</h4>
+      <p class="text-sm text-base-content/70">
+        Le compteur <code>ticks_ms()</code> déborde après environ 12 jours. <code>ticks_diff()</code> gère correctement ce débordement — ne jamais faire <code>t2 - t1</code> directement.
+      </p>
+    </div>
+
+    <h2 class="text-2xl font-black mb-6 mt-12">Boucle rapide non-bloquante</h2>
+
+    <p class="text-base-content/80 leading-relaxed mb-4">La technique fondamentale : une boucle qui tourne très vite (1-10 ms), et qui vérifie si c'est le bon moment pour faire chaque action.</p>
+
+    <h2 class="text-2xl font-black mb-6 mt-12">Séquenceur — machine à états</h2>
+
+    <p class="text-base-content/80 leading-relaxed mb-4">Pour des séquences plus complexes, on utilise une <strong>machine à états</strong>. Le programme mémorise dans quel "état" il se trouve et quand passer au suivant.</p>
+
+    <h2 class="text-2xl font-black mb-6 mt-12">Interruptions</h2>
+
+    <p class="text-base-content/80 leading-relaxed mb-4">Les interruptions permettent de réagir <strong>immédiatement</strong> à un événement (front montant ou descendant d'un pin), sans attendre le prochain tour de boucle.</p>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-6">
+      <div class="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-5">
+        <h4 class="font-bold text-emerald-400 mb-2 text-sm">✅ À faire dans une IRQ</h4>
+        <ul class="text-xs text-base-content/70 space-y-1">
+          <li>Positionner un flag booléen</li>
+          <li>Incrémenter un compteur</li>
+          <li>Mémoriser <code>ticks_ms()</code></li>
+        </ul>
+      </div>
+      <div class="rounded-xl border border-red-500/20 bg-red-500/5 p-5">
+        <h4 class="font-bold text-red-400 mb-2 text-sm">❌ À éviter dans une IRQ</h4>
+        <ul class="text-xs text-base-content/70 space-y-1">
+          <li><code>print()</code> ou I/O lents</li>
+          <li>Allocation mémoire</li>
+          <li>Longues boucles</li>
+        </ul>
+      </div>
+    </div>
+
+    <h2 class="text-2xl font-black mb-6 mt-12">Résumé des techniques</h2>
+
+    <div class="overflow-x-auto rounded-xl border border-base-200/80 my-6">
+      <table class="table table-zebra w-full">
+        <thead>
+          <tr><th>Technique</th><th>Usage</th><th>Complexité</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="font-medium">time.sleep()</td><td>Code simple, une seule tâche</td><td class="text-emerald-400">Simple</td></tr>
+          <tr><td class="font-medium">ticks_ms() + vérification</td><td>2-5 tâches indépendantes</td><td class="text-amber-400">Moyen</td></tr>
+          <tr><td class="font-medium">Machine à états</td><td>Séquences complexes</td><td class="text-orange-400">Avancé</td></tr>
+          <tr><td class="font-medium">Interruptions (IRQ)</td><td>Réaction immédiate à un signal</td><td class="text-orange-400">Avancé</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </section>
+
+  <hr class="border-base-200/60 my-12" />
+  <h2 class="text-2xl font-black mb-2">Exemples commentés</h2>
+  <p class="text-base-content/60 mb-10">Chaque exemple est précédé de son contexte. Le code est affiché directement — bouton copier + lien GitHub disponibles.</p>
+
+  <div class="space-y-14">
+
+    <!-- MESURE DU TEMPS -->
+    <div>
+      <h3 class="text-xl font-black mb-1 flex items-center gap-2">
+        <span>⏱️</span> Mesure du temps
+      </h3>
+      <p class="text-sm text-base-content/50 mb-8">ticks_ms(), mesure de durées, détection de fronts.</p>
+
+      <div class="space-y-10">
+
+        <div>
+          <h4 class="font-bold mb-3 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xs font-black shrink-0">1</span>
+            Quatre approches pour mesurer un temps d'appui
+          </h4>
+          <div class="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
+            <p>Mesurer le temps pendant lequel on appuie sur un bouton peut se faire de 4 façons différentes, selon deux axes :</p>
+            <ul class="list-disc list-inside mt-2 space-y-1">
+              <li><strong>Par comptage de boucles</strong> : on compte le nombre d'itérations de 20 ms pendant l'appui → résolution fixe de 20 ms</li>
+              <li><strong>Par ticks_ms()</strong> : on lit l'horloge interne → meilleure précision</li>
+            </ul>
+            <p class="mt-2">Et pour chacune des deux méthodes, une version :</p>
+            <ul class="list-disc list-inside mt-1 space-y-1">
+              <li><strong>Bloquante</strong> : des boucles <code>while</code> attendent l'appui et le relâchement</li>
+              <li><strong>Non-bloquante</strong> : détection de fronts dans la boucle principale</li>
+            </ul>
+          </div>
+        </div>
+
+        <div>
+          <h4 class="font-bold mb-3 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xs font-black shrink-0">2</span>
+            Méthode 1 — comptage de boucles (bloquant et non-bloquant)
+          </h4>
+          <div class="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
+            <p><strong>Version bloquante :</strong> on attend l'appui (while pas appuyé), puis on incrémente toutes les 20 ms tant qu'appuyé, puis on calcule : <code>durée = compteur × 0,02 s</code>.</p>
+            <p class="mt-2"><strong>Version non-bloquante :</strong> la boucle principale tourne à 50 Hz. On incrémente tant que <code>etat == 1</code>, et au front descendant (relâchement) on affiche la durée accumulée.</p>
+            <pre class="bg-base-300/30 rounded p-3 text-xs mt-2 overflow-x-auto"><code>if etat:
+    compt_temps += 1                        # incrémenter si appuyé
+if ancien_etat and not etat:                # front descendant
+    print(compt_temps / 50, "s")            # afficher la durée
+    compt_temps = 0                         # remettre à 0</code></pre>
+          </div>
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/timing/lecture-bp-temps-bloquant.py" title="lecture-bp-temps-bloquant.py — Durée d'appui — version bloquante" />
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/timing/lecture-bp-temps-ok.py" title="lecture-bp-temps-ok.py — Durée d'appui — version non-bloquante" />
+        </div>
+
+        <div>
+          <h4 class="font-bold mb-3 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xs font-black shrink-0">3</span>
+            Méthode 2 — ticks_ms() : l'horloge interne
+          </h4>
+          <div class="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
+            <p><code>ticks_ms()</code> retourne le temps écoulé en millisecondes depuis la mise sous tension (ou le dernier reset). C'est une horloge absolue, indépendante de la durée des autres instructions.</p>
+            <pre class="bg-base-300/30 rounded p-3 text-xs mt-2 overflow-x-auto"><code>from time import ticks_ms
+print(ticks_ms())   # ex : 12345 ms depuis le démarrage</code></pre>
+            <p class="mt-2">Pour mesurer un temps d'appui : on mémorise <code>start = ticks_ms()</code> au front montant, <code>stop = ticks_ms()</code> au front descendant, et <code>delta = stop - start</code> donne le temps en ms. La précision est bien meilleure que le comptage de boucles, car il n'y a pas de <code>sleep()</code> dans les boucles d'attente.</p>
+          </div>
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/timing/methode-ticks.py" title="methode-ticks.py — Découverte de ticks_ms()" />
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/timing/lecture-bp-temps-ticks-bloquant.py" title="lecture-bp-temps-ticks-bloquant.py — Durée appui avec ticks — bloquant" />
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/timing/lecture-bp-temps-ticks-ok.py" title="lecture-bp-temps-ticks-ok.py — Durée appui avec ticks — non-bloquant" />
+        </div>
+
+        <div>
+          <h4 class="font-bold mb-3 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xs font-black shrink-0">4</span>
+            Application — mesure de temps entre deux événements
+          </h4>
+          <div class="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
+            <p>Application réelle : mesurer la vitesse d'une bille tombant entre deux capteurs distants de 50 mm. On simule les deux capteurs par deux boutons (bpA et bpB).</p>
+            <ul class="list-disc list-inside mt-2 space-y-1">
+              <li><strong>V1 :</strong> comptage de boucles entre les deux fronts — simple mais résolution limitée à 1 ms</li>
+              <li><strong>V2 :</strong> <code>start = ticks_ms()</code> sur bpA, <code>stop = ticks_ms()</code> sur bpB — bien plus précis</li>
+              <li><strong>V3 :</strong> version améliorée de V2 avec une <em>précaution</em> : on vérifie que les deux capteurs sont à l'état bas avant de démarrer la mesure (cas où bpA serait déjà pressé au lancement)</li>
+            </ul>
+          </div>
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/timing/mesure-temps-deux-fronts-1.py" title="mesure-temps-deux-fronts-1.py — Entre deux fronts — comptage boucles" />
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/timing/mesure-temps-deux-fronts-2.py" title="mesure-temps-deux-fronts-2.py — Entre deux fronts — ticks_ms()" />
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/timing/mesure-temps-deux-fronts-3.py" title="mesure-temps-deux-fronts-3.py — Version avec précaution initiale" />
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SÉQUENCEUR -->
+    <div>
+      <h3 class="text-xl font-black mb-1 flex items-center gap-2">
+        <span>🔄</span> Séquenceur
+      </h3>
+      <p class="text-sm text-base-content/50 mb-8">Boucles rapides non-bloquantes et machines à états.</p>
+
+      <div class="space-y-10">
+
+        <div>
+          <h4 class="font-bold mb-3 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xs font-black shrink-0">1</span>
+            Le problème du séquenceur bloquant
+          </h4>
+          <div class="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
+            <p>Le programme suivant fait clignoter deux LEDs avec un décalage de phase — mais de façon <strong>bloquante</strong> : pendant chaque <code>sleep(0.25)</code>, le microcontrôleur ne peut rien faire d'autre.</p>
+            <pre class="bg-base-300/30 rounded p-3 text-xs mt-2 overflow-x-auto"><code>while True:
+    led_bleue.on()
+    sleep(0.25)
+    led_verte.on()
+    sleep(0.25)
+    led_bleue.off()
+    sleep(0.25)
+    led_verte.off()
+    sleep(0.25)</code></pre>
+            <p class="mt-2">Impossible d'ajouter une 3ème LED à fréquence différente, ou de détecter un appui bouton pendant les 0,25 s d'attente.</p>
+          </div>
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/sequenceur/sequenceur.py" title="sequenceur.py — Séquenceur bloquant — illustre la limite" />
+        </div>
+
+        <div>
+          <h4 class="font-bold mb-3 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xs font-black shrink-0">2</span>
+            La solution — boucle rapide et opérateur modulo
+          </h4>
+          <div class="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
+            <p>La solution non-bloquante : la boucle tourne très rapidement (10 ms) et incrémente un compteur. Chaque tâche est déclenchée grâce à l'opérateur modulo (<code>%</code>) :</p>
+            <pre class="bg-base-300/30 rounded p-3 text-xs mt-2 overflow-x-auto"><code>compt = 0
+while True:
+    compt += 1
+    if compt % 50 == 0:          # toutes les 500 ms (50 × 10 ms)
+        led_bleue.value(not led_bleue.value())
+    if (compt + 25) % 50 == 0:   # idem, avec 250 ms de décalage
+        led_verte.value(not led_verte.value())
+    # ici on peut ajouter autant de tâches que l'on veut
+    sleep_ms(10)                 # temps de cycle : 10 ms</code></pre>
+            <p class="mt-2">Pour des fréquences plus élevées (jusqu'à 500 Hz), on passe le temps de cycle à 1 ms (<code>sleep_ms(1)</code>) et on ajuste les modulos en conséquence.</p>
+          </div>
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/sequenceur/boucle-rapide-simple.py" title="boucle-rapide-simple.py — Boucle 10 ms non-bloquante (2 LEDs)" />
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/sequenceur/boucle-rapide-plus.py" title="boucle-rapide-plus.py — Boucle 1 ms — LED à 500 Hz" />
+        </div>
+
+      </div>
+    </div>
+
+    <!-- INTERRUPTIONS -->
+    <div>
+      <h3 class="text-xl font-black mb-1 flex items-center gap-2">
+        <span>⚡</span> Interruptions
+      </h3>
+      <p class="text-sm text-base-content/50 mb-8">IRQ sur front montant/descendant — réaction immédiate.</p>
+
+      <div class="space-y-10">
+
+        <div>
+          <h4 class="font-bold mb-3 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xs font-black shrink-0">1</span>
+            Principe des interruptions matérielles
+          </h4>
+          <div class="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
+            <p>Une <strong>interruption</strong> (IRQ — <em>Interrupt Request</em>) est un mécanisme hardware : lorsqu'un événement survient sur une broche (front montant ou descendant), l'ESP32 <em>interrompt immédiatement</em> ce qu'il fait, exécute une fonction spéciale (<em>handler</em>), puis reprend exactement là où il était.</p>
+            <p class="mt-2">Contrairement à la scrutation (<em>polling</em>), <strong>aucun événement n'est raté</strong> — même si la boucle principale est en train de dormir ou de calculer.</p>
+            <pre class="bg-base-300/30 rounded p-3 text-xs mt-2 overflow-x-auto"><code>def handler(pin):           # la fonction appelée automatiquement
+    led.value(not led.value())
+
+bpA = Pin(25, Pin.IN)
+bpA.irq(trigger=Pin.IRQ_RISING, handler=handler)
+# maintenant la boucle principale fait ce qu'elle veut
+while True:
+    compt += 1
+    sleep(0.25)             # l'IRQ fonctionne même pendant le sleep !</code></pre>
+          </div>
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/interruptions/interruption1.py" title="interruption1.py — IRQ front montant — principe de base" />
+        </div>
+
+        <div>
+          <h4 class="font-bold mb-3 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xs font-black shrink-0">2</span>
+            La règle d'or : handler court + flag global
+          </h4>
+          <div class="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
+            <p><strong>Règle critique :</strong> la fonction handler doit être la plus courte possible. Pas de <code>print()</code>, pas de <code>sleep()</code>, pas de calcul lourd. Pourquoi ? Parce que pendant l'exécution du handler, le programme principal est suspendu.</p>
+            <p class="mt-2">La bonne pratique : dans le handler, on lève uniquement un <strong>flag global</strong> (<code>inter = True</code>). La boucle principale détecte ce flag, effectue le traitement et remet le flag à False.</p>
+            <pre class="bg-base-300/30 rounded p-3 text-xs mt-2 overflow-x-auto"><code>inter = False
+
+def handler(pin):
+    global inter
+    led.value(not led.value())   # action immédiate : OK (rapide)
+    inter = True                 # flag levé : boucle principale traitera le reste
+
+while True:
+    if inter:
+        print('Interruption !')  # print ici, pas dans le handler
+        inter = False
+    sleep(0.25)</code></pre>
+            <p class="mt-2"><em>interruption3.py</em> va plus loin : l'interruption initialise un compteur à 12 ; la boucle principale le décrémente toutes les 0,25 s et allume la LED si ce compteur est positif → LED allumée 3 s après chaque appui.</p>
+          </div>
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/interruptions/interruption2.py" title="interruption2.py — IRQ avec flag global — bonne pratique" />
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/interruptions/interruption3.py" title="interruption3.py — LED active 3 s sur interruption" />
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Prochaine étape -->
+  <div class="rounded-xl border border-primary/20 bg-primary/5 p-6 my-12">
+    <div class="flex items-center justify-between gap-4 flex-wrap">
+      <div>
+        <h4 class="font-bold mb-1">Atelier 01 — Serveur web ESP32</h4>
+        <p class="text-sm text-base-content/60">Mets en pratique ces concepts avec un projet WiFi complet.</p>
+      </div>
+      <a href={siteUrl('/ateliers/serveur-web-esp32/')} class="btn btn-primary btn-sm whitespace-nowrap">
+        Démarrer l'atelier →
+      </a>
+    </div>
+  </div>
+
+</div>
+
+</Layout>

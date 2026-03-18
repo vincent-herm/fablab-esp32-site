@@ -1,0 +1,133 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import DifficultyBadge from '../../components/DifficultyBadge.astro';
+import GitHubCodeBlock from '../../components/GitHubCodeBlock.astro';
+import { siteUrl } from '../../utils/url';
+
+const REPO = 'vincent-herm/fablab-esp32-ateliers';
+const title = 'Programmation orientée objet';
+const description = 'Classes, objets, constructeurs et héritage en MicroPython sur ESP32 : programmation orientée objet pas à pas.';
+---
+<Layout title={title} description={description}>
+
+<div class="border-b border-base-200/60 bg-base-200/20">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+    <div class="flex items-center gap-2 text-sm text-base-content/50">
+      <a href={siteUrl('/')} class="hover:text-base-content transition-colors">Accueil</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <a href={siteUrl('/cours/')} class="hover:text-base-content transition-colors">Cours</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <span class="text-base-content/80">Programmation orientée objet</span>
+    </div>
+  </div>
+</div>
+
+<section class="py-12 hero-pattern border-b border-base-200/60">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-2xl">🧱</span>
+      <span class="text-xs px-2.5 py-1 rounded-full bg-violet-500/15 text-violet-400 font-medium">Avancé</span>
+      <DifficultyBadge level="avance" />
+    </div>
+    <h1 class="text-3xl sm:text-4xl font-black mb-4">Programmation orientée objet</h1>
+    <p class="text-base-content/65 text-lg leading-relaxed max-w-2xl">
+      Classes, objets, constructeurs et héritage en MicroPython. Organiser son code pour le rendre réutilisable et lisible.
+    </p>
+  </div>
+</section>
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+  <!-- THÉORIE LONGUE -->
+  <section class="mb-20 prose-section">
+
+    <h2 class="text-2xl font-black mb-6 mt-12">Concepts fondamentaux</h2>
+
+    <p class="text-base-content/80 leading-relaxed mb-4">La <strong>programmation orientée objet (POO)</strong> regroupe des données (<em>attributs</em>) et des fonctions (<em>méthodes</em>) dans une <em>classe</em>. À partir d'une classe, on crée des <em>instances</em> (objets).</p>
+
+    <p class="text-base-content/80 leading-relaxed mb-4">Tu utilises déjà des objets sans le savoir :</p>
+
+    <h3 class="text-xl font-bold mb-4 mt-8">Le constructeur <code>__init__</code></h3>
+
+    <p class="text-base-content/80 leading-relaxed mb-4">Le constructeur <code>__init__(self)</code> est appelé automatiquement à la création de l'objet. <code>self</code> est la référence à l'objet en cours de création.</p>
+
+    <h2 class="text-2xl font-black mb-6 mt-12">Application sur ESP32</h2>
+
+    <p class="text-base-content/80 leading-relaxed mb-4">On peut créer une classe <code>LED</code> pour encapsuler la logique de clignotement :</p>
+
+    <h2 class="text-2xl font-black mb-6 mt-12">Héritage</h2>
+
+    <p class="text-base-content/80 leading-relaxed mb-4">L'<strong>héritage</strong> permet à une classe enfant de réutiliser et d'étendre les méthodes d'une classe parente.</p>
+
+    <h2 class="text-2xl font-black mb-6 mt-12">Algorithme PGCD</h2>
+
+    <p class="text-base-content/80 leading-relaxed mb-4">La <strong>récursivité</strong> est un concept fondamental : une fonction qui s'appelle elle-même. L'algorithme d'Euclide pour le PGCD (Plus Grand Commun Diviseur) en est un exemple classique.</p>
+
+    <div class="rounded-xl border border-blue-500/20 bg-blue-500/5 p-5 my-6">
+      <h4 class="font-bold text-blue-400 mb-2">💡 Comment ça marche</h4>
+      <p class="text-sm text-base-content/70">pgcd(48, 18) → pgcd(18, 12) → pgcd(12, 6) → pgcd(6, 0) → retourne 6. La condition <code>if b == 0</code> est le cas de base qui arrête la récursion.</p>
+    </div>
+
+  </section>
+
+  <hr class="border-base-200/60 my-12" />
+  <h2 class="text-2xl font-black mb-2">Exemples commentés</h2>
+  <p class="text-base-content/60 mb-10">Chaque exemple est précédé de son contexte. Le code est affiché directement — bouton copier + lien GitHub disponibles.</p>
+
+  <div class="space-y-14">
+
+    <!-- CLASSES ET OBJETS -->
+    <div>
+      <h3 class="text-xl font-black mb-1 flex items-center gap-2">
+        <span>🧱</span> Classes et objets
+      </h3>
+      <p class="text-sm text-base-content/50 mb-8">Programmation orientée objet en MicroPython — classes, modules, héritage.</p>
+
+      <div class="space-y-10">
+
+        <div>
+          <h4 class="font-bold mb-3 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-xs font-black shrink-0">1</span>
+            Concepts fondamentaux de la POO
+          </h4>
+          <div class="rounded-xl border border-indigo-500/20 bg-indigo-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
+            <p>La <strong>programmation orientée objet (POO)</strong> regroupe des données (<em>attributs</em>) et des fonctions (<em>méthodes</em>) dans une <em>classe</em>. À partir d'une classe, on crée des <em>instances</em> (objets).</p>
+            <p class="mt-2">Vous utilisez déjà des objets sans le savoir :</p>
+            <pre class="bg-base-300/30 rounded p-3 text-xs mt-2 overflow-x-auto"><code>led = Pin(2, Pin.OUT)    # led est un objet de la classe Pin
+np = NeoPixel(Pin(26), 8)  # np est un objet de la classe NeoPixel
+np.write()               # write() est une méthode de l'objet np</code></pre>
+            <p class="mt-2">Progression des exemples :</p>
+            <ul class="list-disc list-inside mt-2 space-y-1">
+              <li><em>classe-1.py</em> : définir une classe avec des attributs directs</li>
+              <li><em>classe-2.py</em> : utiliser le constructeur <code>__init__(self)</code></li>
+              <li><em>classe-3.py</em> : passer des paramètres au constructeur + ajouter une méthode</li>
+            </ul>
+            <p class="mt-2">Le constructeur <code>__init__(self, ...)</code> est appelé automatiquement à la création de l'objet. <code>self</code> est la référence à l'objet en cours de création. L'<strong>héritage</strong> permet à une classe enfant de réutiliser et d'étendre les méthodes d'une classe parente.</p>
+          </div>
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/poo/classe-1.py" title="classe-1.py — Première classe — attributs directs" />
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/poo/classe-2.py" title="classe-2.py — Constructeur __init__ simple" />
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/poo/classe-3.py" title="classe-3.py — Paramètres au constructeur + méthode" />
+          <GitHubCodeBlock repo={REPO} file="cours-exemples/poo/pgcd.py" title="pgcd.py — Algorithme PGCD récursif" />
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Prochaine étape -->
+  <div class="rounded-xl border border-primary/20 bg-primary/5 p-6 my-12">
+    <div class="flex items-center justify-between gap-4 flex-wrap">
+      <div>
+        <h4 class="font-bold mb-1">Atelier 01 — Serveur web ESP32</h4>
+        <p class="text-sm text-base-content/60">Mets en pratique ces concepts avec un projet WiFi complet.</p>
+      </div>
+      <a href={siteUrl('/ateliers/serveur-web-esp32/')} class="btn btn-primary btn-sm whitespace-nowrap">
+        Démarrer l'atelier →
+      </a>
+    </div>
+  </div>
+
+</div>
+
+</Layout>
