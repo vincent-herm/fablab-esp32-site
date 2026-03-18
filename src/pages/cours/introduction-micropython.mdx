@@ -152,6 +152,128 @@ Pas besoin de compiler ni de rebooter — idéal pour tester et apprendre.
 
 ---
 
+## Thonny — l'IDE recommandé
+
+**Thonny** est l'environnement de développement recommandé pour MicroPython. Gratuit, simple, et conçu pour les débutants — il intègre déjà Python 3, pas d'installation supplémentaire.
+
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6">
+  {[
+    { os: 'Windows', note: 'Installeur .exe — tout est inclus', lien: 'https://thonny.org' },
+    { os: 'macOS', note: 'Package .pkg — Intel et Apple Silicon', lien: 'https://thonny.org' },
+    { os: 'Linux', note: 'pip install thonny ou gestionnaire de paquets', lien: 'https://thonny.org' },
+  ].map(item => (
+    <div class="rounded-xl border border-base-200/80 bg-base-200/20 p-4">
+      <div class="font-bold text-sm mb-1">{item.os}</div>
+      <div class="text-xs text-base-content/55 mb-2">{item.note}</div>
+      <a href={item.lien} target="_blank" class="text-xs text-primary font-medium hover:underline">Télécharger sur thonny.org →</a>
+    </div>
+  ))}
+</div>
+
+### Connecter l'ESP32 à Thonny
+
+<div class="space-y-2 my-4">
+  {[
+    ['1', 'Brancher l\'ESP32 en USB (câble micro-USB ou USB-C selon le modèle)'],
+    ['2', 'Outils → Configurer l\'interpréteur → MicroPython (ESP32)'],
+    ['3', 'Choisir le port — Mac : /dev/cu.usbserial-XXXX · Windows : COM3, COM4…'],
+    ['4', 'Cliquer sur le bouton Stop/Restart ■ — le REPL >>> apparaît en bas'],
+  ].map(([n, step]) => (
+    <div class="flex gap-3 rounded-xl border border-base-200/80 bg-base-200/10 p-3">
+      <span class="w-6 h-6 rounded-full bg-primary/20 text-primary font-black text-xs flex items-center justify-center shrink-0">{n}</span>
+      <span class="text-sm text-base-content/70">{step}</span>
+    </div>
+  ))}
+</div>
+
+<div class="rounded-xl border border-amber-500/20 bg-amber-500/5 p-4 my-4">
+  <p class="text-sm text-base-content/70"><strong class="text-amber-400">Port non visible ?</strong> Il faut parfois installer un driver. Cartes avec puce CH340 : <strong>driver CH340</strong>. Cartes avec CP2102 : <strong>driver Silicon Labs CP210x</strong>.</p>
+</div>
+
+### Raccourcis essentiels
+
+<div class="overflow-x-auto rounded-xl border border-base-200/80 my-4">
+  <table class="table w-full">
+    <thead><tr><th>Action</th><th>Raccourci</th></tr></thead>
+    <tbody>
+      {[
+        ['Exécuter le script', 'F5'],
+        ['Arrêter le programme', 'Ctrl + C (dans le Shell)'],
+        ['Soft reset — relance boot.py puis main.py', 'Ctrl + D (dans le Shell)'],
+        ['Sauvegarder sur l\'ESP32', 'Fichier → Sauvegarder sous → MicroPython device'],
+        ['Gestionnaire de fichiers', 'View → Files'],
+        ['Autocomplétion', 'Tab'],
+      ].map(([action, raccourci]) => (
+        <tr>
+          <td class="text-sm">{action}</td>
+          <td class="font-mono text-xs text-primary">{raccourci}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
+### Flasher MicroPython sur une nouvelle carte
+
+Si ta carte est neuve ou si MicroPython n'y est pas installé, Thonny peut le faire :
+**Outils → Configurer l'interpréteur → Install or update MicroPython** → choisir la variante (ESP32 / ESP32-S3 / Pico) → Install.
+
+---
+
+## Gérer les fichiers sur l'ESP32
+
+L'ESP32 possède un système de fichiers (Flash 4 Mo). Deux fichiers sont exécutés **automatiquement** à chaque démarrage :
+
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-6">
+  <div class="rounded-xl border border-primary/20 bg-primary/5 p-5">
+    <h3 class="font-bold font-mono mb-2">boot.py</h3>
+    <p class="text-sm text-base-content/60 leading-relaxed">S'exécute en premier. Réservé à la configuration : connexion WiFi, initialisation matérielle. Léger de préférence. Si absent, ignoré.</p>
+  </div>
+  <div class="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-5">
+    <h3 class="font-bold font-mono mb-2">main.py</h3>
+    <p class="text-sm text-base-content/60 leading-relaxed">Ton programme principal. S'exécute après boot.py. Si absent, l'ESP32 attend dans le REPL. C'est le fichier que tu crées pour tes projets.</p>
+  </div>
+</div>
+
+**Ordre de démarrage :** reset → `boot.py` → `main.py` → REPL (si main.py absent ou terminé)
+
+### Le module `os` — gérer les fichiers depuis le REPL
+
+```python
+import os
+
+os.listdir()           # ['boot.py', 'main.py', 'lib']
+os.mkdir('lib')        # créer un dossier
+os.remove('old.py')    # supprimer un fichier
+os.rename('a.py', 'b.py')  # renommer
+os.stat('main.py')     # taille, dates
+```
+
+### Mémoire disponible
+
+```python
+import os, gc
+gc.collect()
+print("RAM libre :", gc.mem_free(), "octets")   # ex : 120000 octets
+
+fs = os.statvfs('/')
+print("Flash libre :", fs[3] * fs[0], "octets sur", fs[2] * fs[0], "octets")
+```
+
+<div class="rounded-xl border border-primary/20 bg-primary/5 p-5 my-6">
+  <div class="flex items-center justify-between gap-4 flex-wrap">
+    <div>
+      <h4 class="font-bold mb-1">Référence complète des commandes OS</h4>
+      <p class="text-sm text-base-content/60">Tous les exemples pratiques : arborescence, lecture/écriture de fichiers, vider la carte.</p>
+    </div>
+    <a href={siteUrl('/doc/micropython-os/')} class="btn btn-primary btn-sm whitespace-nowrap">
+      Voir la fiche →
+    </a>
+  </div>
+</div>
+
+---
+
 ## Prochaine étape
 
 <div class="rounded-xl border border-primary/20 bg-primary/5 p-6 my-8">
