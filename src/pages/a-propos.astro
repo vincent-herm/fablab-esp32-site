@@ -4,7 +4,7 @@ import Layout from '../layouts/Layout.astro';
 
 <Layout
   title="À propos"
-  description="Vincent, ancien professeur d'ESP32, anime un fablab en Ardèche. Ateliers MicroPython débutants et installations ESP32 sur mesure."
+  description="Vincent, ingénieur et ancien professeur d'électronique à l'Université de Lorraine, anime un fablab en Ardèche. Ateliers MicroPython et installations ESP32 sur mesure."
 >
   <!-- Hero -->
   <section class="py-20 hero-pattern border-b border-base-200/60">
@@ -25,7 +25,7 @@ import Layout from '../layouts/Layout.astro';
           <h2 class="text-2xl font-black mb-5">Vincent</h2>
           <div class="space-y-4 text-base-content/70 leading-relaxed">
             <p>
-              Ancien professeur d'ESP32 à l'université jusqu'en 2021, j'ai accumulé du matériel, des connaissances et surtout une conviction : <strong class="text-base-content">l'électronique est accessible à tous</strong> quand on l'aborde par la pratique.
+              Ingénieur diplômé de l'École Nationale d'Ingénieurs de Metz, j'ai enseigné l'électronique, le génie électrique et la mesure à l'Université de Lorraine pendant 25 ans, jusqu'en 2021. Ma conviction : <strong class="text-base-content">l'électronique est accessible à tous</strong> quand on l'aborde par la pratique.
             </p>
             <p>
               Mon fablab en Ardèche, c'est un espace pour expérimenter, apprendre, et surtout créer des choses qui fonctionnent vraiment. Pas de théorie abstraite — des objets qui s'allument, qui sonnent, qui réagissent.
@@ -41,13 +41,14 @@ import Layout from '../layouts/Layout.astro';
             <h3 class="font-semibold text-sm mb-3">Ce que j'ai dans le fablab</h3>
             <ul class="space-y-2 text-sm text-base-content/60">
               {[
-                '40 cartes ESP32 (stock 2020)',
-                'Capteurs : DHT22, HC-SR04, MPU6050, RFID RC522...',
+                'Cartes ESP32',
+                'Lots de capteurs : DHT22, HC-SR04, MPU6050, RFID RC522...',
                 'Actionneurs : servos, moteurs, relais, LEDs',
+                'Cartes de prototypage et breadboards en quantité',
                 'Waveshare ESP32 Touch LCD 3.5" (écran + codec audio + micro)',
                 'Écrans Waveshare Touch LCD (1.28", 1.69", 2.1")',
                 'M5Stack : StickC Plus2, Core2, Cardputer',
-                'Alimentation, câbles, breadboards en quantité',
+                'Alimentation et câbles',
               ].map(item => (
                 <li class="flex items-start gap-2">
                   <span class="text-primary mt-0.5 text-xs">▸</span>
