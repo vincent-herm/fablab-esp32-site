@@ -10,6 +10,7 @@ const cartes = [
     badgeColor: 'bg-primary/15 text-primary',
     emoji: '⭐',
     prix: '~5€',
+    image: '/fablab-esp32-site/images/cartes/esp32-espressif.jpg',
     desc: "La carte qu'on utilise dans la plupart des ateliers. Petite, puissante, WiFi + Bluetooth intégrés. Le meilleur rapport qualité/prix pour débuter.",
     specs: [
       { label: 'Processeur', value: '240 MHz (double cœur)' },
@@ -25,6 +26,7 @@ const cartes = [
     id: 'esp32-s3',
     nom: 'ESP32-S3',
     badge: 'Version améliorée',
+    image: '/fablab-esp32-site/images/cartes/esp32-s3-waveshare.jpg',
     badgeColor: 'bg-blue-500/15 text-blue-400',
     emoji: '🔵',
     prix: '~8–14€',
@@ -80,6 +82,7 @@ const cartes = [
     id: 'waveshare-s3',
     nom: 'Waveshare ESP32-S3 Touch LCD',
     badge: 'Écran tactile intégré',
+    image: '/fablab-esp32-site/images/cartes/waveshare-s3-touch-35b.jpg',
     badgeColor: 'bg-teal-500/15 text-teal-400',
     emoji: '🖥️',
     prix: '25€ – 45€',
@@ -101,6 +104,7 @@ const cartes = [
     badge: 'Avec codec audio',
     badgeColor: 'bg-indigo-500/15 text-indigo-400',
     emoji: '🎙️',
+    image: '/fablab-esp32-site/images/cartes/waveshare-touch-35.jpg',
     prix: '~27€',
     desc: "La version ESP32 classique (pas S3) avec écran 3.5\" tactile et, surprise, un codec audio intégré avec micro et haut-parleur. La seule carte Waveshare avec tout : écran, son et WiFi.",
     specs: [
@@ -147,9 +151,18 @@ const cartes = [
                   <span class={`text-xs font-medium px-2.5 py-1 rounded-lg ${carte.badgeColor}`}>{carte.badge}</span>
                 </div>
               </div>
-              <div class="text-right">
-                <div class="text-2xl font-black">{carte.prix}</div>
-                <div class="text-xs text-base-content/40">prix indicatif</div>
+              <div class="flex items-center gap-4">
+                {carte.image && (
+                  <img
+                    src={carte.image}
+                    alt={carte.nom}
+                    class="w-24 h-24 object-contain rounded-xl bg-white/5 p-1 border border-base-200/30"
+                  />
+                )}
+                <div class="text-right">
+                  <div class="text-2xl font-black">{carte.prix}</div>
+                  <div class="text-xs text-base-content/40">prix indicatif</div>
+                </div>
               </div>
             </div>
 
