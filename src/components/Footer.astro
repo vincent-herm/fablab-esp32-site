@@ -105,10 +105,15 @@ import { siteUrl } from '../utils/url';
     </div>
 
     <div class="border-t border-base-200/60 mt-10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-      <p class="text-xs text-base-content/40">
-        © {new Date().getFullYear()} Fablab ESP32 Ardèche · Contenu sous licence{' '}
-        <a href="https://creativecommons.org/licenses/by-sa/4.0/" class="hover:text-primary" target="_blank" rel="noopener">CC BY-SA 4.0</a>
-      </p>
+      <div class="flex flex-wrap items-center gap-3 text-xs text-base-content/40">
+        <span>© {new Date().getFullYear()} Fablab ESP32 Ardèche</span>
+        <span>·</span>
+        <span>Contenu sous <a href="https://creativecommons.org/licenses/by-sa/4.0/" class="hover:text-primary" target="_blank" rel="noopener">CC BY-SA 4.0</a></span>
+        <span>·</span>
+        <a href={siteUrl('/legal/')} class="hover:text-primary transition-colors">Mentions légales & CGV</a>
+        <span>·</span>
+        <a href={siteUrl('/legal/#confidentialite')} class="hover:text-primary transition-colors">Confidentialité</a>
+      </div>
       <div class="flex items-center gap-2 text-xs text-base-content/40">
         <span>Construit avec</span>
         <a href="https://astro.build" class="hover:text-primary" target="_blank" rel="noopener">Astro</a>

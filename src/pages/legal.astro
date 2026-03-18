@@ -1,0 +1,217 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { siteUrl } from '../utils/url';
+
+const sections = [
+  { id: 'mentions-legales', label: 'Mentions légales' },
+  { id: 'cgv', label: 'Conditions générales de vente' },
+  { id: 'confidentialite', label: 'Politique de confidentialité' },
+];
+---
+
+<Layout
+  title="Mentions légales, CGV & Confidentialité"
+  description="Mentions légales, conditions générales de vente et politique de confidentialité du Fablab ESP32 Ardèche."
+>
+  <section class="py-20 hero-pattern border-b border-base-200/60">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <p class="text-base-content/50 text-sm font-mono font-medium mb-3">// légal</p>
+      <h1 class="text-4xl sm:text-5xl font-black mb-5">Informations légales</h1>
+      <p class="text-base-content/65 text-lg leading-relaxed max-w-2xl">
+        Mentions légales, conditions générales de vente et politique de confidentialité du Fablab ESP32 Ardèche.
+      </p>
+      <!-- Table des matières -->
+      <div class="flex flex-wrap gap-3 mt-8">
+        {sections.map(s => (
+          <a
+            href={`#${s.id}`}
+            class="text-sm px-4 py-2 rounded-lg border border-base-200/80 bg-base-200/30 hover:bg-primary/10 hover:border-primary/30 hover:text-primary transition-all"
+          >
+            {s.label}
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="py-16">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-20">
+
+      <!-- ══════════════════════════════════════
+           MENTIONS LÉGALES
+      ══════════════════════════════════════ -->
+      <div id="mentions-legales" class="scroll-mt-24">
+        <h2 class="text-3xl font-black mb-2">Mentions légales</h2>
+        <p class="text-xs text-base-content/40 font-mono mb-10">
+          Conformément à la loi n°2004-575 du 21 juin 2004 pour la confiance dans l'économie numérique.
+        </p>
+
+        <div class="space-y-6">
+
+          <div class="rounded-xl border border-base-200/80 bg-base-200/20 p-6">
+            <h3 class="font-bold text-sm text-base-content/50 uppercase tracking-wider mb-4">Éditeur du site</h3>
+            <ul class="space-y-2 text-sm text-base-content/80">
+              <li><span class="text-base-content/50 w-40 inline-block">Nom</span> Vincent HERMITANT</li>
+              <li><span class="text-base-content/50 w-40 inline-block">Statut</span> Micro-entrepreneur (en cours d'immatriculation)</li>
+              <li><span class="text-base-content/50 w-40 inline-block">Adresse</span> 593 route de Brès, 07230 PAYZAC, France</li>
+              <li><span class="text-base-content/50 w-40 inline-block">Email</span> contact@fablab-esp32.fr</li>
+              <li><span class="text-base-content/50 w-40 inline-block">Responsable</span> Vincent HERMITANT</li>
+            </ul>
+          </div>
+
+          <div class="rounded-xl border border-base-200/80 bg-base-200/20 p-6">
+            <h3 class="font-bold text-sm text-base-content/50 uppercase tracking-wider mb-4">Hébergeur</h3>
+            <ul class="space-y-2 text-sm text-base-content/80">
+              <li><span class="text-base-content/50 w-40 inline-block">Société</span> GitHub, Inc.</li>
+              <li><span class="text-base-content/50 w-40 inline-block">Adresse</span> 88 Colin P Kelly Jr St, San Francisco, CA 94107, États-Unis</li>
+              <li><span class="text-base-content/50 w-40 inline-block">Site web</span> <a href="https://pages.github.com" target="_blank" rel="noopener" class="text-primary hover:underline">pages.github.com</a></li>
+            </ul>
+            <p class="text-xs text-base-content/40 mt-3">Ce site est hébergé via GitHub Pages, service d'hébergement statique gratuit de GitHub.</p>
+          </div>
+
+          <div class="rounded-xl border border-base-200/80 bg-base-200/20 p-6">
+            <h3 class="font-bold text-sm text-base-content/50 uppercase tracking-wider mb-4">Propriété intellectuelle</h3>
+            <p class="text-sm text-base-content/70 leading-relaxed">
+              L'ensemble du contenu de ce site (textes, cours, exemples de code, illustrations) est la propriété de Vincent HERMITANT, sauf mention contraire. Les exemples de code MicroPython sont publiés sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/" class="text-primary hover:underline" target="_blank" rel="noopener">CC BY-SA 4.0</a> — tu peux les réutiliser librement en citant la source.
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════
+           CGV
+      ══════════════════════════════════════ -->
+      <div id="cgv" class="scroll-mt-24">
+        <h2 class="text-3xl font-black mb-2">Conditions générales de vente</h2>
+        <p class="text-xs text-base-content/40 font-mono mb-10">Applicables aux ateliers pratiques ESP32 / MicroPython. Dernière mise à jour : mars 2026.</p>
+
+        <div class="space-y-5">
+
+          <div class="rounded-xl border border-base-200/80 bg-base-200/20 p-6">
+            <h3 class="font-bold mb-3">1. Prestataire</h3>
+            <p class="text-sm text-base-content/70 leading-relaxed">
+              Vincent HERMITANT, micro-entrepreneur (en cours d'immatriculation), domicilié 593 route de Brès, 07230 PAYZAC, France. Email : contact@fablab-esp32.fr.
+            </p>
+          </div>
+
+          <div class="rounded-xl border border-base-200/80 bg-base-200/20 p-6">
+            <h3 class="font-bold mb-3">2. Objet</h3>
+            <p class="text-sm text-base-content/70 leading-relaxed">
+              Les présentes conditions régissent la vente d'ateliers pratiques en présentiel sur la programmation de microcontrôleurs ESP32 avec MicroPython, organisés en Ardèche par Vincent HERMITANT.
+            </p>
+          </div>
+
+          <div class="rounded-xl border border-base-200/80 bg-base-200/20 p-6">
+            <h3 class="font-bold mb-3">3. Tarif et TVA</h3>
+            <p class="text-sm text-base-content/70 leading-relaxed mb-2">
+              Le prix de chaque atelier est de <strong class="text-base-content">20 € par personne</strong> pour une session de 3 heures. Tout le matériel est fourni — aucun achat préalable n'est nécessaire.
+            </p>
+            <p class="text-sm text-base-content/70 leading-relaxed">
+              En tant que micro-entrepreneur bénéficiant de la franchise en base de TVA (article 293 B du CGI), la TVA n'est pas applicable. Aucune TVA ne sera facturée.
+            </p>
+          </div>
+
+          <div class="rounded-xl border border-base-200/80 bg-base-200/20 p-6">
+            <h3 class="font-bold mb-3">4. Réservation</h3>
+            <p class="text-sm text-base-content/70 leading-relaxed">
+              La réservation s'effectue par email à contact@fablab-esp32.fr en indiquant l'atelier souhaité. La place est confirmée par retour d'email. Les groupes sont limités à 6 participants pour garantir un suivi personnalisé.
+            </p>
+          </div>
+
+          <div class="rounded-xl border border-base-200/80 bg-base-200/20 p-6">
+            <h3 class="font-bold mb-3">5. Paiement</h3>
+            <p class="text-sm text-base-content/70 leading-relaxed">
+              Le paiement s'effectue sur place, le jour de l'atelier, en espèces ou par virement bancaire. Aucun pré-paiement en ligne n'est requis.
+            </p>
+          </div>
+
+          <div class="rounded-xl border border-base-200/80 bg-base-200/20 p-6">
+            <h3 class="font-bold mb-3">6. Annulation et remboursement</h3>
+            <div class="space-y-3 text-sm text-base-content/70 leading-relaxed">
+              <p><strong class="text-base-content">Annulation par le participant :</strong> toute annulation signalée au moins 48 heures avant la date de l'atelier donne droit à un report sans frais sur une session ultérieure. En dessous de ce délai, la place est considérée comme occupée.</p>
+              <p><strong class="text-base-content">Annulation par le prestataire :</strong> en cas d'annulation de l'atelier (nombre de participants insuffisant, force majeure, maladie), les participants inscrits en sont informés le plus tôt possible et se voient proposer un report ou la confirmation de non-paiement.</p>
+            </div>
+          </div>
+
+          <div class="rounded-xl border border-base-200/80 bg-base-200/20 p-6">
+            <h3 class="font-bold mb-3">7. Obligations du participant</h3>
+            <ul class="space-y-2 text-sm text-base-content/70 leading-relaxed">
+              <li class="flex items-start gap-2"><span class="text-primary mt-0.5">▸</span> Se présenter à l'heure convenue.</li>
+              <li class="flex items-start gap-2"><span class="text-primary mt-0.5">▸</span> Aucune compétence préalable n'est requise — les ateliers sont accessibles à tous les niveaux.</li>
+              <li class="flex items-start gap-2"><span class="text-primary mt-0.5">▸</span> Manipuler le matériel mis à disposition avec soin. Tout dommage résultant d'une utilisation manifestement abusive pourra être refacturé.</li>
+            </ul>
+          </div>
+
+          <div class="rounded-xl border border-base-200/80 bg-base-200/20 p-6">
+            <h3 class="font-bold mb-3">8. Responsabilité</h3>
+            <p class="text-sm text-base-content/70 leading-relaxed">
+              Le prestataire met tout en œuvre pour assurer la qualité pédagogique des ateliers. Sa responsabilité ne saurait être engagée pour des dommages indirects, ou en cas de force majeure. L'électronique implique des tensions faibles (3,3 V / 5 V) ne présentant aucun danger pour les participants.
+            </p>
+          </div>
+
+          <div class="rounded-xl border border-base-200/80 bg-base-200/20 p-6">
+            <h3 class="font-bold mb-3">9. Droit applicable et litiges</h3>
+            <p class="text-sm text-base-content/70 leading-relaxed">
+              Les présentes CGV sont soumises au droit français. En cas de litige, une résolution amiable sera recherchée en priorité. À défaut, le tribunal compétent sera celui du ressort d'Aubenas (Ardèche).
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════
+           CONFIDENTIALITÉ
+      ══════════════════════════════════════ -->
+      <div id="confidentialite" class="scroll-mt-24">
+        <h2 class="text-3xl font-black mb-2">Politique de confidentialité</h2>
+        <p class="text-xs text-base-content/40 font-mono mb-10">Données personnelles & cookies. Conforme au RGPD.</p>
+
+        <div class="space-y-5">
+
+          <div class="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-6">
+            <h3 class="font-bold mb-3 text-emerald-400">Ce site ne vous trace pas</h3>
+            <ul class="space-y-2 text-sm text-base-content/70 leading-relaxed">
+              <li class="flex items-start gap-2"><span class="text-emerald-400 mt-0.5">✓</span> Aucun cookie de suivi ni traceur publicitaire.</li>
+              <li class="flex items-start gap-2"><span class="text-emerald-400 mt-0.5">✓</span> Aucun pixel Facebook / Meta, Google Analytics, ou tout autre outil de tracking.</li>
+              <li class="flex items-start gap-2"><span class="text-emerald-400 mt-0.5">✓</span> Aucune donnée personnelle collectée automatiquement à des fins statistiques ou marketing.</li>
+              <li class="flex items-start gap-2"><span class="text-emerald-400 mt-0.5">✓</span> Aucune publicité ciblée. Aucune revente de données.</li>
+            </ul>
+          </div>
+
+          <div class="rounded-xl border border-base-200/80 bg-base-200/20 p-6">
+            <h3 class="font-bold mb-3">Données transmises volontairement</h3>
+            <p class="text-sm text-base-content/70 leading-relaxed mb-3">
+              Lorsque tu envoies un email ou un message pour réserver un atelier, les informations fournies (prénom, email, message) sont utilisées <strong class="text-base-content">uniquement</strong> pour confirmer ta réservation et assurer le suivi de l'atelier.
+            </p>
+            <ul class="space-y-2 text-sm text-base-content/70">
+              <li class="flex items-start gap-2"><span class="text-primary mt-0.5">▸</span> Ces données ne sont ni vendues, ni cédées, ni partagées avec des tiers.</li>
+              <li class="flex items-start gap-2"><span class="text-primary mt-0.5">▸</span> Elles ne sont pas utilisées pour de la prospection non sollicitée.</li>
+              <li class="flex items-start gap-2"><span class="text-primary mt-0.5">▸</span> Elles sont conservées uniquement le temps nécessaire à la relation (durée de l'atelier + suivi immédiat).</li>
+            </ul>
+          </div>
+
+          <div class="rounded-xl border border-base-200/80 bg-base-200/20 p-6">
+            <h3 class="font-bold mb-3">Hébergement du site</h3>
+            <p class="text-sm text-base-content/70 leading-relaxed">
+              Ce site est un site statique hébergé sur GitHub Pages. GitHub peut collecter des données techniques de navigation (adresse IP, logs serveur) conformément à sa propre <a href="https://docs.github.com/fr/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener" class="text-primary hover:underline">politique de confidentialité</a>. Aucune donnée n'est transmise à l'éditeur de ce site par cet intermédiaire.
+            </p>
+          </div>
+
+          <div class="rounded-xl border border-base-200/80 bg-base-200/20 p-6">
+            <h3 class="font-bold mb-3">Tes droits (RGPD)</h3>
+            <p class="text-sm text-base-content/70 leading-relaxed mb-3">
+              Conformément au Règlement Général sur la Protection des Données (RGPD), tu disposes des droits suivants sur tes données personnelles : accès, rectification, effacement, limitation, portabilité.
+            </p>
+            <p class="text-sm text-base-content/70">
+              Pour exercer ces droits ou pour toute question relative à tes données : <a href="mailto:contact@fablab-esp32.fr" class="text-primary hover:underline">contact@fablab-esp32.fr</a> ou par courrier : 593 route de Brès, 07230 PAYZAC, France.
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</Layout>
