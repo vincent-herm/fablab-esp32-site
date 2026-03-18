@@ -24,21 +24,21 @@ const ateliers = [
   },
   {
     numero: 3,
-    title: 'Écran tactile ESP32-S3',
-    description: 'Crée une interface graphique interactive sur un écran Waveshare Touch LCD.',
-    href: siteUrl('/ateliers/ecran-tactile-esp32/'),
-    level: 'intermediaire' as const,
+    title: 'Station météo',
+    description: 'Mesure la température avec un DS18B20 et affiche les données sur un écran OLED SSD1306.',
+    href: siteUrl('/ateliers/station-meteo/'),
+    level: 'debutant' as const,
     duration: '3h',
-    tags: ['ESP32-S3', 'SPI', 'Tactile', 'UI'],
+    tags: ['ESP32', 'DS18B20', 'OLED', 'I2C'],
   },
   {
     numero: 4,
-    title: 'RFID & Escape Game',
-    description: 'Badge RFID, serrures électroniques, déclencheurs — crée les enigmes d\'un escape game réel.',
-    href: siteUrl('/ateliers/rfid-escape-game/'),
+    title: 'Badge RFID',
+    description: 'Lis et écris des badges RFID avec le module RC522 — contrôle d\'accès et identification.',
+    href: siteUrl('/ateliers/rfid/'),
     level: 'intermediaire' as const,
     duration: '3h',
-    tags: ['RFID', 'ESP32', 'SPI', 'GPIO'],
+    tags: ['RFID', 'ESP32', 'SPI', 'RC522'],
   },
 ];
 
@@ -85,7 +85,8 @@ const stats = [
         <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight mb-6 animate-fade-in animate-delay-1">
           Apprends l'électronique
           <span class="gradient-text block">en faisant des choses</span>
-          qui s'allument, sonnent et réagissent
+          qui s'allument, sonnent, réagissent —
+          <span class="block text-3xl sm:text-4xl lg:text-5xl mt-2 text-base-content/70 font-bold">et commandent, régulent, supervisent, contrôlent ton monde.</span>
         </h1>
 
         <p class="text-lg text-base-content/65 leading-relaxed mb-10 max-w-2xl animate-fade-in animate-delay-2">
@@ -305,6 +306,49 @@ const stats = [
     </div>
   </section>
 
+  <!-- ======== LE FABLAB ======== -->
+  <section class="py-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+
+        <div>
+          <p class="text-emerald-400 text-sm font-mono font-medium mb-2">// le fablab</p>
+          <h2 class="text-3xl sm:text-4xl font-black mb-6">Un espace, un ingénieur, une pédagogie</h2>
+          <div class="space-y-4 text-base-content/70 leading-relaxed">
+            <p>
+              Ingénieur diplômé de l'ENIM et ancien professeur à l'Université de Lorraine (25 ans d'enseignement en électronique et génie électrique), Vincent anime ce fablab en Ardèche avec une conviction simple : <strong class="text-base-content">on apprend l'électronique en la faisant</strong>.
+            </p>
+            <p>
+              Pas de cours magistraux. Des projets réels, du vrai matériel, et quelqu'un à côté pour expliquer quand ça ne marche pas.
+            </p>
+          </div>
+          <a href={siteUrl('/a-propos/')} class="inline-flex items-center gap-2 mt-6 text-sm text-emerald-400 font-medium hover:underline">
+            En savoir plus sur le fablab
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </a>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          {[
+            { icon: '👨‍🏫', label: 'Supervision', desc: 'Vincent est présent à chaque atelier pour guider, débloquer, expliquer.' },
+            { icon: '👥', label: '6 personnes max', desc: 'Petits groupes pour un suivi personnalisé et une vraie progression.' },
+            { icon: '🔧', label: 'Matériel fourni', desc: 'ESP32, breadboards, capteurs, câbles — tout est prêt à brancher.' },
+            { icon: '📍', label: 'En Ardèche', desc: 'Payzac, 07230. En présentiel, dans le fablab.' },
+          ].map(item => (
+            <div class="rounded-xl border border-base-200/80 bg-base-200/20 p-5">
+              <div class="text-2xl mb-3">{item.icon}</div>
+              <div class="font-bold text-sm mb-1">{item.label}</div>
+              <div class="text-xs text-base-content/55 leading-relaxed">{item.desc}</div>
+            </div>
+          ))}
+        </div>
+
+      </div>
+    </div>
+  </section>
+
   <!-- ======== APERÇU MicroPython ======== -->
   <section class="py-24">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -340,6 +384,52 @@ const stats = [
           Cours Introduction à MicroPython
         </a>
       </div>
+    </div>
+  </section>
+
+  <!-- ======== PRESTATIONS B2B ======== -->
+  <section class="py-24 bg-base-200/30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+      <div class="flex flex-col sm:flex-row items-start sm:items-end justify-between mb-10 gap-4">
+        <div>
+          <p class="text-amber-400 text-sm font-mono font-medium mb-2">// entreprises</p>
+          <h2 class="text-3xl sm:text-4xl font-black">Prestations sur mesure</h2>
+          <p class="text-base-content/60 mt-3 max-w-xl">
+            Installations ESP32 pour événements, loisirs et animations interactives — conçues et déployées par un ingénieur en électronique.
+          </p>
+        </div>
+        <a href={siteUrl('/a-propos/#b2b')} class="btn btn-outline btn-sm whitespace-nowrap">
+          Prendre contact →
+        </a>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+        {[
+          {
+            icon: '🔐',
+            title: 'Escape games',
+            desc: 'Serrures électroniques, RFID, effets sonores, synchronisation multi-salles — tout piloté par ESP32.',
+          },
+          {
+            icon: '🎭',
+            title: 'Murder parties',
+            desc: 'Déclencheurs d\'ambiance, indices numériques, révélations automatiques — des effets qui immergent.',
+          },
+          {
+            icon: '🎪',
+            title: 'Événementiel',
+            desc: 'Installations interactives, jeux connectés, animations technologiques pour vos événements.',
+          },
+        ].map(service => (
+          <div class="rounded-2xl border border-amber-500/15 bg-base-100/50 p-7 hover:border-amber-500/35 transition-colors">
+            <div class="text-3xl mb-4">{service.icon}</div>
+            <h3 class="font-bold text-lg mb-2">{service.title}</h3>
+            <p class="text-sm text-base-content/60 leading-relaxed">{service.desc}</p>
+          </div>
+        ))}
+      </div>
+
     </div>
   </section>
 
