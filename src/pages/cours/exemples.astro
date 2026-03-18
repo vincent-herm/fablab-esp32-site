@@ -15,7 +15,8 @@ const categories = [
       { fichier: 'led-temps.py',            desc: 'Mesure le temps de 10 000 clignotements' },
       { fichier: 'led-bouton.py',           desc: 'LED contrôlée par un bouton' },
       { fichier: 'led-stop.py',             desc: 'Bouton stop/reprendre' },
-      { fichier: 'tempo-eclairage.py',      desc: 'LED s\'éteint après 2 secondes' },
+      { fichier: 'tempo-eclairage.py',          desc: 'LED s\'éteint après 2 secondes' },
+      { fichier: 'tempo-eclairage-optimise.py', desc: 'Version optimisée non-bloquante' },
     ],
   },
   {
@@ -53,10 +54,13 @@ const categories = [
     desc: 'Lecture d\'entrées numériques, anti-rebond, comptage et touch capacitif.',
     exemples: [
       { fichier: 'lecture-bp.py',                    desc: 'Lecture simple d\'un bouton' },
-      { fichier: 'comptage-ok.py',                   desc: 'Comptage non-bloquant' },
+      { fichier: 'comptage-bloquant.py',             desc: 'Comptage — version bloquante' },
+      { fichier: 'comptage-ok.py',                   desc: 'Comptage — version non-bloquante' },
+      { fichier: 'comptage-NFP.py',                  desc: 'Comptage — front montant uniquement' },
       { fichier: 'comptage-thread.py',               desc: 'Comptage avec thread' },
       { fichier: 'touchpad.py',                      desc: 'Capteur capacitif (touch)' },
-      { fichier: 'touchpad-comptage-ok.py',          desc: 'Comptage via touch non-bloquant' },
+      { fichier: 'touchpad-comptage-bloquant.py',    desc: 'Comptage touch — version bloquante' },
+      { fichier: 'touchpad-comptage-ok.py',          desc: 'Comptage touch — version non-bloquante' },
     ],
   },
   {
@@ -70,7 +74,10 @@ const categories = [
       { fichier: 'mesure-temps-deux-fronts-1.py',    desc: 'Durée entre deux fronts (v1)' },
       { fichier: 'mesure-temps-deux-fronts-2.py',    desc: 'Durée entre deux fronts (v2)' },
       { fichier: 'mesure-temps-deux-fronts-3.py',    desc: 'Durée entre deux fronts (v3)' },
-      { fichier: 'lecture-bp-temps-ok.py',           desc: 'Durée d\'appui d\'un bouton' },
+      { fichier: 'lecture-bp-temps-bloquant.py',     desc: 'Durée d\'appui — version bloquante' },
+      { fichier: 'lecture-bp-temps-ok.py',           desc: 'Durée d\'appui — version non-bloquante' },
+      { fichier: 'lecture-bp-temps-ticks-bloquant.py', desc: 'Durée appui avec ticks — bloquant' },
+      { fichier: 'lecture-bp-temps-ticks-ok.py',    desc: 'Durée appui avec ticks — non-bloquant' },
     ],
   },
   {
@@ -179,7 +186,7 @@ const BASE_RAW = 'https://github.com/vincent-herm/fablab-esp32-ateliers/blob/mai
 
 <Layout
   title="Exemples de code"
-  description="48 exemples MicroPython classés par thème : GPIO, PWM, NeoPixel, ADC, OLED, interruptions, DS18B20, audio."
+  description="53 exemples MicroPython classés par thème : GPIO, PWM, NeoPixel, ADC, OLED, interruptions, DS18B20, audio."
 >
   <section class="py-20 hero-pattern border-b border-base-200/60">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -192,7 +199,7 @@ const BASE_RAW = 'https://github.com/vincent-herm/fablab-esp32-ateliers/blob/mai
         <div class="flex flex-wrap gap-3 mt-6">
           <span class="inline-flex items-center gap-2 bg-base-200/60 rounded-full px-4 py-2 text-sm">
             <span class="w-2 h-2 rounded-full bg-success"></span>
-            48 scripts disponibles
+            53 scripts disponibles
           </span>
           <a
             href="https://github.com/vincent-herm/fablab-esp32-ateliers/tree/main/cours-exemples"
