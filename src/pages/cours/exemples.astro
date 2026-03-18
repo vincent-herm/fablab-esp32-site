@@ -26,7 +26,7 @@ const categories = [
     desc: 'Variation de luminosité, servomoteurs et signaux analogiques simulés.',
     exemples: [
       { fichier: 'pwm.py',                  desc: 'Variation de luminosité linéaire' },
-      { fichier: 'pwm-gamma.py',            desc: 'Correction gamma perceptuelle' },
+      { fichier: 'pwm-correction.py',       desc: 'Correction gamma perceptuelle' },
       { fichier: 'pwm-allume-bp.py',        desc: 'Fade-in progressif sur appui bouton' },
     ],
   },
@@ -66,9 +66,11 @@ const categories = [
     color: 'cyan',
     desc: 'ticks_ms(), mesure de durées, détection de fronts.',
     exemples: [
-      { fichier: 'ticks.py',                         desc: 'Compteur milliseconde' },
-      { fichier: 'mesure-temps-deux-fronts.py',      desc: 'Durée entre deux fronts' },
-      { fichier: 'lecture-bp-temps.py',              desc: 'Durée d\'appui d\'un bouton' },
+      { fichier: 'methode-ticks.py',                  desc: 'Compteur milliseconde' },
+      { fichier: 'mesure-temps-deux-fronts-1.py',    desc: 'Durée entre deux fronts (v1)' },
+      { fichier: 'mesure-temps-deux-fronts-2.py',    desc: 'Durée entre deux fronts (v2)' },
+      { fichier: 'mesure-temps-deux-fronts-3.py',    desc: 'Durée entre deux fronts (v3)' },
+      { fichier: 'lecture-bp-temps-ok.py',           desc: 'Durée d\'appui d\'un bouton' },
     ],
   },
   {
@@ -115,7 +117,7 @@ const categories = [
     desc: 'SSD1306 128×64 — texte, formes, graphiques et courbes.',
     exemples: [
       { fichier: 'oled-base.py',                     desc: 'Texte et formes de base' },
-      { fichier: 'mesure-vitesse-oled.py',           desc: 'Mesure de vitesse affichée en temps réel' },
+      { fichier: 'mesure-vitesse-OLED.py',           desc: 'Mesure de vitesse affichée en temps réel' },
       { fichier: 'sinus.py',                         desc: 'Tracé sinus et courbes de Lissajous' },
     ],
   },
@@ -126,8 +128,8 @@ const categories = [
     color: 'violet',
     desc: 'Capteur 1-Wire numérique — un ou plusieurs sur le même fil.',
     exemples: [
-      { fichier: 'capteur-ds18b20.py',               desc: 'Un seul capteur DS18B20' },
-      { fichier: 'ensemble-ds18b20.py',              desc: 'Plusieurs capteurs sur un fil' },
+      { fichier: 'capteur-DS18B20.py',               desc: 'Un seul capteur DS18B20' },
+      { fichier: 'ensemble-DS18B20.py',              desc: 'Plusieurs capteurs sur un fil' },
     ],
   },
   {
@@ -177,7 +179,7 @@ const BASE_RAW = 'https://github.com/vincent-herm/fablab-esp32-ateliers/blob/mai
 
 <Layout
   title="Exemples de code"
-  description="66 exemples MicroPython classés par thème : GPIO, PWM, NeoPixel, ADC, OLED, interruptions, DS18B20, audio."
+  description="48 exemples MicroPython classés par thème : GPIO, PWM, NeoPixel, ADC, OLED, interruptions, DS18B20, audio."
 >
   <section class="py-20 hero-pattern border-b border-base-200/60">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -190,7 +192,7 @@ const BASE_RAW = 'https://github.com/vincent-herm/fablab-esp32-ateliers/blob/mai
         <div class="flex flex-wrap gap-3 mt-6">
           <span class="inline-flex items-center gap-2 bg-base-200/60 rounded-full px-4 py-2 text-sm">
             <span class="w-2 h-2 rounded-full bg-success"></span>
-            66 scripts disponibles
+            48 scripts disponibles
           </span>
           <a
             href="https://github.com/vincent-herm/fablab-esp32-ateliers/tree/main/cours-exemples"
