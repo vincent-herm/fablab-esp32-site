@@ -1,24 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 
-const articles = [
-  {
-    titre: 'Premier atelier : serveur web avec ESP32',
-    date: '15 mars 2026',
-    description: 'Retour sur le premier atelier du fablab — six participants, un point d\'accès WiFi, une LED contrôlée depuis un téléphone.',
-    tags: ['ESP32', 'WiFi', 'MicroPython', 'Débutant'],
-    href: '/blog/premier-atelier/',
-    featured: true,
-  },
-  {
-    titre: 'Atelier NeoPixel : animer des LEDs RGB avec MicroPython',
-    date: '10 mars 2026',
-    description: 'Retour sur notre premier atelier NeoPixel — WS2812, bibliothèque neopixel, arcs-en-ciel et effets lumineux.',
-    tags: ['NeoPixel', 'WS2812', 'MicroPython', 'RGB'],
-    href: '/blog/atelier-neopixel/',
-    featured: false,
-  },
-];
+const articles: any[] = [];
 ---
 
 <Layout
