@@ -9,6 +9,7 @@ const categories = [
     titre: 'GPIO numérique',
     color: 'blue',
     desc: 'LEDs, boutons, minuteries — les bases des entrées/sorties numériques.',
+    theorie: '<p>Une broche GPIO (<em>General Purpose Input/Output</em>) peut être configurée en <strong>sortie</strong> (pour allumer une LED) ou en <strong>entrée</strong> (pour lire un bouton). En MicroPython, la classe <code>Pin</code> du module <code>machine</code> gère tout cela.</p><p class="mt-2">Pour faire clignoter une LED à 1 Hz, on bascule son état toutes les 0,5 secondes avec <code>led.value(not led.value())</code>. Pour un bouton, <code>bp.value()</code> retourne 1 si appuyé, 0 sinon. Un <strong>temporisateur d\'éclairage</strong> allume la LED à l\'appui et la mémorise dans une variable ; la boucle principale décrémente le compteur, sans bloquer le reste du programme.</p>',
     exemples: [
       { fichier: 'led.py',                  desc: 'LED qui clignote à 1 Hz' },
       { fichier: 'led-3-fois.py',           desc: 'Clignote 3 fois puis s\'arrête' },
@@ -25,6 +26,7 @@ const categories = [
     titre: 'PWM',
     color: 'orange',
     desc: 'Variation de luminosité, servomoteurs et signaux analogiques simulés.',
+    theorie: '<p>Le <strong>PWM</strong> (<em>Pulse Width Modulation</em>) simule une tension variable en faisant osciller rapidement une sortie entre 0 V et 3,3 V. Le <strong>rapport cyclique</strong> (0 à 1023 en MicroPython) fixe la proportion de temps à l\'état haut : 0 = éteint, 512 = moitié, 1023 = plein.</p><p class="mt-2">Mais notre œil ne perçoit pas la luminosité de façon linéaire : passer de 0 à 512 semble beaucoup plus brillant que passer de 512 à 1023. La <strong>correction gamma</strong> corrige cela avec une courbe parabolique : <code>valeur_corrigée = (i/1023)² × 1023</code> (ou avec exposant 3,5 pour un rendu encore plus naturel).</p>',
     exemples: [
       { fichier: 'pwm.py',                  desc: 'Variation de luminosité linéaire' },
       { fichier: 'pwm-correction.py',       desc: 'Correction gamma perceptuelle' },
@@ -37,6 +39,7 @@ const categories = [
     titre: 'NeoPixel RGB',
     color: 'pink',
     desc: 'LED WS2812 adressables — couleurs, animations et effets.',
+    theorie: '<p>Les LED <strong>WS2812</strong> (NeoPixel) sont des LED RGB adressables : chaque LED contient trois canaux (Rouge, Vert, Bleu), chacun de 0 à 255. Par synthèse additive, (255,0,0) = rouge pur, (0,255,0) = vert, (0,0,255) = bleu, (255,255,255) = blanc, (0,0,0) = éteint.</p><p class="mt-2">En MicroPython, on crée un objet <code>NeoPixel(Pin(26), 8)</code> pour 8 LEDs sur la broche 26, on affecte les couleurs avec <code>np[i] = (R, G, B)</code>, puis on envoie tout d\'un coup avec <code>np.write()</code>. Pour un <strong>arc-en-ciel</strong>, on répartit les teintes de 0° à 360° en convertissant HSV en RGB, et on décale le tout à chaque cycle pour créer l\'animation.</p>',
     exemples: [
       { fichier: 'neopixel.py',             desc: 'Couleur unique sur toutes les LEDs' },
       { fichier: 'neopixel-defilement.py',  desc: 'Défilement de gauche à droite' },
@@ -52,6 +55,7 @@ const categories = [
     titre: 'Boutons et comptage',
     color: 'emerald',
     desc: 'Lecture d\'entrées numériques, anti-rebond, comptage et touch capacitif.',
+    theorie: '<p>Lire un bouton est simple : <code>bp.value()</code> retourne 1 si appuyé. Mais <strong>compter les appuis</strong> est plus subtil. La version bloquante (deux boucles <code>while</code> qui attendent l\'appui puis le relâchement) fonctionne, mais fige tout le reste du programme.</p><p class="mt-2">La solution <strong>non bloquante</strong> repose sur la <em>détection de front montant</em> : on mémorise l\'état précédent dans <code>ancien_etat</code>, et on incrémente uniquement quand <code>not ancien_etat and etat</code> — c\'est-à-dire au passage de 0 à 1. La boucle principale tourne toutes les 20 ms (théorème de Shannon : on peut détecter jusqu\'à 25 appuis/seconde).</p><p class="mt-2">L\'ESP32 offre aussi 10 broches <strong>capacitives</strong> (TouchPad). La valeur lue est &gt; 150 sans contact, et &lt; 60 au toucher — on applique le même principe de front pour compter les appuis tactiles.</p>',
     exemples: [
       { fichier: 'lecture-bp.py',                    desc: 'Lecture simple d\'un bouton' },
       { fichier: 'comptage-bloquant.py',             desc: 'Comptage — version bloquante' },
@@ -69,6 +73,7 @@ const categories = [
     titre: 'Mesure du temps',
     color: 'cyan',
     desc: 'ticks_ms(), mesure de durées, détection de fronts.',
+    theorie: '<p>Il existe deux méthodes pour mesurer le temps d\'appui sur un bouton, et pour chacune une version bloquante et non-bloquante — soit quatre combinaisons au total.</p><p class="mt-2"><strong>Par comptage de boucles</strong> : on incrémente un compteur toutes les 20 ms pendant l\'appui. La durée est <code>compteur × 0,02 s</code>. La résolution est de 20 ms.</p><p class="mt-2"><strong>Par ticks_ms()</strong> : on mémorise <code>start = ticks_ms()</code> au front montant, et <code>stop = ticks_ms()</code> au front descendant. <code>delta = stop - start</code> donne le temps en millisecondes avec une bien meilleure précision. Cette méthode est aussi utilisée pour mesurer le temps entre deux événements distincts (par exemple deux capteurs).</p>',
     exemples: [
       { fichier: 'methode-ticks.py',                  desc: 'Compteur milliseconde' },
       { fichier: 'mesure-temps-deux-fronts-1.py',    desc: 'Durée entre deux fronts (v1)' },
@@ -86,6 +91,7 @@ const categories = [
     titre: 'Séquenceur',
     color: 'purple',
     desc: 'Boucles rapides non-bloquantes et machines à états.',
+    theorie: '<p>Un programme séquentiel classique (avec des <code>sleep()</code>) bloque l\'ESP32 à chaque attente : impossible de lire un bouton ou de faire autre chose pendant ce temps. La solution est la <strong>boucle rapide non-bloquante</strong>.</p><p class="mt-2">Le principe : la boucle principale tourne très vite (toutes les 10 ms ou 1 ms) en incrémentant un compteur. Chaque tâche est déclenchée selon le modulo de ce compteur : <code>if compt % 50 == 0</code> s\'exécute toutes les 500 ms (50 × 10 ms), <code>if (compt + 25) % 50 == 0</code> s\'exécute avec un décalage d\'un quart de période. Plusieurs tâches à fréquences différentes coexistent ainsi sans se bloquer mutuellement.</p>',
     exemples: [
       { fichier: 'boucle-rapide-simple.py',          desc: 'Boucle 10 ms non-bloquante' },
       { fichier: 'boucle-rapide-plus.py',            desc: 'Boucle 1 ms — 500 Hz' },
@@ -98,6 +104,7 @@ const categories = [
     titre: 'Interruptions',
     color: 'amber',
     desc: 'IRQ sur front montant/descendant — réaction immédiate.',
+    theorie: '<p>Une <strong>interruption</strong> (IRQ) permet de réagir instantanément à un événement externe sans scruter en permanence l\'état d\'une broche. Quand l\'événement survient (front montant ou descendant), l\'ESP32 interrompt le programme principal, exécute la <em>fonction de traitement</em>, puis reprend là où il s\'était arrêté.</p><p class="mt-2">Règle importante : le traitement de l\'interruption doit être <strong>le plus court possible</strong>. On évite donc les <code>print()</code>, les temporisations et les calculs lourds. La bonne pratique consiste à lever un <em>flag global</em> dans la fonction d\'interruption (<code>inter = True</code>), et à traiter cet événement dans la boucle principale, qui le détecte et remet le flag à False.</p>',
     exemples: [
       { fichier: 'interruption1.py',                 desc: 'IRQ front montant basique' },
       { fichier: 'interruption2.py',                 desc: 'IRQ avec flag global' },
@@ -110,6 +117,7 @@ const categories = [
     titre: 'Entrées analogiques',
     color: 'red',
     desc: 'ADC 12 bits, potentiomètre, cellule photo, capteur LM35.',
+    theorie: '<p>L\'ESP32 dispose d\'un <strong>convertisseur Analogique/Numérique (ADC)</strong> sur plusieurs broches. Il mesure une tension entre 0 et 3,3 V et la code sur 9, 10, 11 ou 12 bits. En 12 bits, on obtient 4096 valeurs possibles (0 à 4095) ; en 9 bits, 512 valeurs (0 à 511).</p><p class="mt-2">Un <strong>potentiomètre</strong> fait varier la tension de 0 à 3,3 V — la valeur lue varie de 0 à 511. Une <strong>cellule photo-électrique (LDR)</strong> est une résistance qui change avec la lumière (100 Ω éclairé, 500 kΩ dans l\'obscurité) ; montée en pont diviseur, elle fait varier la tension mesurée. On compare alors cette tension à un seuil pour déclencher une action.</p>',
     exemples: [
       { fichier: 'entree-analogique.py',             desc: 'Lecture ADC et conversion en tension' },
       { fichier: 'entree-analogique-neopixel.py',    desc: 'Potentiomètre contrôle les NeoPixels' },
@@ -122,6 +130,7 @@ const categories = [
     titre: 'Afficheur OLED',
     color: 'teal',
     desc: 'SSD1306 128×64 — texte, formes, graphiques et courbes.',
+    theorie: '<p>L\'écran OLED SSD1306 (128 × 64 pixels, monochrome) se connecte à l\'ESP32 via le bus <strong>I2C</strong> (broches SCL et SDA). La bibliothèque <code>ssd1306</code> gère l\'affichage : <code>display.text("Hello", x, y, 1)</code> pour écrire du texte, <code>display.pixel(x, y, 1)</code> pour un pixel, <code>display.hline()</code>, <code>display.rect()</code> pour des formes.</p><p class="mt-2">Important : l\'affichage n\'est visible qu\'après l\'appel de <code>display.show()</code>, qui transfère le buffer en mémoire vers l\'écran. Cet afficheur est indispensable pour les projets embarqués sans ordinateur à côté — il permet d\'afficher des mesures, des courbes ou des menus directement sur la carte.</p>',
     exemples: [
       { fichier: 'oled-base.py',                     desc: 'Texte et formes de base' },
       { fichier: 'mesure-vitesse-OLED.py',           desc: 'Mesure de vitesse affichée en temps réel' },
@@ -134,6 +143,7 @@ const categories = [
     titre: 'Température DS18B20',
     color: 'violet',
     desc: 'Capteur 1-Wire numérique — un ou plusieurs sur le même fil.',
+    theorie: '<p>Le capteur <strong>DS18B20</strong> est un thermomètre numérique intelligent qui communique via le protocole <strong>1-Wire</strong> (un seul fil de données). Contrairement à un capteur analogique, le signal transmis est numérique : il n\'est donc pas sensible aux perturbations électriques, même sur des fils de plusieurs mètres.</p><p class="mt-2">Chaque capteur DS18B20 possède un <strong>code ROM unique</strong> gravé en usine. Grâce à ce code, on peut connecter plusieurs capteurs sur la même broche et les interroger individuellement. En MicroPython, la bibliothèque <code>ds18x20</code> gère la conversion et la lecture : <code>ds_capteur.convert_temp()</code> déclenche la mesure, et <code>ds_capteur.read_temp(rom)</code> retourne la température en degrés Celsius.</p>',
     exemples: [
       { fichier: 'capteur-DS18B20.py',               desc: 'Un seul capteur DS18B20' },
       { fichier: 'ensemble-DS18B20.py',              desc: 'Plusieurs capteurs sur un fil' },
@@ -145,6 +155,7 @@ const categories = [
     titre: 'Audio et son',
     color: 'rose',
     desc: 'Buzzer, fréquences, notes musicales et gammes.',
+    theorie: '<p>Un buzzer ou haut-parleur connecté sur une broche PWM vibre à la fréquence du signal généré, produisant un son audible si la fréquence est entre 20 et 20 000 Hz. Un rapport cyclique de 40/1023 (~4%) suffit pour produire un son correct sans surchauffe.</p><p class="mt-2">En musique occidentale, le <strong>La3 (A4) = 440 Hz</strong> est la fréquence de référence. Les 12 notes d\'une octave forment une <em>suite géométrique</em> de raison <strong>2^(1/12)</strong> (la racine douzième de 2) : chaque demi-ton multiplie la fréquence par ce facteur. En MicroPython, on génère la liste des 13 notes avec une liste en compréhension : <code>[int(2**(x/12)*880) for x in range(0,13)]</code>. Les gammes (majeure, éolienne, lydienne…) sont des successions de 7 notes choisies parmi ces 12, chacune produisant une couleur émotionnelle différente.</p>',
     exemples: [
       { fichier: 'haut-parleur-son.py',              desc: 'Son simple sur buzzer' },
       { fichier: 'haut-parleur-13-notes.py',         desc: 'Gamme de 13 notes' },
@@ -157,6 +168,7 @@ const categories = [
     titre: 'Classes et objets',
     color: 'slate',
     desc: 'Programmation orientée objet en MicroPython — classes, modules, héritage.',
+    theorie: '<p>La <strong>programmation orientée objet (POO)</strong> permet de regrouper des données (<em>attributs</em>) et des fonctions (<em>méthodes</em>) dans une <em>classe</em>. On crée ensuite des <em>instances</em> (objets) de cette classe. Cela rend le code plus lisible, réutilisable et modulaire.</p><p class="mt-2">En MicroPython comme en Python standard : <code>__init__(self)</code> est le constructeur appelé à la création de l\'objet. L\'<strong>héritage</strong> permet à une classe enfant de réutiliser les méthodes de sa classe parente en les étendant. Vous utilisez déjà les objets sans le savoir : <code>Pin</code>, <code>PWM</code>, <code>NeoPixel</code> sont tous des classes de MicroPython.</p>',
     exemples: [
       { fichier: 'classe-1.py',                      desc: 'Première classe MicroPython' },
       { fichier: 'classe-2.py',                      desc: 'Attributs et méthodes' },
@@ -181,6 +193,21 @@ const colorMap: Record<string, string> = {
   slate:  'bg-slate-500/10  text-slate-400  border-slate-500/20',
 };
 
+const theorieBorderMap: Record<string, string> = {
+  blue:   'border-blue-500/20   bg-blue-500/5',
+  orange: 'border-orange-500/20 bg-orange-500/5',
+  pink:   'border-pink-500/20   bg-pink-500/5',
+  emerald:'border-emerald-500/20 bg-emerald-500/5',
+  cyan:   'border-cyan-500/20   bg-cyan-500/5',
+  purple: 'border-purple-500/20 bg-purple-500/5',
+  amber:  'border-amber-500/20  bg-amber-500/5',
+  red:    'border-red-500/20    bg-red-500/5',
+  teal:   'border-teal-500/20   bg-teal-500/5',
+  violet: 'border-violet-500/20 bg-violet-500/5',
+  rose:   'border-rose-500/20   bg-rose-500/5',
+  slate:  'border-slate-500/20  bg-slate-500/5',
+};
+
 const BASE_RAW = 'https://github.com/vincent-herm/fablab-esp32-ateliers/blob/main/cours-exemples';
 ---
 
@@ -194,7 +221,7 @@ const BASE_RAW = 'https://github.com/vincent-herm/fablab-esp32-ateliers/blob/mai
         <p class="text-purple-400 text-sm font-mono font-medium mb-3">// cours / exemples</p>
         <h1 class="text-4xl sm:text-5xl font-black mb-5">Exemples de code</h1>
         <p class="text-base-content/65 text-lg leading-relaxed">
-          Tous les scripts MicroPython du cours, classés par thème. Copiables directement dans Thonny ou mpremote.
+          Tous les scripts MicroPython du cours, classés par thème. Chaque section commence par les notions essentielles, suivies des fichiers à télécharger.
         </p>
         <div class="flex flex-wrap gap-3 mt-6">
           <span class="inline-flex items-center gap-2 bg-base-200/60 rounded-full px-4 py-2 text-sm">
@@ -216,16 +243,21 @@ const BASE_RAW = 'https://github.com/vincent-herm/fablab-esp32-ateliers/blob/mai
 
   <section class="py-16">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="space-y-12">
+      <div class="space-y-16">
         {categories.map(cat => (
           <div>
-            <div class="flex items-center gap-3 mb-5">
+            <div class="flex items-center gap-3 mb-4">
               <span class="text-2xl">{cat.icon}</span>
               <div>
                 <h2 class="text-xl font-black">{cat.titre}</h2>
                 <p class="text-sm text-base-content/50">{cat.desc}</p>
               </div>
             </div>
+
+            <div class={`rounded-xl border p-5 mb-5 text-sm text-base-content/75 leading-relaxed ${theorieBorderMap[cat.color]}`}>
+              <Fragment set:html={cat.theorie} />
+            </div>
+
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {cat.exemples.map(ex => (
                 <a
