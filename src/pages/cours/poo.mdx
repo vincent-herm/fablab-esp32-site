@@ -1,0 +1,231 @@
+---
+title: 'Programmation orientée objet'
+description: 'Classes, objets, constructeurs et héritage en MicroPython sur ESP32 : programmation orientée objet pas à pas.'
+---
+
+import Layout from '../../layouts/Layout.astro';
+import DifficultyBadge from '../../components/DifficultyBadge.astro';
+import { siteUrl } from '../../utils/url';
+
+<Layout title={frontmatter.title} description={frontmatter.description}>
+
+<div class="border-b border-base-200/60 bg-base-200/20">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+    <div class="flex items-center gap-2 text-sm text-base-content/50">
+      <a href={siteUrl('/')} class="hover:text-base-content transition-colors">Accueil</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <a href={siteUrl('/cours/')} class="hover:text-base-content transition-colors">Cours</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <span class="text-base-content/80">Programmation orientée objet</span>
+    </div>
+  </div>
+</div>
+
+<section class="py-12 hero-pattern border-b border-base-200/60">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-2xl">🧱</span>
+      <span class="text-xs px-2.5 py-1 rounded-full bg-violet-500/15 text-violet-400 font-medium">Avancé</span>
+      <DifficultyBadge level="avance" />
+    </div>
+    <h1 class="text-3xl sm:text-4xl font-black mb-4">Programmation orientée objet</h1>
+    <p class="text-base-content/65 text-lg leading-relaxed max-w-2xl">
+      Classes, objets, constructeurs et héritage en MicroPython. Organiser son code pour le rendre réutilisable et lisible.
+    </p>
+  </div>
+</section>
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mdx-content">
+
+## Concepts fondamentaux
+
+La **programmation orientée objet (POO)** regroupe des données (*attributs*) et des fonctions (*méthodes*) dans une *classe*. À partir d'une classe, on crée des *instances* (objets).
+
+Tu utilises déjà des objets sans le savoir :
+
+```python
+from machine import Pin
+from neopixel import NeoPixel
+
+led = Pin(2, Pin.OUT)       # led est un objet de la classe Pin
+np = NeoPixel(Pin(26), 8)   # np est un objet de la classe NeoPixel
+np.write()                  # write() est une méthode de l'objet np
+```
+
+### Définir une première classe
+
+```python
+class Voiture:
+    marque = "Renault"
+    modele = "Clio"
+    annee = 2020
+
+ma_voiture = Voiture()
+print(ma_voiture.marque)    # Renault
+```
+
+### Le constructeur `__init__`
+
+Le constructeur `__init__(self)` est appelé automatiquement à la création de l'objet. `self` est la référence à l'objet en cours de création.
+
+```python
+class Voiture:
+    def __init__(self):
+        self.marque = "Renault"
+        self.modele = "Clio"
+        self.annee = 2020
+
+ma_voiture = Voiture()
+print(ma_voiture.marque)    # Renault
+```
+
+### Paramètres au constructeur
+
+```python
+class Voiture:
+    def __init__(self, marque, modele, annee):
+        self.marque = marque
+        self.modele = modele
+        self.annee = annee
+
+    def description(self):
+        return self.marque + " " + self.modele + " (" + str(self.annee) + ")"
+
+voiture1 = Voiture("Renault", "Clio", 2020)
+voiture2 = Voiture("Peugeot", "208", 2022)
+
+print(voiture1.description())   # Renault Clio (2020)
+print(voiture2.description())   # Peugeot 208 (2022)
+```
+
+---
+
+## Application sur ESP32
+
+On peut créer une classe `LED` pour encapsuler la logique de clignotement :
+
+```python
+from machine import Pin
+import time
+
+class LED:
+    def __init__(self, pin_num):
+        self.pin = Pin(pin_num, Pin.OUT)
+
+    def allumer(self):
+        self.pin.on()
+
+    def eteindre(self):
+        self.pin.off()
+
+    def basculer(self):
+        self.pin.value(not self.pin.value())
+
+    def clignoter(self, nb_fois, delai_ms=200):
+        for _ in range(nb_fois):
+            self.allumer()
+            time.sleep_ms(delai_ms)
+            self.eteindre()
+            time.sleep_ms(delai_ms)
+
+# Utilisation
+led_rouge = LED(2)
+led_verte = LED(19)
+
+led_rouge.clignoter(3)
+led_verte.clignoter(5, delai_ms=100)
+```
+
+---
+
+## Héritage
+
+L'**héritage** permet à une classe enfant de réutiliser et d'étendre les méthodes d'une classe parente.
+
+```python
+class Animal:
+    def __init__(self, nom):
+        self.nom = nom
+
+    def parler(self):
+        return "..."
+
+class Chien(Animal):
+    def parler(self):
+        return "Woof !"
+
+class Chat(Animal):
+    def parler(self):
+        return "Miaou !"
+
+chien = Chien("Rex")
+chat  = Chat("Félix")
+
+print(chien.nom + " dit : " + chien.parler())   # Rex dit : Woof !
+print(chat.nom  + " dit : " + chat.parler())    # Félix dit : Miaou !
+```
+
+---
+
+## Algorithme PGCD
+
+La **récursivité** est un concept fondamental : une fonction qui s'appelle elle-même. L'algorithme d'Euclide pour le PGCD (Plus Grand Commun Diviseur) en est un exemple classique.
+
+```python
+def pgcd(a, b):
+    if b == 0:
+        return a
+    return pgcd(b, a % b)
+
+print(pgcd(48, 18))    # 6
+print(pgcd(100, 75))   # 25
+```
+
+<div class="rounded-xl border border-blue-500/20 bg-blue-500/5 p-5 my-6">
+  <h4 class="font-bold text-blue-400 mb-2">💡 Comment ça marche</h4>
+  <p class="text-sm text-base-content/70">pgcd(48, 18) → pgcd(18, 12) → pgcd(12, 6) → pgcd(6, 0) → retourne 6. La condition <code>if b == 0</code> est le cas de base qui arrête la récursion.</p>
+</div>
+
+---
+
+<div class="rounded-xl border border-purple-500/20 bg-purple-500/5 p-5 my-8">
+  <h4 class="font-bold text-purple-400 mb-4 font-mono text-sm">📂 Fichiers — Classes et objets</h4>
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+    {[
+      { fichier: 'classe-1.py', desc: 'Première classe — attributs directs' },
+      { fichier: 'classe-2.py', desc: 'Constructeur __init__ simple' },
+      { fichier: 'classe-3.py', desc: 'Paramètres au constructeur + méthode' },
+      { fichier: 'pgcd.py', desc: 'Algorithme PGCD récursif' },
+    ].map(f => (
+      <a
+        href={"https://github.com/vincent-herm/fablab-esp32-ateliers/blob/main/cours-exemples/poo/" + f.fichier}
+        target="_blank"
+        rel="noopener"
+        class="flex items-center gap-3 rounded-lg bg-base-300/40 border border-base-200/60 hover:border-purple-500/40 hover:bg-purple-500/5 p-3 transition-all group"
+      >
+        <span class="font-mono text-xs text-purple-400 font-bold shrink-0">{f.fichier}</span>
+        <span class="text-xs text-base-content/60 group-hover:text-base-content/80 transition-colors">{f.desc}</span>
+      </a>
+    ))}
+  </div>
+</div>
+
+---
+
+## Prochaine étape
+
+<div class="rounded-xl border border-primary/20 bg-primary/5 p-6 my-8">
+  <div class="flex items-center justify-between gap-4 flex-wrap">
+    <div>
+      <h4 class="font-bold mb-1">Atelier 01 — Serveur web ESP32</h4>
+      <p class="text-sm text-base-content/60">Mets en pratique ces concepts avec un projet WiFi complet.</p>
+    </div>
+    <a href={siteUrl('/ateliers/serveur-web-esp32/')} class="btn btn-primary btn-sm whitespace-nowrap">
+      Démarrer l'atelier →
+    </a>
+  </div>
+</div>
+
+</div>
+
+</Layout>

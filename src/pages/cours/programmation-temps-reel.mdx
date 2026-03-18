@@ -150,6 +150,34 @@ while True:
 
 ---
 
+<div class="rounded-xl border border-purple-500/20 bg-purple-500/5 p-5 my-8">
+  <h4 class="font-bold text-purple-400 mb-4 font-mono text-sm">📂 Fichiers — Mesure du temps</h4>
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+    {[
+      { fichier: 'lecture-bp-temps-bloquant.py', desc: "Durée d'appui — version bloquante" },
+      { fichier: 'lecture-bp-temps-ok.py', desc: "Durée d'appui — version non-bloquante" },
+      { fichier: 'methode-ticks.py', desc: 'Découverte de ticks_ms()' },
+      { fichier: 'lecture-bp-temps-ticks-bloquant.py', desc: 'Durée appui avec ticks — bloquant' },
+      { fichier: 'lecture-bp-temps-ticks-ok.py', desc: 'Durée appui avec ticks — non-bloquant' },
+      { fichier: 'mesure-temps-deux-fronts-1.py', desc: 'Entre deux fronts — comptage boucles' },
+      { fichier: 'mesure-temps-deux-fronts-2.py', desc: 'Entre deux fronts — ticks_ms()' },
+      { fichier: 'mesure-temps-deux-fronts-3.py', desc: 'Version avec précaution initiale' },
+    ].map(f => (
+      <a
+        href={"https://github.com/vincent-herm/fablab-esp32-ateliers/blob/main/cours-exemples/timing/" + f.fichier}
+        target="_blank"
+        rel="noopener"
+        class="flex items-center gap-3 rounded-lg bg-base-300/40 border border-base-200/60 hover:border-purple-500/40 hover:bg-purple-500/5 p-3 transition-all group"
+      >
+        <span class="font-mono text-xs text-purple-400 font-bold shrink-0">{f.fichier}</span>
+        <span class="text-xs text-base-content/60 group-hover:text-base-content/80 transition-colors">{f.desc}</span>
+      </a>
+    ))}
+  </div>
+</div>
+
+---
+
 ## Séquenceur — machine à états
 
 Pour des séquences plus complexes, on utilise une **machine à états**. Le programme mémorise dans quel "état" il se trouve et quand passer au suivant.
@@ -224,6 +252,29 @@ while True:
 
     time.sleep_ms(10)
 ```
+
+---
+
+<div class="rounded-xl border border-purple-500/20 bg-purple-500/5 p-5 my-8">
+  <h4 class="font-bold text-purple-400 mb-4 font-mono text-sm">📂 Fichiers — Séquenceur</h4>
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+    {[
+      { fichier: 'sequenceur.py', desc: 'Séquenceur bloquant — illustre la limite' },
+      { fichier: 'boucle-rapide-simple.py', desc: 'Boucle 10 ms non-bloquante (2 LEDs)' },
+      { fichier: 'boucle-rapide-plus.py', desc: 'Boucle 1 ms — LED à 500 Hz' },
+    ].map(f => (
+      <a
+        href={"https://github.com/vincent-herm/fablab-esp32-ateliers/blob/main/cours-exemples/sequenceur/" + f.fichier}
+        target="_blank"
+        rel="noopener"
+        class="flex items-center gap-3 rounded-lg bg-base-300/40 border border-base-200/60 hover:border-purple-500/40 hover:bg-purple-500/5 p-3 transition-all group"
+      >
+        <span class="font-mono text-xs text-purple-400 font-bold shrink-0">{f.fichier}</span>
+        <span class="text-xs text-base-content/60 group-hover:text-base-content/80 transition-colors">{f.desc}</span>
+      </a>
+    ))}
+  </div>
+</div>
 
 ---
 
@@ -302,6 +353,29 @@ while True:
         t_debut = t_fin = None
     time.sleep_ms(10)
 ```
+
+---
+
+<div class="rounded-xl border border-purple-500/20 bg-purple-500/5 p-5 my-8">
+  <h4 class="font-bold text-purple-400 mb-4 font-mono text-sm">📂 Fichiers — Interruptions</h4>
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+    {[
+      { fichier: 'interruption1.py', desc: 'IRQ front montant — principe de base' },
+      { fichier: 'interruption2.py', desc: 'IRQ avec flag global — bonne pratique' },
+      { fichier: 'interruption3.py', desc: 'LED active 3 s sur interruption' },
+    ].map(f => (
+      <a
+        href={"https://github.com/vincent-herm/fablab-esp32-ateliers/blob/main/cours-exemples/interruptions/" + f.fichier}
+        target="_blank"
+        rel="noopener"
+        class="flex items-center gap-3 rounded-lg bg-base-300/40 border border-base-200/60 hover:border-purple-500/40 hover:bg-purple-500/5 p-3 transition-all group"
+      >
+        <span class="font-mono text-xs text-purple-400 font-bold shrink-0">{f.fichier}</span>
+        <span class="text-xs text-base-content/60 group-hover:text-base-content/80 transition-colors">{f.desc}</span>
+      </a>
+    ))}
+  </div>
+</div>
 
 ---
 

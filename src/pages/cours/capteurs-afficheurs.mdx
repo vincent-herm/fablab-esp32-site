@@ -99,6 +99,29 @@ while True:
 
 ---
 
+<div class="rounded-xl border border-purple-500/20 bg-purple-500/5 p-5 my-8">
+  <h4 class="font-bold text-purple-400 mb-4 font-mono text-sm">📂 Fichiers — Entrées analogiques (ADC)</h4>
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+    {[
+      { fichier: 'entree-analogique.py', desc: 'Lecture ADC et conversion en tension' },
+      { fichier: 'entree-analogique-neopixel.py', desc: 'Potentiomètre contrôle les NeoPixels' },
+      { fichier: 'cellule-photo.py', desc: "LDR — LED s'allume dans l'obscurité" },
+    ].map(f => (
+      <a
+        href={"https://github.com/vincent-herm/fablab-esp32-ateliers/blob/main/cours-exemples/analogique/" + f.fichier}
+        target="_blank"
+        rel="noopener"
+        class="flex items-center gap-3 rounded-lg bg-base-300/40 border border-base-200/60 hover:border-purple-500/40 hover:bg-purple-500/5 p-3 transition-all group"
+      >
+        <span class="font-mono text-xs text-purple-400 font-bold shrink-0">{f.fichier}</span>
+        <span class="text-xs text-base-content/60 group-hover:text-base-content/80 transition-colors">{f.desc}</span>
+      </a>
+    ))}
+  </div>
+</div>
+
+---
+
 ## OLED SSD1306 — Afficheur I2C
 
 Le SSD1306 est un afficheur OLED 128×64 pixels, communiquant en I2C. Le module `ssd1306` est inclus dans MicroPython pour ESP32.
@@ -185,6 +208,29 @@ for x in range(128):
     oled.pixel(x, y, 1)
 oled.show()
 ```
+
+---
+
+<div class="rounded-xl border border-purple-500/20 bg-purple-500/5 p-5 my-8">
+  <h4 class="font-bold text-purple-400 mb-4 font-mono text-sm">📂 Fichiers — Afficheur OLED SSD1306</h4>
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+    {[
+      { fichier: 'oled-base.py', desc: 'Texte, formes et commandes de base' },
+      { fichier: 'mesure-vitesse-OLED.py', desc: 'Mesure de vitesse affichée en temps réel' },
+      { fichier: 'sinus.py', desc: 'Tracé sinus et courbes de Lissajous' },
+    ].map(f => (
+      <a
+        href={"https://github.com/vincent-herm/fablab-esp32-ateliers/blob/main/cours-exemples/oled/" + f.fichier}
+        target="_blank"
+        rel="noopener"
+        class="flex items-center gap-3 rounded-lg bg-base-300/40 border border-base-200/60 hover:border-purple-500/40 hover:bg-purple-500/5 p-3 transition-all group"
+      >
+        <span class="font-mono text-xs text-purple-400 font-bold shrink-0">{f.fichier}</span>
+        <span class="text-xs text-base-content/60 group-hover:text-base-content/80 transition-colors">{f.desc}</span>
+      </a>
+    ))}
+  </div>
+</div>
 
 ---
 
@@ -275,6 +321,28 @@ while True:
     oled.show()
     time.sleep(2)
 ```
+
+---
+
+<div class="rounded-xl border border-purple-500/20 bg-purple-500/5 p-5 my-8">
+  <h4 class="font-bold text-purple-400 mb-4 font-mono text-sm">📂 Fichiers — Température DS18B20</h4>
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+    {[
+      { fichier: 'capteur-DS18B20.py', desc: 'Un seul capteur DS18B20' },
+      { fichier: 'ensemble-DS18B20.py', desc: 'Plusieurs capteurs sur un fil' },
+    ].map(f => (
+      <a
+        href={"https://github.com/vincent-herm/fablab-esp32-ateliers/blob/main/cours-exemples/temperature/" + f.fichier}
+        target="_blank"
+        rel="noopener"
+        class="flex items-center gap-3 rounded-lg bg-base-300/40 border border-base-200/60 hover:border-purple-500/40 hover:bg-purple-500/5 p-3 transition-all group"
+      >
+        <span class="font-mono text-xs text-purple-400 font-bold shrink-0">{f.fichier}</span>
+        <span class="text-xs text-base-content/60 group-hover:text-base-content/80 transition-colors">{f.desc}</span>
+      </a>
+    ))}
+  </div>
+</div>
 
 ---
 

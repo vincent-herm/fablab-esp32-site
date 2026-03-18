@@ -49,12 +49,21 @@ const cours = [
     ready: true,
   },
   {
-    href: siteUrl('/cours/exemples/'),
-    title: 'Exemples de code',
-    description: '66 scripts MicroPython classés par thème : GPIO, PWM, NeoPixel, ADC, OLED, interruptions, audio.',
-    category: 'Référence',
-    color: 'purple',
-    icon: '📂',
+    href: siteUrl('/cours/audio/'),
+    title: 'Audio sur ESP32',
+    description: 'Générer des sons avec le PWM : buzzer, fréquences, notes musicales et gammes.',
+    category: 'Audio',
+    color: 'amber',
+    icon: '🎵',
+    ready: true,
+  },
+  {
+    href: siteUrl('/cours/poo/'),
+    title: 'Programmation OO',
+    description: 'Classes, objets, constructeurs et héritage en MicroPython — organiser son code pour le réutiliser.',
+    category: 'Avancé',
+    color: 'violet',
+    icon: '🧱',
     ready: true,
   },
   {
@@ -75,15 +84,6 @@ const cours = [
     icon: '🌐',
     ready: false,
   },
-  {
-    href: '#',
-    title: 'Audio sur ESP32',
-    description: 'I2S, codecs, génération de sons, lecture WAV et MP3 — l\'audio pas à pas.',
-    category: 'Audio',
-    color: 'amber',
-    icon: '🎵',
-    ready: false,
-  },
 ];
 
 const colorMap: Record<string, string> = {
@@ -94,6 +94,7 @@ const colorMap: Record<string, string> = {
   cyan: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20 hover:border-cyan-500/40',
   pink: 'bg-pink-500/10 text-pink-400 border-pink-500/20 hover:border-pink-500/40',
   amber: 'bg-amber-500/10 text-amber-400 border-amber-500/20 hover:border-amber-500/40',
+  violet: 'bg-violet-500/10 text-violet-400 border-violet-500/20 hover:border-violet-500/40',
 };
 ---
 

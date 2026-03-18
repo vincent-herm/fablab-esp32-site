@@ -88,6 +88,29 @@ print("Fini !")
 
 ---
 
+<div class="rounded-xl border border-purple-500/20 bg-purple-500/5 p-5 my-8">
+  <h4 class="font-bold text-purple-400 mb-4 font-mono text-sm">📂 Fichiers — GPIO numérique (sorties)</h4>
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+    {[
+      { fichier: 'led.py', desc: 'LED qui clignote à 1 Hz' },
+      { fichier: 'led-3-fois.py', desc: "Clignote 3 fois puis s'arrête" },
+      { fichier: 'led-temps.py', desc: 'Mesure le temps de 10 000 clignotements' },
+    ].map(f => (
+      <a
+        href={"https://github.com/vincent-herm/fablab-esp32-ateliers/blob/main/cours-exemples/gpio/" + f.fichier}
+        target="_blank"
+        rel="noopener"
+        class="flex items-center gap-3 rounded-lg bg-base-300/40 border border-base-200/60 hover:border-purple-500/40 hover:bg-purple-500/5 p-3 transition-all group"
+      >
+        <span class="font-mono text-xs text-purple-400 font-bold shrink-0">{f.fichier}</span>
+        <span class="text-xs text-base-content/60 group-hover:text-base-content/80 transition-colors">{f.desc}</span>
+      </a>
+    ))}
+  </div>
+</div>
+
+---
+
 ## GPIO numérique — entrées (boutons)
 
 Pour lire un bouton, on configure le pin en entrée. La résistance pull-up interne évite le pin "flottant" quand le bouton est relâché.
@@ -121,6 +144,38 @@ while True:
     else:
         led.off()
 ```
+
+---
+
+<div class="rounded-xl border border-purple-500/20 bg-purple-500/5 p-5 my-8">
+  <h4 class="font-bold text-purple-400 mb-4 font-mono text-sm">📂 Fichiers — Boutons et comptage</h4>
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+    {[
+      { fichier: 'led-bouton.py', desc: 'LED contrôlée par un bouton' },
+      { fichier: 'led-stop.py', desc: 'Bouton stop/reprendre' },
+      { fichier: 'tempo-eclairage.py', desc: "LED s'éteint après 2 secondes" },
+      { fichier: 'tempo-eclairage-optimise.py', desc: 'Version non-bloquante avec ticks_ms()' },
+      { fichier: 'lecture-bp.py', desc: "Lecture simple d'un bouton" },
+      { fichier: 'comptage-NFP.py', desc: 'Comptage naïf — illustre le problème' },
+      { fichier: 'comptage-bloquant.py', desc: 'Comptage — version bloquante' },
+      { fichier: 'comptage-ok.py', desc: 'Comptage — version non-bloquante (front montant)' },
+      { fichier: 'comptage-thread.py', desc: 'Comptage avec thread — multitâche' },
+      { fichier: 'touchpad.py', desc: 'Capteur capacitif (touch)' },
+      { fichier: 'touchpad-comptage-bloquant.py', desc: 'Comptage touch — version bloquante' },
+      { fichier: 'touchpad-comptage-ok.py', desc: 'Comptage touch — version non-bloquante' },
+    ].map(f => (
+      <a
+        href={"https://github.com/vincent-herm/fablab-esp32-ateliers/blob/main/cours-exemples/boutons/" + f.fichier}
+        target="_blank"
+        rel="noopener"
+        class="flex items-center gap-3 rounded-lg bg-base-300/40 border border-base-200/60 hover:border-purple-500/40 hover:bg-purple-500/5 p-3 transition-all group"
+      >
+        <span class="font-mono text-xs text-purple-400 font-bold shrink-0">{f.fichier}</span>
+        <span class="text-xs text-base-content/60 group-hover:text-base-content/80 transition-colors">{f.desc}</span>
+      </a>
+    ))}
+  </div>
+</div>
 
 ---
 
@@ -174,6 +229,29 @@ def luminosite(pourcent):
 luminosite(50)   # 50% perçu (pas 50% électrique)
 luminosite(100)  # pleine puissance
 ```
+
+---
+
+<div class="rounded-xl border border-purple-500/20 bg-purple-500/5 p-5 my-8">
+  <h4 class="font-bold text-purple-400 mb-4 font-mono text-sm">📂 Fichiers — PWM</h4>
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+    {[
+      { fichier: 'pwm.py', desc: 'Variation de luminosité linéaire' },
+      { fichier: 'pwm-correction.py', desc: 'Correction gamma perceptuelle' },
+      { fichier: 'pwm-allume-bp.py', desc: 'Fade-in progressif sur appui bouton' },
+    ].map(f => (
+      <a
+        href={"https://github.com/vincent-herm/fablab-esp32-ateliers/blob/main/cours-exemples/pwm/" + f.fichier}
+        target="_blank"
+        rel="noopener"
+        class="flex items-center gap-3 rounded-lg bg-base-300/40 border border-base-200/60 hover:border-purple-500/40 hover:bg-purple-500/5 p-3 transition-all group"
+      >
+        <span class="font-mono text-xs text-purple-400 font-bold shrink-0">{f.fichier}</span>
+        <span class="text-xs text-base-content/60 group-hover:text-base-content/80 transition-colors">{f.desc}</span>
+      </a>
+    ))}
+  </div>
+</div>
 
 ---
 
@@ -254,6 +332,32 @@ while True:
     offset = (offset + 1) % 256
     time.sleep_ms(20)
 ```
+
+---
+
+<div class="rounded-xl border border-purple-500/20 bg-purple-500/5 p-5 my-8">
+  <h4 class="font-bold text-purple-400 mb-4 font-mono text-sm">📂 Fichiers — NeoPixel RGB</h4>
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+    {[
+      { fichier: 'neopixel.py', desc: 'Couleur unique sur toutes les LEDs' },
+      { fichier: 'neopixel-defilement.py', desc: 'Défilement de gauche à droite' },
+      { fichier: 'neopixel-x-allumes.py', desc: 'Nombre de LEDs contrôlé par bouton' },
+      { fichier: 'neopixel-random.py', desc: 'Activation aléatoire' },
+      { fichier: 'neopixel-rainbow.py', desc: 'Arc-en-ciel défilant' },
+      { fichier: 'tirage-aleatoire.py', desc: 'Distribution aléatoire uniforme' },
+    ].map(f => (
+      <a
+        href={"https://github.com/vincent-herm/fablab-esp32-ateliers/blob/main/cours-exemples/neopixel/" + f.fichier}
+        target="_blank"
+        rel="noopener"
+        class="flex items-center gap-3 rounded-lg bg-base-300/40 border border-base-200/60 hover:border-purple-500/40 hover:bg-purple-500/5 p-3 transition-all group"
+      >
+        <span class="font-mono text-xs text-purple-400 font-bold shrink-0">{f.fichier}</span>
+        <span class="text-xs text-base-content/60 group-hover:text-base-content/80 transition-colors">{f.desc}</span>
+      </a>
+    ))}
+  </div>
+</div>
 
 ---
 
