@@ -5,8 +5,8 @@ import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
-  site: 'https://vincent-herm.github.io',
-  base: '/fablab-esp32-site',
+  site: 'https://opentek.fr',
+  base: '',
   vite: {
     plugins: [tailwindcss()]
   },
