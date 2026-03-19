@@ -16,8 +16,23 @@ const blocs = [
     tags: ['GRAFCET', 'IEC 60848', 'MicroPython', 'Automate', 'Séquentiel'],
     fichiers: [
       { nom: 'grafcet.py', desc: 'Moteur GRAFCET réutilisable — étapes, transitions, timers' },
-      { nom: 'ascenseur.py', desc: 'Exemple générique documenté ligne par ligne' },
-      { nom: 'ascenseur_enim_led.py', desc: 'Exemple adapté à la carte ENIM (sans OLED)' },
+      { nom: 'ascenseur_enim_led.py', desc: 'Ascenseur ENIM avec LEDs de statut' },
+    ],
+  },
+  {
+    id: 'neoprog',
+    titre: 'NeoPixel progressif',
+    soustitre: 'Affichage fluide sur bandeau LED',
+    description: 'Interpoler la luminosité entre deux LEDs adjacentes pour afficher une valeur numérique sans saut visible. Correction gamma intégrée. Classe réutilisable : jauge, VU-mètre, niveau d\'ascenseur, barre de progression.',
+    icon: '🌈',
+    color: 'purple',
+    ready: true,
+    href: '/avance/neoprog/',
+    github: 'https://github.com/vincent-herm/fablab-esp32-ateliers/tree/main/avance/neoprog',
+    tags: ['NeoPixel', 'WS2812', 'Interpolation', 'Gamma', 'MicroPython'],
+    fichiers: [
+      { nom: 'neoprog.py', desc: 'Classe NeoProgressif — interpolation + correction gamma' },
+      { nom: 'ascenseur_enim_v2.py', desc: 'Ascenseur GRAFCET avec affichage NeoPixel progressif' },
     ],
   },
   {

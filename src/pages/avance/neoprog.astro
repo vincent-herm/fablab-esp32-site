@@ -1,0 +1,207 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import DifficultyBadge from '../../components/DifficultyBadge.astro';
+import GitHubCodeBlock from '../../components/GitHubCodeBlock.astro';
+import { siteUrl } from '../../utils/url';
+
+const REPO = 'vincent-herm/fablab-esp32-ateliers';
+const title = 'NeoPixel progressif — Affichage fluide sur bandeau LED';
+const description = 'Interpolation douce entre LEDs WS2812 avec correction gamma — classe NeoProgressif MicroPython. Application : ascenseur simulé sur carte ENIM avec affichage progressif du niveau.';
+---
+<Layout title={title} description={description}>
+
+<div class="border-b border-base-200/60 bg-base-200/20">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+    <div class="flex items-center gap-2 text-sm text-base-content/50">
+      <a href={siteUrl('/')} class="hover:text-base-content transition-colors">Accueil</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <a href={siteUrl('/avance/')} class="hover:text-base-content transition-colors">Avancé</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <span class="text-base-content/80">NeoPixel progressif</span>
+    </div>
+  </div>
+</div>
+
+<section class="py-12 hero-pattern border-b border-base-200/60">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-2xl">🌈</span>
+      <span class="text-xs px-2.5 py-1 rounded-full bg-purple-500/15 text-purple-400 font-medium">Affichage</span>
+      <DifficultyBadge level="avance" />
+    </div>
+    <h1 class="text-3xl sm:text-4xl font-black mb-4">NeoPixel progressif</h1>
+    <p class="text-base-content/65 text-lg leading-relaxed max-w-2xl">
+      Afficher une valeur numérique sur un bandeau WS2812 <em>sans saut visible</em> — interpolation entre deux LEDs adjacentes
+      avec correction gamma. Classe réutilisable : jauge, VU-mètre, niveau d'ascenseur, barre de progression.
+    </p>
+  </div>
+</section>
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+  <!-- THÉORIE -->
+  <section class="mb-20 prose-section">
+
+    <h2 class="text-2xl font-black mb-6 mt-12">Le problème des positions discrètes</h2>
+
+    <p class="text-base-content/80 leading-relaxed mb-4">
+      Un bandeau NeoPixel de 8 LEDs ne peut afficher que <strong>8 positions</strong>.
+      Si une valeur passe de 374 à 376, rien ne bouge — puis d'un coup une LED bascule.
+      Sur un affichage de niveau (ascenseur, jauge, VU-mètre), cet effet de saut est très visible.
+    </p>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-6">
+      <div class="rounded-xl border border-red-500/20 bg-red-500/5 p-5">
+        <h4 class="font-bold text-red-400 mb-2">❌ Sans interpolation</h4>
+        <p class="text-sm text-base-content/70 leading-relaxed">
+          La LED s'allume ou s'éteint d'un coup. Sur 8 LEDs pour 1000 valeurs,
+          chaque LED couvre 125 unités — saut très visible à l'œil.
+        </p>
+      </div>
+      <div class="rounded-xl border border-purple-500/20 bg-purple-500/5 p-5">
+        <h4 class="font-bold text-purple-400 mb-2">✓ Avec interpolation</h4>
+        <p class="text-sm text-base-content/70 leading-relaxed">
+          Deux LEDs adjacentes sont allumées proportionnellement. La progression
+          paraît continue même avec seulement 8 LEDs physiques.
+        </p>
+      </div>
+    </div>
+
+    <h3 class="text-xl font-bold mb-4 mt-8">L'algorithme en deux étapes</h3>
+
+    <p class="text-base-content/80 leading-relaxed mb-4">
+      La position d'une valeur <code>x</code> tombe en général <em>entre</em> deux LEDs.
+      On calcule quelle fraction de chaque LED allumer :
+    </p>
+
+    <div class="overflow-x-auto rounded-xl border border-base-200/80 my-6">
+      <table class="table table-zebra w-full">
+        <thead>
+          <tr><th>Variable</th><th>Calcul</th><th>Signification</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="font-mono text-purple-400 text-sm">entier</td><td class="text-sm"><code>x * n // max</code></td><td class="text-sm text-base-content/60">Index de la LED "juste avant" la position</td></tr>
+          <tr><td class="font-mono text-purple-400 text-sm">frac2</td><td class="text-sm"><code>(x*n/max - entier) * 255</code></td><td class="text-sm text-base-content/60">Luminosité de la LED suivante (0–255)</td></tr>
+          <tr><td class="font-mono text-purple-400 text-sm">frac1</td><td class="text-sm"><code>255 - frac2</code></td><td class="text-sm text-base-content/60">Luminosité de la LED courante (complément)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="text-xl font-bold mb-4 mt-8">La correction gamma</h3>
+
+    <p class="text-base-content/80 leading-relaxed mb-4">
+      Même avec interpolation linéaire, la transition peut paraître brusque.
+      L'œil perçoit la lumière de façon <strong>non-linéaire</strong> : il est très sensible aux faibles luminosités
+      et peu sensible aux fortes. La correction gamma compense ça :
+    </p>
+
+    <div class="rounded-xl border border-purple-500/20 bg-purple-500/5 p-5 my-6">
+      <pre class="text-xs overflow-x-auto"><code>c2 = int((frac2 / 255) ** coef * 255)   # LED suivante — courbe en puissance
+c1 = int((frac1 / 255) ** coef * 255)   # LED courante</code></pre>
+      <p class="text-sm text-base-content/70 mt-3">
+        Avec <code>coef = 1.8</code>, les valeurs faibles sont "tassées" et les fortes amplifiées — la progression paraît régulière.
+        Augmenter <code>coef</code> adoucit encore la transition. Valeur 1.0 = linéaire (pas de correction).
+      </p>
+    </div>
+
+    <div class="rounded-xl border border-amber-500/20 bg-amber-500/5 p-5 my-6">
+      <h4 class="font-bold text-amber-400 mb-2">⚠️ Algorithme original</h4>
+      <p class="text-sm text-base-content/70 leading-relaxed">
+        La combinaison interpolation fractionnelle + correction gamma <em>appliquée à la fraction</em> (et non à la luminosité finale)
+        est absente des bibliothèques NeoPixel existantes — ni en MicroPython ni en Arduino.
+        C'est un algorithme développé spécifiquement pour ce module.
+      </p>
+    </div>
+
+  </section>
+
+  <hr class="border-base-200/60 my-12" />
+  <h2 class="text-2xl font-black mb-2">Fichiers commentés</h2>
+  <p class="text-base-content/60 mb-10">Chaque fichier est précédé de son contexte. Le code est affiché directement — bouton copier + lien GitHub disponibles.</p>
+
+  <div class="space-y-14">
+
+    <!-- LA CLASSE NEOPASSIF -->
+    <div>
+      <h3 class="text-xl font-black mb-1 flex items-center gap-2">
+        <span>🌈</span> La classe NeoProgressif
+      </h3>
+      <p class="text-sm text-base-content/50 mb-8">Le module réutilisable — fonctionne indépendamment de tout projet GRAFCET.</p>
+
+      <div class="space-y-10">
+
+        <div>
+          <h4 class="font-bold mb-3 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center text-xs font-black shrink-0">1</span>
+            neoprog.py — Interpolation + correction gamma
+          </h4>
+          <div class="rounded-xl border border-purple-500/20 bg-purple-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
+            <p>La classe <code>NeoProgressif</code> encapsule un bandeau NeoPixel et expose une seule méthode utile : <code>afficher(x)</code>. Elle gère en interne l'interpolation et la correction gamma.</p>
+            <ul class="list-disc list-inside mt-2 space-y-1">
+              <li><code>pin</code> — numéro de broche GPIO du bandeau</li>
+              <li><code>n</code> — nombre de LEDs (défaut : 8)</li>
+              <li><code>coef</code> — exposant gamma (défaut : 1.8)</li>
+              <li><code>couleur</code> — tuple RGB (défaut : bleu)</li>
+            </ul>
+            <p class="mt-2">Usage minimal :</p>
+            <pre class="bg-base-300/30 rounded p-3 text-xs mt-2 overflow-x-auto"><code>from neoprog import NeoProgressif
+neo = NeoProgressif(pin=26, n=8, couleur=(0, 255, 0))
+neo.afficher(500)    # position milieu
+neo.eteindre()       # tout éteindre</code></pre>
+          </div>
+          <GitHubCodeBlock repo={REPO} file="avance/neoprog/neoprog.py" title="neoprog.py — NeoPixel progressif avec correction gamma" />
+        </div>
+
+      </div>
+    </div>
+
+    <!-- L'ASCENSEUR AVEC NEOPROG -->
+    <div>
+      <h3 class="text-xl font-black mb-1 flex items-center gap-2">
+        <span>🏗️</span> L'ascenseur avec NeoPixel progressif
+      </h3>
+      <p class="text-sm text-base-content/50 mb-8">Le même ascenseur GRAFCET, enrichi d'un affichage visuel fluide du niveau.</p>
+
+      <div class="space-y-10">
+
+        <div>
+          <h4 class="font-bold mb-3 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center text-xs font-black shrink-0">1</span>
+            ascenseur_enim_v2.py — Grafcet + NeoProgressif
+          </h4>
+          <div class="rounded-xl border border-purple-500/20 bg-purple-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
+            <p>Cette version combine les deux modules : <code>grafcet.py</code> pour la logique séquentielle et <code>neoprog.py</code> pour l'affichage. La cabine simulée descend de 0 à -100 — convertie en valeur 0–1000 pour <code>NeoProgressif</code> :</p>
+            <pre class="bg-base-300/30 rounded p-3 text-xs mt-2 overflow-x-auto"><code>neo.afficher(int(-niveau * 10))
+# niveau=0   → afficher(0)    → bandeau éteint (cabine en haut)
+# niveau=-100 → afficher(1000) → bandeau plein  (cabine en bas)</code></pre>
+            <p class="mt-2"><strong>Fichiers nécessaires sur l'ESP32 :</strong> <code>grafcet.py</code>, <code>neoprog.py</code>, <code>essential.py</code> (sans OLED).</p>
+          </div>
+          <GitHubCodeBlock repo={REPO} file="avance/neoprog/ascenseur_enim_v2.py" title="ascenseur_enim_v2.py — Ascenseur ENIM avec NeoProgressif" />
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Retour / Précédent -->
+  <div class="rounded-xl border border-purple-500/20 bg-purple-500/5 p-6 my-12">
+    <div class="flex items-center justify-between gap-4 flex-wrap">
+      <div>
+        <h4 class="font-bold mb-1">Réutiliser NeoProgressif ailleurs</h4>
+        <p class="text-sm text-base-content/60">Copie <code>neoprog.py</code> dans n'importe quel projet. La classe est indépendante de GRAFCET — utilisable pour une jauge de température, un VU-mètre audio, une barre de progression, etc.</p>
+      </div>
+      <div class="flex flex-col gap-2">
+        <a href={siteUrl('/avance/grafcet/')} class="btn btn-ghost btn-sm whitespace-nowrap text-base-content/50">
+          ← GRAFCET (version LEDs)
+        </a>
+        <a href={siteUrl('/avance/')} class="btn btn-outline btn-sm whitespace-nowrap">
+          ← Retour à Avancé
+        </a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</Layout>

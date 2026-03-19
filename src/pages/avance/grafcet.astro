@@ -146,48 +146,19 @@ const description = 'Implémentation MicroPython du GRAFCET (IEC 60848) sur ESP3
       </div>
     </div>
 
-    <!-- NEOPIXEL PROGRESSIF -->
-    <div>
-      <h3 class="text-xl font-black mb-1 flex items-center gap-2">
-        <span>🌈</span> Affichage NeoPixel progressif
-      </h3>
-      <p class="text-sm text-base-content/50 mb-8">Interpolation douce entre les LEDs avec correction gamma — algorithme original.</p>
-
-      <div class="space-y-10">
-
-        <div>
-          <h4 class="font-bold mb-3 flex items-center gap-2">
-            <span class="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xs font-black shrink-0">1</span>
-            Le problème des 8 positions discrètes
-          </h4>
-          <div class="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
-            <p>Un bandeau NeoPixel de 8 LEDs ne peut afficher que 8 positions. Si une valeur passe de 374 à 376, rien ne bouge — puis d'un coup une LED s'allume. Sur un affichage de niveau (ascenseur, jauge, VU-mètre), cet effet de saut est très visible.</p>
-            <p class="mt-2">La solution : <strong>interpoler la luminosité entre deux LEDs adjacentes</strong>. La position tombe toujours entre deux LEDs — on allume les deux, proportionnellement à la distance :</p>
-            <pre class="bg-base-300/30 rounded p-3 text-xs mt-2 overflow-x-auto"><code>entier = x * n // max          # index de la LED "avant"
-frac2 = (x*n/max - entier)*255  # luminosité LED suivante (0–255)
-frac1 = 255 - frac2             # luminosité LED courante (complément)</code></pre>
-            <p class="mt-2">La <strong>correction gamma</strong> (paramètre <code>coef=1.8</code>) compense la perception non-linéaire de l'œil. Sans elle, même avec interpolation, la transition paraît brusque. La courbe <code>(frac/255)**coef</code> rend la progression perçue régulière.</p>
-            <p class="mt-2">Cet algorithme combinant interpolation fractionnelle et correction gamma appliquée à la fraction est <strong>introuvable dans les bibliothèques NeoPixel existantes</strong> — ni en MicroPython ni en Arduino.</p>
-          </div>
-          <GitHubCodeBlock repo={REPO} file="avance/neoprog.py" title="neoprog.py — NeoPixel progressif avec correction gamma" />
-        </div>
-
-      </div>
-    </div>
-
     <!-- L'ASCENSEUR -->
     <div>
       <h3 class="text-xl font-black mb-1 flex items-center gap-2">
         <span>🏗️</span> L'ascenseur simulé
       </h3>
-      <p class="text-sm text-base-content/50 mb-8">Exemple complet sur carte ENIM — 3 étapes, 3 transitions, simulation NeoPixel.</p>
+      <p class="text-sm text-base-content/50 mb-8">Exemple complet sur carte ENIM — 3 étapes, 3 transitions, LEDs de statut.</p>
 
       <div class="space-y-10">
 
         <div>
           <h4 class="font-bold mb-3 flex items-center gap-2">
             <span class="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xs font-black shrink-0">1</span>
-            Version complète — avec NeoPixel progressif
+            Ascenseur avec LEDs — version de base
           </h4>
           <div class="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
             <p>L'ascenseur est l'exemple pédagogique classique du GRAFCET. Trois étapes, trois transitions — une logique qui se lit comme un schéma :</p>
@@ -195,22 +166,10 @@ frac1 = 255 - frac2             # luminosité LED courante (complément)</code><
 Étape 1 — Descente  │ T1 : bpC OR niveau ≤ -99
 Étape 2 — Montée    │ T2 : bpB OR niveau ≥ -1
                     └──────────────────► Étape 0</code></pre>
-            <p class="mt-2">La simulation du niveau (<code>0</code> = haut, <code>-100</code> = bas) remplace les fins de course physiques quand elles ne sont pas connectées. Conversion pour <code>NeoProgressif</code> : <code>int(-niveau * 10)</code> mappe <code>[-100, 0]</code> sur <code>[1000, 0]</code>.</p>
-            <p class="mt-2"><strong>Fichiers nécessaires sur l'ESP32 :</strong> <code>grafcet.py</code>, <code>neoprog.py</code>, <code>essential.py</code> (sans OLED).</p>
-          </div>
-          <GitHubCodeBlock repo={REPO} file="avance/grafcet/ascenseur_enim_v2.py" title="ascenseur_enim_v2.py — Ascenseur ENIM avec NeoProgressif" />
-        </div>
-
-        <div>
-          <h4 class="font-bold mb-3 flex items-center gap-2">
-            <span class="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xs font-black shrink-0">2</span>
-            Version allégée — sans NeoProgressif
-          </h4>
-          <div class="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
-            <p>Si tu n'as pas besoin de l'affichage progressif, cette version utilise uniquement le NeoPixel standard importé depuis <code>essential.py</code>. Plus simple, moins de fichiers à transférer.</p>
+            <p class="mt-2">Le niveau simulé (<code>0</code> = haut, <code>-100</code> = bas) remplace les fins de course physiques. Les LEDs de la carte ENIM indiquent l'étape active. Version minimaliste : seuls <code>grafcet.py</code> et <code>essential.py</code> sont nécessaires.</p>
             <p class="mt-2"><strong>Fichiers nécessaires sur l'ESP32 :</strong> <code>grafcet.py</code>, <code>essential.py</code> (sans OLED).</p>
           </div>
-          <GitHubCodeBlock repo={REPO} file="avance/grafcet/ascenseur_enim_led.py" title="ascenseur_enim_led.py — Ascenseur ENIM sans NeoProgressif" />
+          <GitHubCodeBlock repo={REPO} file="avance/grafcet/ascenseur_enim_led.py" title="ascenseur_enim_led.py — Ascenseur ENIM avec LEDs" />
         </div>
 
       </div>
@@ -218,16 +177,22 @@ frac1 = 255 - frac2             # luminosité LED courante (complément)</code><
 
   </div>
 
-  <!-- Retour -->
+  <!-- Retour / Suite -->
   <div class="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-6 my-12">
     <div class="flex items-center justify-between gap-4 flex-wrap">
       <div>
         <h4 class="font-bold mb-1">Adapter à ton propre système</h4>
         <p class="text-sm text-base-content/60">Garde <code>grafcet.py</code> intact. Crée ton propre fichier avec ta table <code>T</code> et tes 4 fonctions. Divergence ET : <code>(0, (0,), (1, 2))</code> active les étapes 1 et 2 simultanément.</p>
+        <p class="text-sm text-base-content/60 mt-2">Pour aller plus loin : voir le module <strong>NeoPixel progressif</strong> qui ajoute un affichage visuel fluide au même ascenseur.</p>
       </div>
-      <a href={siteUrl('/avance/')} class="btn btn-outline btn-sm whitespace-nowrap">
-        ← Retour à Avancé
-      </a>
+      <div class="flex flex-col gap-2">
+        <a href={siteUrl('/avance/neoprog/')} class="btn btn-outline btn-sm whitespace-nowrap">
+          Suite : NeoPixel progressif →
+        </a>
+        <a href={siteUrl('/avance/')} class="btn btn-ghost btn-sm whitespace-nowrap text-base-content/50">
+          ← Retour à Avancé
+        </a>
+      </div>
     </div>
   </div>
 
