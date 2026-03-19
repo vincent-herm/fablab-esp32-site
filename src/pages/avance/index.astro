@@ -1,0 +1,162 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { siteUrl } from '../../utils/url';
+
+const blocs = [
+  {
+    id: 'grafcet',
+    titre: 'GRAFCET & Programmation séquentielle',
+    soustitre: 'Automates séquentiels sur ESP32',
+    description: 'Le GRAFCET (IEC 60848) est le standard industriel pour programmer des systèmes séquentiels : ascenseurs, chaînes de production, machines automatisées. Ce module MicroPython implémente le moteur d\'exécution complet — étapes, transitions, timers, fronts montants/descendants.',
+    icon: '🔁',
+    color: 'cyan',
+    ready: true,
+    github: 'https://github.com/vincent-herm/fablab-esp32-ateliers/tree/main/avance/grafcet',
+    tags: ['GRAFCET', 'IEC 60848', 'MicroPython', 'Automate', 'Séquentiel'],
+    fichiers: [
+      { nom: 'grafcet.py', desc: 'Moteur GRAFCET réutilisable — étapes, transitions, timers' },
+      { nom: 'ascenseur.py', desc: 'Exemple générique documenté ligne par ligne' },
+      { nom: 'ascenseur_enim_led.py', desc: 'Exemple adapté à la carte ENIM (sans OLED)' },
+    ],
+  },
+  {
+    id: 'pid',
+    titre: 'Régulation PID',
+    soustitre: 'Correcteur Proportionnel-Intégral-Dérivé',
+    description: 'Réguler une température, une vitesse, une position — le correcteur PID est la brique de base de l\'automatique industrielle. Implémentation MicroPython avec réglage des gains Kp, Ki, Kd.',
+    icon: '📈',
+    color: 'orange',
+    ready: false,
+    tags: ['PID', 'Régulation', 'Automatique', 'MicroPython'],
+    fichiers: [],
+  },
+  {
+    id: 'protocoles',
+    titre: 'Protocoles avancés',
+    soustitre: 'I2C, SPI, UART, I2S en profondeur',
+    description: 'Au-delà du câblage basique : débogage de bus, analyse de trames, multi-esclaves I2C, DMA SPI, communication inter-ESP32 par UART.',
+    icon: '🔗',
+    color: 'purple',
+    ready: false,
+    tags: ['I2C', 'SPI', 'UART', 'I2S', 'Protocoles'],
+    fichiers: [],
+  },
+  {
+    id: 'iot',
+    titre: 'IoT & MQTT',
+    soustitre: 'Connecter l\'ESP32 à un broker MQTT',
+    description: 'Publier des mesures, souscrire à des commandes, superviser plusieurs ESP32 depuis un tableau de bord. Node-RED, Home Assistant, broker Mosquitto.',
+    icon: '🌐',
+    color: 'pink',
+    ready: false,
+    tags: ['MQTT', 'IoT', 'WiFi', 'Node-RED', 'Home Assistant'],
+    fichiers: [],
+  },
+];
+
+const colorMap: Record<string, { border: string; bg: string; text: string; badge: string }> = {
+  cyan:   { border: 'border-cyan-500/30',   bg: 'bg-cyan-500/5',   text: 'text-cyan-400',   badge: 'bg-cyan-500/15 text-cyan-400' },
+  orange: { border: 'border-orange-500/30', bg: 'bg-orange-500/5', text: 'text-orange-400', badge: 'bg-orange-500/15 text-orange-400' },
+  purple: { border: 'border-purple-500/30', bg: 'bg-purple-500/5', text: 'text-purple-400', badge: 'bg-purple-500/15 text-purple-400' },
+  pink:   { border: 'border-pink-500/30',   bg: 'bg-pink-500/5',   text: 'text-pink-400',   badge: 'bg-pink-500/15 text-pink-400' },
+};
+---
+
+<Layout
+  title="Techniques avancées"
+  description="GRAFCET, PID, protocoles avancés et IoT sur ESP32 — modules MicroPython pour l'automatique industrielle et les projets avancés."
+>
+
+  <!-- Hero -->
+  <section class="py-20 hero-pattern border-b border-base-200/60">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-2xl">
+        <p class="text-cyan-400 text-sm font-mono font-medium mb-3">// avancé</p>
+        <h1 class="text-4xl sm:text-5xl font-black mb-5">Techniques avancées</h1>
+        <p class="text-base-content/65 text-lg leading-relaxed">
+          Modules MicroPython pour l'automatique industrielle, la régulation et les protocoles avancés sur ESP32.
+          Pour les makers et les ingénieurs qui veulent aller plus loin.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Blocs -->
+  <section class="py-16">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+
+      {blocs.map(bloc => (
+        <div
+          id={bloc.id}
+          class={`rounded-2xl border p-7 sm:p-9 scroll-mt-20 ${colorMap[bloc.color].border} ${colorMap[bloc.color].bg} ${!bloc.ready ? 'opacity-60' : ''}`}
+        >
+
+          <!-- En-tête du bloc -->
+          <div class="flex items-start justify-between gap-4 flex-wrap mb-6">
+            <div class="flex items-center gap-4">
+              <span class="text-4xl">{bloc.icon}</span>
+              <div>
+                <div class="flex items-center gap-2 mb-1">
+                  <h2 class="text-xl font-black">{bloc.titre}</h2>
+                  {!bloc.ready && (
+                    <span class="text-xs px-2 py-0.5 rounded-full bg-base-300/50 text-base-content/40">Bientôt</span>
+                  )}
+                </div>
+                <p class={`text-sm font-medium ${colorMap[bloc.color].text}`}>{bloc.soustitre}</p>
+              </div>
+            </div>
+            {bloc.ready && bloc.github && (
+              <a
+                href={bloc.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                class={`inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg ${colorMap[bloc.color].badge} hover:opacity-80 transition-opacity`}
+              >
+                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                </svg>
+                Voir sur GitHub
+              </a>
+            )}
+          </div>
+
+          <!-- Description -->
+          <p class="text-base-content/70 leading-relaxed mb-6">{bloc.description}</p>
+
+          <!-- Tags -->
+          <div class="flex flex-wrap gap-2 mb-6">
+            {bloc.tags.map(tag => (
+              <span class="text-xs px-2.5 py-1 rounded-md bg-base-300/50 text-base-content/50 font-mono">{tag}</span>
+            ))}
+          </div>
+
+          <!-- Fichiers (si dispo) -->
+          {bloc.fichiers.length > 0 && (
+            <div class="border-t border-base-200/40 pt-5">
+              <p class="text-xs font-bold text-base-content/40 uppercase tracking-wider mb-3">Fichiers disponibles</p>
+              <ul class="space-y-2">
+                {bloc.fichiers.map(f => (
+                  <li class="flex items-start gap-3">
+                    <span class={`font-mono text-xs font-bold mt-0.5 ${colorMap[bloc.color].text}`}>{f.nom}</span>
+                    <span class="text-xs text-base-content/55 leading-relaxed">{f.desc}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+        </div>
+      ))}
+
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="py-16 bg-base-200/30">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <p class="text-base-content/50 text-sm mb-2">Une technique que tu voudrais voir ici ?</p>
+      <a href={siteUrl('/a-propos/')} class="btn btn-outline btn-sm">Contacte-moi →</a>
+    </div>
+  </section>
+
+</Layout>
