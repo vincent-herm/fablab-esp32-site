@@ -45,7 +45,7 @@ const description = 'Contrôle des LEDs, boutons et LED RGB avec MicroPython : G
 
     <p class="text-base-content/80 leading-relaxed mb-4">Le GPIO (General Purpose Input/Output) est la façon la plus simple d'interagir avec le monde physique. Un pin peut être mis à <code>1</code> (3.3 V) ou <code>0</code> (0 V).</p>
 
-    <h3 class="text-xl font-bold mb-4 mt-8">GPIO numérique — entrées (boutons)</h3>
+    <h2 class="text-2xl font-black mb-6 mt-12">GPIO numérique — entrées (boutons)</h2>
 
     <p class="text-base-content/80 leading-relaxed mb-4">Pour lire un bouton, on configure le pin en entrée. La résistance pull-up interne évite le pin "flottant" quand le bouton est relâché.</p>
 
@@ -54,7 +54,7 @@ const description = 'Contrôle des LEDs, boutons et LED RGB avec MicroPython : G
       <p class="text-sm text-base-content/70">Avec PULL_UP, la logique est inversée : <code>0</code> = appuyé, <code>1</code> = relâché. Le bouton connecte le pin à GND quand il est pressé.</p>
     </div>
 
-    <h3 class="text-xl font-bold mb-4 mt-8">PWM — Pulse Width Modulation</h3>
+    <h2 class="text-2xl font-black mb-6 mt-12">PWM — Pulse Width Modulation</h2>
 
     <p class="text-base-content/80 leading-relaxed mb-4">Le PWM simule une sortie analogique en faisant varier la largeur des impulsions. Utilisé pour la luminosité des LEDs, les servomoteurs, les sons.</p>
 
@@ -73,11 +73,11 @@ const description = 'Contrôle des LEDs, boutons et LED RGB avec MicroPython : G
     <h4 class="font-bold mb-3 mt-6">Correction de luminosité (courbe gamma)</h4>
     <p class="text-base-content/80 leading-relaxed mb-4">L'œil humain ne perçoit pas la luminosité de façon linéaire. Une correction quadratique donne un rendu plus naturel.</p>
 
-    <h3 class="text-xl font-bold mb-4 mt-8">NeoPixel — LED RGB WS2812</h3>
+    <h2 class="text-2xl font-black mb-6 mt-12">NeoPixel — LED RGB WS2812</h2>
 
     <p class="text-base-content/80 leading-relaxed mb-4">Les NeoPixel (WS2812) sont des LED RGB adressables en série. Un seul fil de données contrôle autant de LED que tu veux.</p>
 
-    <h3 class="text-xl font-bold mb-4 mt-8">Résumé des pins ESP32</h3>
+    <h2 class="text-2xl font-black mb-6 mt-12">Résumé des pins ESP32</h2>
 
     <div class="overflow-x-auto rounded-xl border border-base-200/80 my-6">
       <table class="table table-zebra w-full">
