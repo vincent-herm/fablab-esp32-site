@@ -1,293 +1,236 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import DifficultyBadge from '../../components/DifficultyBadge.astro';
 import GitHubCodeBlock from '../../components/GitHubCodeBlock.astro';
 import { siteUrl } from '../../utils/url';
 
 const REPO = 'vincent-herm/fablab-esp32-ateliers';
+const title = 'GRAFCET & Programmation séquentielle';
+const description = 'Implémentation MicroPython du GRAFCET (IEC 60848) sur ESP32 — moteur séquentiel, timers, interpolation NeoPixel. Exemple complet : ascenseur simulé sur carte ENIM.';
 ---
+<Layout title={title} description={description}>
 
-<Layout
-  title="GRAFCET sur ESP32"
-  description="Implémentation MicroPython du standard GRAFCET (IEC 60848) sur ESP32 — moteur séquentiel, timers, interpolation NeoPixel. Exemple complet : ascenseur simulé sur carte ENIM."
->
-
-  <!-- Fil d'Ariane -->
-  <div class="border-b border-base-200/60 bg-base-200/20">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-      <div class="flex items-center gap-2 text-sm text-base-content/50">
-        <a href={siteUrl('/')} class="hover:text-base-content transition-colors">Accueil</a>
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-        <a href={siteUrl('/avance/')} class="hover:text-base-content transition-colors">Avancé</a>
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-        <span class="text-base-content/80">GRAFCET</span>
-      </div>
+<div class="border-b border-base-200/60 bg-base-200/20">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+    <div class="flex items-center gap-2 text-sm text-base-content/50">
+      <a href={siteUrl('/')} class="hover:text-base-content transition-colors">Accueil</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <a href={siteUrl('/avance/')} class="hover:text-base-content transition-colors">Avancé</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <span class="text-base-content/80">GRAFCET</span>
     </div>
   </div>
+</div>
 
-  <!-- Hero -->
-  <section class="py-12 hero-pattern border-b border-base-200/60">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center gap-3 mb-5">
-        <span class="text-2xl">🔁</span>
-        <span class="text-xs px-2.5 py-1 rounded-full bg-cyan-500/15 text-cyan-400 font-medium">Automatisme</span>
-        <span class="text-xs px-2.5 py-1 rounded-full bg-base-300/50 text-base-content/50 font-medium">Avancé</span>
+<section class="py-12 hero-pattern border-b border-base-200/60">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center gap-3 mb-5">
+      <span class="text-2xl">🔁</span>
+      <span class="text-xs px-2.5 py-1 rounded-full bg-cyan-500/15 text-cyan-400 font-medium">Automatisme</span>
+      <DifficultyBadge level="avance" />
+    </div>
+    <h1 class="text-3xl sm:text-4xl font-black mb-4">GRAFCET & Programmation séquentielle</h1>
+    <p class="text-base-content/65 text-lg leading-relaxed max-w-2xl">
+      Le standard industriel français pour commander des systèmes séquentiels — implémenté en MicroPython sur ESP32.
+      Ascenseurs, chaînes de production, machines automatisées : tout ce qui doit faire des choses <em>dans un ordre précis</em>.
+    </p>
+  </div>
+</section>
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+  <!-- THÉORIE -->
+  <section class="mb-20 prose-section">
+
+    <h2 class="text-2xl font-black mb-6 mt-12">C'est quoi le GRAFCET ?</h2>
+
+    <p class="text-base-content/80 leading-relaxed mb-4">
+      Le <strong>GRAFCET</strong> (Graphe Fonctionnel de Commande Étape/Transition) est un standard français normalisé
+      <strong>IEC 60848</strong>, utilisé dans toute l'industrie pour programmer des automates séquentiels.
+      Tu le retrouves dans les ascenseurs, les feux tricolores, les machines-outils, les chaînes de montage.
+    </p>
+
+    <p class="text-base-content/80 leading-relaxed mb-4">
+      Un système séquentiel passe d'un <strong>état stable</strong> à un autre selon des <strong>conditions logiques</strong>.
+      Le GRAFCET modélise ça avec deux éléments fondamentaux :
+    </p>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-6">
+      <div class="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-5">
+        <h4 class="font-bold text-cyan-400 mb-2">□ Étape</h4>
+        <p class="text-sm text-base-content/70 leading-relaxed">
+          Un état stable du système. Quand une étape est <strong>active</strong>, ses actions s'exécutent en continu.
+          Plusieurs étapes peuvent être simultanément actives (divergence ET = parallélisme).
+        </p>
       </div>
-      <h1 class="text-3xl sm:text-4xl font-black mb-4">GRAFCET & Programmation séquentielle</h1>
-      <p class="text-base-content/65 text-lg leading-relaxed max-w-2xl">
-        Le standard industriel français pour commander des systèmes séquentiels — implémenté en MicroPython sur ESP32.
-        Ascenseurs, chaînes de production, machines automatisées : tout ce qui doit faire des choses <em>dans un ordre précis</em>.
+      <div class="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-5">
+        <h4 class="font-bold text-cyan-400 mb-2">— Transition</h4>
+        <p class="text-sm text-base-content/70 leading-relaxed">
+          Une condition logique entre deux étapes. Quand la réceptivité est vraie
+          <em>et</em> l'étape source est active, la transition est franchie.
+        </p>
+      </div>
+    </div>
+
+    <h3 class="text-xl font-bold mb-4 mt-8">Le cycle d'exécution normalisé</h3>
+
+    <p class="text-base-content/80 leading-relaxed mb-4">
+      Un automate GRAFCET tourne en boucle infinie selon un cycle en <strong>6 phases séquentielles</strong>.
+      Respecter cet ordre garantit un comportement déterministe — chaque phase lit le résultat de la précédente :
+    </p>
+
+    <div class="overflow-x-auto rounded-xl border border-base-200/80 my-6">
+      <table class="table table-zebra w-full">
+        <thead>
+          <tr><th>Phase</th><th>Fonction</th><th>Ce qu'elle fait</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="font-mono text-cyan-400 text-sm">tick()</td><td class="font-medium">Timers</td><td class="text-sm text-base-content/60">Incrémente les compteurs de temps des étapes actives</td></tr>
+          <tr><td class="font-mono text-cyan-400 text-sm">gerer_actions()</td><td class="font-medium">Actions</td><td class="text-sm text-base-content/60">Calcule les variables logiques selon les étapes actives</td></tr>
+          <tr><td class="font-mono text-cyan-400 text-sm">affecter_sorties()</td><td class="font-medium">Sorties</td><td class="text-sm text-base-content/60">Applique les variables sur le matériel (LEDs, moteurs...)</td></tr>
+          <tr><td class="font-mono text-cyan-400 text-sm">lire_entrees()</td><td class="font-medium">Entrées</td><td class="text-sm text-base-content/60">Lit les capteurs et boutons</td></tr>
+          <tr><td class="font-mono text-cyan-400 text-sm">calculer_transitions()</td><td class="font-medium">Transitions</td><td class="text-sm text-base-content/60">Évalue les conditions de franchissement</td></tr>
+          <tr><td class="font-mono text-cyan-400 text-sm">franchir(T, trans)</td><td class="font-medium">Évolution</td><td class="text-sm text-base-content/60">Active/désactive les étapes selon les transitions validées</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="rounded-xl border border-amber-500/20 bg-amber-500/5 p-5 my-6">
+      <h4 class="font-bold text-amber-400 mb-2">⚠️ Pourquoi cet ordre ?</h4>
+      <p class="text-sm text-base-content/70 leading-relaxed">
+        Les sorties sont affectées <strong>avant</strong> la lecture des entrées. Cela évite qu'une sortie activée dans le même cycle influence une entrée dans le même cycle — comportement non-déterministe à éviter dans un automate industriel.
       </p>
     </div>
+
   </section>
 
-  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <hr class="border-base-200/60 my-12" />
+  <h2 class="text-2xl font-black mb-2">Fichiers commentés</h2>
+  <p class="text-base-content/60 mb-10">Chaque fichier est précédé de son contexte. Le code est affiché directement — bouton copier + lien GitHub disponibles.</p>
 
-    <!-- ===================================================================
-         PARTIE 1 — C'EST QUOI LE GRAFCET ?
-    ==================================================================== -->
-    <section class="mb-16">
+  <div class="space-y-14">
 
-      <h2 class="text-2xl font-black mb-6">C'est quoi le GRAFCET ?</h2>
+    <!-- LE MOTEUR GRAFCET -->
+    <div>
+      <h3 class="text-xl font-black mb-1 flex items-center gap-2">
+        <span>⚙️</span> Le moteur GRAFCET
+      </h3>
+      <p class="text-sm text-base-content/50 mb-8">La classe réutilisable — indépendante du matériel, utilisable dans n'importe quel projet.</p>
 
-      <p class="text-base-content/80 leading-relaxed mb-4">
-        Le <strong>GRAFCET</strong> (Graphe Fonctionnel de Commande Étape/Transition) est un standard français
-        normalisé <strong>IEC 60848</strong>, utilisé dans toute l'industrie pour programmer des automates séquentiels.
-        Tu le retrouves dans les ascenseurs, les feux tricolores, les machines-outils, les chaînes de montage.
-      </p>
+      <div class="space-y-10">
 
-      <p class="text-base-content/80 leading-relaxed mb-6">
-        L'idée est simple : un système séquentiel passe d'un <strong>état stable</strong> à un autre selon des
-        <strong>conditions logiques</strong>. Le GRAFCET modélise ça visuellement avec deux éléments :
-      </p>
-
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-        <div class="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-5">
-          <div class="text-xl mb-2">□ Étape</div>
-          <p class="text-sm text-base-content/70 leading-relaxed">
-            Un état stable du système. Quand une étape est <strong>active</strong>, ses actions s'exécutent.
-            Plusieurs étapes peuvent être actives simultanément (parallélisme).
-          </p>
-        </div>
-        <div class="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-5">
-          <div class="text-xl mb-2">— Transition</div>
-          <p class="text-sm text-base-content/70 leading-relaxed">
-            Une condition logique entre deux étapes. Quand la condition est vraie
-            <em>et</em> l'étape source est active, on franchit la transition.
-          </p>
-        </div>
-      </div>
-
-      <h3 class="text-xl font-bold mb-4">Le cycle d'exécution normalisé</h3>
-
-      <p class="text-base-content/80 leading-relaxed mb-5">
-        Un automate GRAFCET tourne en boucle infinie selon un cycle en <strong>5 phases séquentielles</strong>.
-        Respecter cet ordre est essentiel — c'est ce qui garantit un comportement déterministe :
-      </p>
-
-      <div class="rounded-xl border border-base-200/80 bg-base-200/20 overflow-hidden mb-8">
-        <table class="table w-full">
-          <thead>
-            <tr>
-              <th class="font-mono text-xs text-base-content/50">Phase</th>
-              <th>Fonction</th>
-              <th>Ce qu'elle fait</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td class="font-mono text-cyan-400">1. tick()</td><td class="font-medium">Timers</td><td class="text-sm text-base-content/60">Incrémente les compteurs de temps des étapes actives</td></tr>
-            <tr><td class="font-mono text-cyan-400">2. gerer_actions()</td><td class="font-medium">Actions</td><td class="text-sm text-base-content/60">Calcule les variables logiques selon les étapes actives</td></tr>
-            <tr><td class="font-mono text-cyan-400">3. affecter_sorties()</td><td class="font-medium">Sorties</td><td class="text-sm text-base-content/60">Applique les variables sur le matériel (LEDs, moteurs...)</td></tr>
-            <tr><td class="font-mono text-cyan-400">4. lire_entrees()</td><td class="font-medium">Entrées</td><td class="text-sm text-base-content/60">Lit les capteurs et boutons</td></tr>
-            <tr><td class="font-mono text-cyan-400">5. calculer_transitions()</td><td class="font-medium">Transitions</td><td class="text-sm text-base-content/60">Évalue les conditions de franchissement</td></tr>
-            <tr><td class="font-mono text-cyan-400">6. franchir()</td><td class="font-medium">Évolution</td><td class="text-sm text-base-content/60">Active/désactive les étapes selon les transitions validées</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-    </section>
-
-    <!-- ===================================================================
-         PARTIE 2 — LE MOTEUR GRAFCET
-    ==================================================================== -->
-    <section class="mb-16">
-
-      <h2 class="text-2xl font-black mb-4">Le moteur : <code class="text-cyan-400">grafcet.py</code></h2>
-
-      <p class="text-base-content/80 leading-relaxed mb-4">
-        La classe <code>Grafcet</code> encapsule tout l'état interne du séquenceur.
-        Elle ne connaît <strong>aucun composant matériel</strong> — pas de Pin, pas de LED, pas de capteur.
-        Elle ne manipule que des listes de booléens et des entiers.
-        C'est ce qui la rend réutilisable dans n'importe quel projet.
-      </p>
-
-      <p class="text-base-content/80 leading-relaxed mb-6">
-        La <strong>table de transitions</strong> <code>T</code> décrit la structure de l'automate sous forme de données,
-        pas de code. Chaque règle indique : "quand la transition N est franchie, désactiver ces étapes et activer celles-là".
-      </p>
-
-      <div class="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-5 mb-6">
-        <h4 class="font-bold text-cyan-400 mb-2 text-sm">Format de la table T</h4>
-        <code class="text-sm text-base-content/80 font-mono">
-          T = [<br/>
-          &nbsp;&nbsp;(0, (0,), (1,)),&nbsp;&nbsp;&nbsp;# transition 0 : désactive étape 0, active étape 1<br/>
-          &nbsp;&nbsp;(1, (1,), (2,)),&nbsp;&nbsp;&nbsp;# transition 1 : désactive étape 1, active étape 2<br/>
-          &nbsp;&nbsp;(2, (2,), (0,)),&nbsp;&nbsp;&nbsp;# transition 2 : désactive étape 2, active étape 0<br/>
-          ]
-        </code>
-      </div>
-
-      <GitHubCodeBlock
-        repo={REPO}
-        file="avance/grafcet/grafcet.py"
-        title="Moteur GRAFCET"
-      />
-
-    </section>
-
-    <!-- ===================================================================
-         PARTIE 3 — NEOPROG
-    ==================================================================== -->
-    <section class="mb-16">
-
-      <h2 class="text-2xl font-black mb-4">Affichage fluide : <code class="text-cyan-400">neoprog.py</code></h2>
-
-      <p class="text-base-content/80 leading-relaxed mb-4">
-        Un bandeau NeoPixel de 8 LEDs ne peut afficher que 8 positions discrètes.
-        Si une valeur passe de 374 à 376, rien ne bouge — puis d'un coup une LED s'allume.
-        Sur un affichage de niveau (ascenseur, jauge, VU-mètre), l'effet de saut est très visible.
-      </p>
-
-      <p class="text-base-content/80 leading-relaxed mb-4">
-        La classe <code>NeoProgressif</code> résout ça en <strong>interpolant la luminosité entre deux LEDs adjacentes</strong>.
-        La position tombe toujours entre deux LEDs : on allume les deux, proportionnellement à la distance.
-      </p>
-
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-        <div class="rounded-xl border border-base-200/80 bg-base-200/20 p-5">
-          <h4 class="font-bold text-sm mb-2">Sans interpolation</h4>
-          <p class="text-xs text-base-content/60 leading-relaxed">
-            Valeur 374 → LED 2 allumée<br/>
-            Valeur 376 → LED 3 allumée<br/>
-            <span class="text-warning">→ saut brutal visible à l'œil</span>
-          </p>
-        </div>
-        <div class="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-5">
-          <h4 class="font-bold text-sm mb-2">Avec interpolation</h4>
-          <p class="text-xs text-base-content/60 leading-relaxed">
-            Valeur 374 → LED 2 à 75%, LED 3 à 25%<br/>
-            Valeur 376 → LED 2 à 74%, LED 3 à 26%<br/>
-            <span class="text-success">→ transition imperceptible</span>
-          </p>
-        </div>
-      </div>
-
-      <p class="text-base-content/80 leading-relaxed mb-6">
-        La <strong>correction gamma</strong> (paramètre <code>coef=1.8</code>) compense la perception non-linéaire
-        de l'œil humain : sans elle, la transition paraît brusque même avec interpolation.
-        Une courbe en puissance <code>(frac/255)**coef</code> rend la progression perçue régulière.
-        Cet algorithme combinant interpolation fractionnelle et correction gamma est introuvable dans les
-        bibliothèques NeoPixel existantes — c'est une contribution originale.
-      </p>
-
-      <GitHubCodeBlock
-        repo={REPO}
-        file="avance/neoprog.py"
-        title="NeoPixel progressif"
-      />
-
-    </section>
-
-    <!-- ===================================================================
-         PARTIE 4 — L'ASCENSEUR
-    ==================================================================== -->
-    <section class="mb-16">
-
-      <h2 class="text-2xl font-black mb-4">Exemple complet : l'ascenseur</h2>
-
-      <p class="text-base-content/80 leading-relaxed mb-4">
-        L'ascenseur est l'exemple pédagogique classique du GRAFCET. Il illustre parfaitement la structure
-        séquentielle : attendre un ordre, descendre jusqu'en bas, remonter, attendre.
-        Trois étapes, trois transitions — et une logique claire qui se lit comme un schéma.
-      </p>
-
-      <!-- Schéma GRAFCET -->
-      <div class="rounded-xl border border-base-200/80 bg-base-200/20 p-6 mb-6 font-mono text-sm">
-        <div class="text-xs text-base-content/40 mb-4 font-sans">Schéma GRAFCET de l'ascenseur</div>
-        <div class="space-y-0 text-base-content/80">
-          <div class="flex items-center gap-3">
-            <div class="w-32 text-center border border-base-content/30 rounded px-2 py-1 text-xs">0 — Repos</div>
-            <span class="text-base-content/40 text-xs">led_bleue</span>
+        <div>
+          <h4 class="font-bold mb-3 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xs font-black shrink-0">1</span>
+            La classe Grafcet — étapes, timers, fronts montants/descendants
+          </h4>
+          <div class="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
+            <p>La classe <code>Grafcet</code> encapsule tout l'état interne du séquenceur. Elle ne connaît <strong>aucun composant matériel</strong> — pas de Pin, pas de LED, pas de capteur. Elle ne manipule que des listes de booléens et d'entiers. C'est ce qui la rend réutilisable dans n'importe quel projet.</p>
+            <p class="mt-2">La <strong>table de transitions T</strong> décrit la structure de l'automate sous forme de données :</p>
+            <pre class="bg-base-300/30 rounded p-3 text-xs mt-2 overflow-x-auto"><code>T = [
+    (0, (0,), (1,)),   # T0 : désactive étape 0, active étape 1
+    (1, (1,), (2,)),   # T1 : désactive étape 1, active étape 2
+    (2, (2,), (0,)),   # T2 : désactive étape 2, active étape 0
+]</code></pre>
+            <p class="mt-2">Les <strong>fronts montants/descendants</strong> (<code>rising</code> / <code>falling</code>) sont True pendant un seul cycle, au moment précis où une étape s'active ou se désactive — équivalent du <em>StepRising</em> / <em>StepFalling</em> des PLCs industriels.</p>
+            <ul class="list-disc list-inside mt-2 space-y-1">
+              <li><code>g.etapes[i]</code> — True si l'étape i est active</li>
+              <li><code>g.tempo[i]</code> — durée en ms depuis l'activation (remis à 0 à la désactivation)</li>
+              <li><code>g.rising[i]</code> — True pendant 1 cycle au moment de l'activation</li>
+              <li><code>g.falling[i]</code> — True pendant 1 cycle au moment de la désactivation</li>
+            </ul>
           </div>
-          <div class="ml-14 text-base-content/40 text-xs py-1">│ T0 : bpA ET tempo &gt; 200 ms</div>
-          <div class="flex items-center gap-3">
-            <div class="w-32 text-center border border-cyan-500/40 rounded px-2 py-1 text-xs text-cyan-400">1 — Descente</div>
-            <span class="text-base-content/40 text-xs">led_verte</span>
+          <GitHubCodeBlock repo={REPO} file="avance/grafcet/grafcet.py" title="grafcet.py — Moteur GRAFCET réutilisable" />
+        </div>
+
+      </div>
+    </div>
+
+    <!-- NEOPIXEL PROGRESSIF -->
+    <div>
+      <h3 class="text-xl font-black mb-1 flex items-center gap-2">
+        <span>🌈</span> Affichage NeoPixel progressif
+      </h3>
+      <p class="text-sm text-base-content/50 mb-8">Interpolation douce entre les LEDs avec correction gamma — algorithme original.</p>
+
+      <div class="space-y-10">
+
+        <div>
+          <h4 class="font-bold mb-3 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xs font-black shrink-0">1</span>
+            Le problème des 8 positions discrètes
+          </h4>
+          <div class="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
+            <p>Un bandeau NeoPixel de 8 LEDs ne peut afficher que 8 positions. Si une valeur passe de 374 à 376, rien ne bouge — puis d'un coup une LED s'allume. Sur un affichage de niveau (ascenseur, jauge, VU-mètre), cet effet de saut est très visible.</p>
+            <p class="mt-2">La solution : <strong>interpoler la luminosité entre deux LEDs adjacentes</strong>. La position tombe toujours entre deux LEDs — on allume les deux, proportionnellement à la distance :</p>
+            <pre class="bg-base-300/30 rounded p-3 text-xs mt-2 overflow-x-auto"><code>entier = x * n // max          # index de la LED "avant"
+frac2 = (x*n/max - entier)*255  # luminosité LED suivante (0–255)
+frac1 = 255 - frac2             # luminosité LED courante (complément)</code></pre>
+            <p class="mt-2">La <strong>correction gamma</strong> (paramètre <code>coef=1.8</code>) compense la perception non-linéaire de l'œil. Sans elle, même avec interpolation, la transition paraît brusque. La courbe <code>(frac/255)**coef</code> rend la progression perçue régulière.</p>
+            <p class="mt-2">Cet algorithme combinant interpolation fractionnelle et correction gamma appliquée à la fraction est <strong>introuvable dans les bibliothèques NeoPixel existantes</strong> — ni en MicroPython ni en Arduino.</p>
           </div>
-          <div class="ml-14 text-base-content/40 text-xs py-1">│ T1 : bpC OU niveau ≤ -99</div>
-          <div class="flex items-center gap-3">
-            <div class="w-32 text-center border border-cyan-500/40 rounded px-2 py-1 text-xs text-cyan-400">2 — Montée</div>
-            <span class="text-base-content/40 text-xs">led_jaune</span>
+          <GitHubCodeBlock repo={REPO} file="avance/neoprog.py" title="neoprog.py — NeoPixel progressif avec correction gamma" />
+        </div>
+
+      </div>
+    </div>
+
+    <!-- L'ASCENSEUR -->
+    <div>
+      <h3 class="text-xl font-black mb-1 flex items-center gap-2">
+        <span>🏗️</span> L'ascenseur simulé
+      </h3>
+      <p class="text-sm text-base-content/50 mb-8">Exemple complet sur carte ENIM — 3 étapes, 3 transitions, simulation NeoPixel.</p>
+
+      <div class="space-y-10">
+
+        <div>
+          <h4 class="font-bold mb-3 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xs font-black shrink-0">1</span>
+            Version complète — avec NeoPixel progressif
+          </h4>
+          <div class="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
+            <p>L'ascenseur est l'exemple pédagogique classique du GRAFCET. Trois étapes, trois transitions — une logique qui se lit comme un schéma :</p>
+            <pre class="bg-base-300/30 rounded p-3 text-xs mt-2 overflow-x-auto"><code>Étape 0 — Repos     │ T0 : bpA AND tempo[0] > 200 ms
+Étape 1 — Descente  │ T1 : bpC OR niveau ≤ -99
+Étape 2 — Montée    │ T2 : bpB OR niveau ≥ -1
+                    └──────────────────► Étape 0</code></pre>
+            <p class="mt-2">La simulation du niveau (<code>0</code> = haut, <code>-100</code> = bas) remplace les fins de course physiques quand elles ne sont pas connectées. Conversion pour <code>NeoProgressif</code> : <code>int(-niveau * 10)</code> mappe <code>[-100, 0]</code> sur <code>[1000, 0]</code>.</p>
+            <p class="mt-2"><strong>Fichiers nécessaires sur l'ESP32 :</strong> <code>grafcet.py</code>, <code>neoprog.py</code>, <code>essential.py</code> (sans OLED).</p>
           </div>
-          <div class="ml-14 text-base-content/40 text-xs py-1">│ T2 : bpB OU niveau ≥ -1</div>
-          <div class="ml-14 text-base-content/40 text-xs">└──────────────────► étape 0</div>
+          <GitHubCodeBlock repo={REPO} file="avance/grafcet/ascenseur_enim_v2.py" title="ascenseur_enim_v2.py — Ascenseur ENIM avec NeoProgressif" />
         </div>
-      </div>
 
-      <p class="text-base-content/80 leading-relaxed mb-4">
-        La simulation du niveau (<code>0</code> = haut, <code>-100</code> = bas) remplace les fins de course
-        physiques quand elles ne sont pas connectées. Le NeoPixel affiche la position en temps réel via
-        <code>NeoProgressif</code> — conversion : <code>int(-niveau * 10)</code> mappe <code>[-100, 0]</code> sur <code>[1000, 0]</code>.
-      </p>
-
-      <div class="rounded-xl border border-base-200/80 bg-base-200/20 p-5 mb-6">
-        <h4 class="font-bold text-sm mb-3">Fichiers nécessaires sur l'ESP32</h4>
-        <ul class="space-y-1.5 text-sm text-base-content/60 font-mono">
-          <li><span class="text-cyan-400">grafcet.py</span> — moteur GRAFCET</li>
-          <li><span class="text-cyan-400">neoprog.py</span> — affichage NeoPixel progressif</li>
-          <li><span class="text-cyan-400">essential.py</span> — déclarations carte ENIM (sans OLED)</li>
-          <li><span class="text-cyan-400">ascenseur_enim_v2.py</span> — programme principal</li>
-        </ul>
-      </div>
-
-      <GitHubCodeBlock
-        repo={REPO}
-        file="avance/grafcet/ascenseur_enim_v2.py"
-        title="Ascenseur — carte ENIM v2"
-      />
-
-    </section>
-
-    <!-- ===================================================================
-         PARTIE 5 — POUR ALLER PLUS LOIN
-    ==================================================================== -->
-    <section class="mb-8">
-      <h2 class="text-2xl font-black mb-6">Pour aller plus loin</h2>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div class="rounded-xl border border-base-200/80 bg-base-200/20 p-5">
-          <h4 class="font-bold text-sm mb-2">Adapter à ton propre système</h4>
-          <p class="text-xs text-base-content/60 leading-relaxed">
-            Garde <code>grafcet.py</code> intact. Crée ton propre fichier avec
-            ta table <code>T</code> et tes 4 fonctions. Le moteur fait le reste.
-          </p>
+        <div>
+          <h4 class="font-bold mb-3 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xs font-black shrink-0">2</span>
+            Version allégée — sans NeoProgressif
+          </h4>
+          <div class="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
+            <p>Si tu n'as pas besoin de l'affichage progressif, cette version utilise uniquement le NeoPixel standard importé depuis <code>essential.py</code>. Plus simple, moins de fichiers à transférer.</p>
+            <p class="mt-2"><strong>Fichiers nécessaires sur l'ESP32 :</strong> <code>grafcet.py</code>, <code>essential.py</code> (sans OLED).</p>
+          </div>
+          <GitHubCodeBlock repo={REPO} file="avance/grafcet/ascenseur_enim_led.py" title="ascenseur_enim_led.py — Ascenseur ENIM sans NeoProgressif" />
         </div>
-        <div class="rounded-xl border border-base-200/80 bg-base-200/20 p-5">
-          <h4 class="font-bold text-sm mb-2">Divergence ET (parallélisme)</h4>
-          <p class="text-xs text-base-content/60 leading-relaxed">
-            Pour activer plusieurs étapes simultanément :<br/>
-            <code class="text-xs">(0, (0,), (1, 2))</code><br/>
-            désactive l'étape 0, active 1 ET 2 en même temps.
-          </p>
-        </div>
-      </div>
-    </section>
 
-    <!-- Nav bas de page -->
-    <div class="border-t border-base-200/60 pt-8 flex items-center justify-between">
-      <a href={siteUrl('/avance/')} class="flex items-center gap-2 text-sm text-base-content/50 hover:text-primary transition-colors">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-        Retour à Avancé
-      </a>
+      </div>
     </div>
 
   </div>
+
+  <!-- Retour -->
+  <div class="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-6 my-12">
+    <div class="flex items-center justify-between gap-4 flex-wrap">
+      <div>
+        <h4 class="font-bold mb-1">Adapter à ton propre système</h4>
+        <p class="text-sm text-base-content/60">Garde <code>grafcet.py</code> intact. Crée ton propre fichier avec ta table <code>T</code> et tes 4 fonctions. Divergence ET : <code>(0, (0,), (1, 2))</code> active les étapes 1 et 2 simultanément.</p>
+      </div>
+      <a href={siteUrl('/avance/')} class="btn btn-outline btn-sm whitespace-nowrap">
+        ← Retour à Avancé
+      </a>
+    </div>
+  </div>
+
+</div>
+
 </Layout>
