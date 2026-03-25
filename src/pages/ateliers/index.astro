@@ -5,6 +5,15 @@ import { siteUrl } from '../../utils/url';
 
 const ateliers = [
   {
+    numero: 0,
+    title: 'Initiation — Zéro câblage',
+    description: '10 manipulations pour découvrir l\'ESP32 : REPL, LED, PWM, bouton, WiFi, serveur web. Rien à brancher.',
+    href: siteUrl('/ateliers/initiation/'),
+    level: 'debutant' as const,
+    duration: '3h',
+    tags: ['ESP32', 'MicroPython', 'WiFi', 'LED', 'Débutant'],
+  },
+  {
     numero: 1,
     title: 'Serveur web avec ESP32',
     description: 'Crée un point d\'accès WiFi, sers une page HTML et contrôle une LED depuis ton navigateur.',
@@ -94,7 +103,7 @@ const ateliers = [
         <div class="flex flex-wrap gap-3 mt-8">
           <div class="inline-flex items-center gap-2 bg-base-200/60 rounded-full px-4 py-2 text-sm">
             <span class="w-2 h-2 rounded-full bg-success"></span>
-            8 ateliers disponibles
+            9 ateliers disponibles
           </div>
           <div class="inline-flex items-center gap-2 bg-base-200/60 rounded-full px-4 py-2 text-sm font-semibold">
             20€ / 3h · 6 personnes max

@@ -1,0 +1,240 @@
+---
+title: "Initiation à l'ESP32 — Zéro câblage"
+description: "Découvre l'ESP32 et MicroPython en 10 manipulations progressives. Du REPL au serveur web contrôlé depuis ton smartphone — sans rien brancher."
+level: 'debutant'
+duration: '3h'
+tags: ['ESP32', 'MicroPython', 'WiFi', 'LED', 'REPL', 'Débutant']
+---
+
+import Layout from '../../layouts/Layout.astro';
+import GitHubCodeBlock from '../../components/GitHubCodeBlock.astro';
+import DifficultyBadge from '../../components/DifficultyBadge.astro';
+import { siteUrl } from '../../utils/url';
+
+<Layout
+  title="Atelier Initiation — ESP32 et MicroPython, zéro câblage"
+  description="Découvre l'ESP32 et MicroPython en 10 manipulations progressives. Du REPL au serveur web contrôlé depuis ton smartphone — sans rien brancher."
+>
+
+{/* Navigation */}
+<div class="border-b border-base-200/60 bg-base-200/20">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+    <div class="flex items-center gap-2 text-sm text-base-content/50">
+      <a href={siteUrl('/')} class="hover:text-base-content transition-colors">Accueil</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <a href={siteUrl('/ateliers/')} class="hover:text-base-content transition-colors">Ateliers</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <span class="text-base-content/80">Initiation ESP32</span>
+    </div>
+  </div>
+</div>
+
+{/* En-tête */}
+<section class="py-12 hero-pattern border-b border-base-200/60">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center gap-3 mb-6">
+      <span class="font-mono text-primary/60 text-sm font-bold bg-primary/10 px-3 py-1 rounded-lg">ATELIER DÉCOUVERTE</span>
+      <DifficultyBadge level="debutant" />
+    </div>
+    <h1 class="text-3xl sm:text-4xl font-black mb-4">Initiation à l'ESP32 — Zéro câblage</h1>
+    <p class="text-base-content/65 text-lg leading-relaxed max-w-2xl mb-8">
+      10 manipulations progressives pour découvrir ce qu'est un microcontrôleur.
+      Du premier clignotement jusqu'au contrôle d'une LED depuis ton smartphone — sans brancher quoi que ce soit.
+    </p>
+    <div class="flex flex-wrap gap-4">
+      <div class="flex items-center gap-2 text-sm text-base-content/60">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        3h
+      </div>
+      <div class="flex flex-wrap gap-2">
+        {['ESP32', 'MicroPython', 'WiFi', 'LED', 'REPL'].map(tag => (
+          <span class="text-xs px-2.5 py-1 rounded-lg bg-base-200/60 text-base-content/50 font-mono">{tag}</span>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+{/* Contenu */}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mdx-content">
+
+## Matériel nécessaire
+
+<div class="rounded-xl border border-success/30 bg-success/5 p-5 my-6 flex gap-4 items-start">
+  <span class="text-2xl">🎉</span>
+  <div>
+    <p class="font-semibold text-success mb-1">Rien à brancher sur breadboard</p>
+    <p class="text-sm text-base-content/60">
+      Toutes les manipulations utilisent uniquement la <strong>LED intégrée (GPIO 2)</strong> et le
+      <strong> bouton BOOT (GPIO 0)</strong> déjà présents sur la carte.
+    </p>
+  </div>
+</div>
+
+<div class="overflow-x-auto rounded-xl border border-base-200/80 my-6">
+  <table class="table table-zebra w-full">
+    <thead>
+      <tr><th>Matériel</th><th>Quantité</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="font-medium">ESP32</td><td>1</td><td class="text-base-content/60">Fourni en atelier — tu repars avec</td></tr>
+      <tr><td class="font-medium">Câble USB</td><td>1</td><td class="text-base-content/60">Micro-USB ou USB-C selon la carte</td></tr>
+      <tr><td class="font-medium">Ordinateur</td><td>1</td><td class="text-base-content/60">Avec Thonny installé</td></tr>
+      <tr><td class="font-medium">Smartphone</td><td>1</td><td class="text-base-content/60">Pour la manipulation finale</td></tr>
+    </tbody>
+  </table>
+</div>
+
+---
+
+## Les 10 manipulations
+
+<div class="overflow-x-auto rounded-xl border border-base-200/80 my-6">
+  <table class="table w-full">
+    <thead>
+      <tr><th>#</th><th>Manipulation</th><th>Concept clé</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="font-mono text-primary">01</td><td class="font-medium">Le REPL</td><td class="text-base-content/60">Dialogue interactif avec l'ESP32</td></tr>
+      <tr><td class="font-mono text-primary">02</td><td class="font-medium">LED on / off</td><td class="text-base-content/60">GPIO en sortie</td></tr>
+      <tr><td class="font-mono text-primary">03</td><td class="font-medium">LED qui clignote</td><td class="text-base-content/60">Boucle infinie, <code>while True</code></td></tr>
+      <tr><td class="font-mono text-primary">04</td><td class="font-medium">LED qui "respire"</td><td class="text-base-content/60">PWM, luminosité variable</td></tr>
+      <tr><td class="font-mono text-primary">05</td><td class="font-medium">Lire le bouton BOOT</td><td class="text-base-content/60">GPIO en entrée, logique active bas</td></tr>
+      <tr><td class="font-mono text-primary">06</td><td class="font-medium">LED commandée par le bouton</td><td class="text-base-content/60">Capteur → actionneur</td></tr>
+      <tr><td class="font-mono text-primary">07</td><td class="font-medium">Température du processeur</td><td class="text-base-content/60">Capteur interne, f-strings</td></tr>
+      <tr><td class="font-mono text-primary">08</td><td class="font-medium">Scanner les réseaux WiFi</td><td class="text-base-content/60">Module réseau</td></tr>
+      <tr><td class="font-mono text-primary">09</td><td class="font-medium">Créer un point d'accès WiFi</td><td class="text-base-content/60">L'ESP32 devient un routeur</td></tr>
+      <tr><td class="font-mono text-primary font-bold">10</td><td class="font-medium font-bold">Serveur web + LED depuis le smartphone</td><td class="text-base-content/60 font-medium">WiFi + HTTP + GPIO</td></tr>
+    </tbody>
+  </table>
+</div>
+
+---
+
+## Manip 02 — Allumer la LED intégrée
+
+La LED bleue soudée sur la carte est connectée au **GPIO 2**.
+C'est la première interaction physique avec le matériel.
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="atelier0-initiation/manip02_led_on_off.py"
+  language="python"
+  title="manip02_led_on_off.py"
+/>
+
+---
+
+## Manip 03 — Faire clignoter la LED
+
+Le "Hello World" de l'électronique embarquée : une boucle infinie
+avec des pauses. `Ctrl+C` pour arrêter.
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="atelier0-initiation/manip03_led_blink.py"
+  language="python"
+  title="manip03_led_blink.py"
+/>
+
+---
+
+## Manip 04 — La LED qui "respire" (PWM)
+
+Le **PWM** (Modulation de Largeur d'Impulsion) allume et éteint la LED
+des centaines de fois par seconde. L'œil perçoit une luminosité intermédiaire.
+`duty` va de **0** (éteint) à **1023** (pleine puissance).
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="atelier0-initiation/manip04_led_pwm.py"
+  language="python"
+  title="manip04_led_pwm.py"
+/>
+
+---
+
+## Manip 06 — La LED obéit au bouton
+
+Premier automatisme : une **entrée** (bouton) commande une **sortie** (LED).
+Le bouton BOOT utilise une logique inversée — appuyé = 0, relâché = 1.
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="atelier0-initiation/manip06_led_bouton.py"
+  language="python"
+  title="manip06_led_bouton.py"
+/>
+
+---
+
+## Manip 10 — Contrôler la LED depuis son smartphone ✨
+
+Le grand final. L'ESP32 crée son réseau WiFi, démarre un serveur web
+et sert une page avec deux boutons. On se connecte depuis son téléphone
+et on allume la LED à distance.
+
+**Comment faire :**
+1. Lancer ce programme dans Thonny
+2. Sur le smartphone : réglages WiFi → se connecter à `ESP32-Polinno` (mot de passe : `micropython`)
+3. Ouvrir le navigateur → taper `192.168.4.1`
+4. Appuyer sur les boutons 🎉
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="atelier0-initiation/manip10_serveur_web_led.py"
+  language="python"
+  title="manip10_serveur_web_led.py"
+/>
+
+---
+
+## Tous les fichiers de l'atelier
+
+Les 10 fichiers sont disponibles sur GitHub dans le dossier `atelier0-initiation/` :
+
+<div class="rounded-xl overflow-hidden border border-base-200/60 bg-[#1a1b26] my-4">
+  <div class="px-4 py-2 border-b border-white/8 text-white/50 text-xs font-mono">github.com/vincent-herm/fablab-esp32-ateliers</div>
+  <pre class="p-4 text-xs font-mono text-white/70 leading-relaxed overflow-x-auto"><code>{`atelier0-initiation/
+├── manip01_repl.py                   # commandes à taper dans le Shell
+├── manip02_led_on_off.py             # GPIO sortie
+├── manip03_led_blink.py              # boucle infinie
+├── manip04_led_pwm.py                # respiration, duty cycle
+├── manip05_bouton_boot.py            # GPIO entrée
+├── manip06_led_bouton.py             # capteur → actionneur
+├── manip07_temperature_interne.py    # module esp32
+├── manip08_scan_wifi.py              # scan réseau
+├── manip09_point_acces_wifi.py       # créer un AP
+└── manip10_serveur_web_led.py        # serveur HTTP complet`}</code></pre>
+</div>
+
+---
+
+## Pour aller plus loin
+
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6">
+  {[
+    { title: 'Ajouter un capteur', desc: 'Affiche la température d\'un DHT22 directement sur la page web de la manip 10.' },
+    { title: 'LED externe', desc: 'Brancher une LED sur breadboard avec une résistance 220Ω — et passer à l\'atelier 01.' },
+    { title: 'Plusieurs LEDs', desc: 'Contrôle 3 LEDs de couleurs différentes depuis la même interface web.' },
+  ].map(card => (
+    <div class="rounded-xl border border-base-200/80 bg-base-200/30 p-5">
+      <h4 class="font-semibold text-sm mb-2">{card.title}</h4>
+      <p class="text-xs text-base-content/60">{card.desc}</p>
+    </div>
+  ))}
+</div>
+
+<div class="border-t border-base-200/60 pt-10 mt-10 flex justify-end">
+  <a href={siteUrl('/ateliers/serveur-web-esp32/')} class="group flex items-center gap-3 rounded-xl border border-base-200/80 bg-base-200/30 px-5 py-4 hover:border-primary/30 transition-colors">
+    <div class="text-right">
+      <div class="text-xs text-base-content/50 mb-0.5">Atelier suivant</div>
+      <div class="font-semibold text-sm group-hover:text-primary transition-colors">Serveur web avec ESP32</div>
+    </div>
+    <svg class="w-5 h-5 text-base-content/40 group-hover:text-primary group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+  </a>
+</div>
+
+</div>
+
+</Layout>
