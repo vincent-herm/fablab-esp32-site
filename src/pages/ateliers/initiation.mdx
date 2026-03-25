@@ -1,6 +1,6 @@
 ---
 title: "Initiation à l'ESP32 — Zéro câblage"
-description: "Découvre l'ESP32 et MicroPython en 10 manipulations progressives. Du REPL au serveur web contrôlé depuis ton smartphone — sans rien brancher."
+description: "Découvre l'ESP32 et MicroPython en 11 manipulations progressives. Du REPL au serveur web contrôlé depuis ton smartphone — sans rien brancher."
 level: 'debutant'
 duration: '3h'
 tags: ['ESP32', 'MicroPython', 'WiFi', 'LED', 'REPL', 'Débutant']
@@ -13,7 +13,7 @@ import { siteUrl } from '../../utils/url';
 
 <Layout
   title="Atelier Initiation — ESP32 et MicroPython, zéro câblage"
-  description="Découvre l'ESP32 et MicroPython en 10 manipulations progressives. Du REPL au serveur web contrôlé depuis ton smartphone — sans rien brancher."
+  description="Découvre l'ESP32 et MicroPython en 11 manipulations progressives. Du REPL au serveur web contrôlé depuis ton smartphone — sans rien brancher."
 >
 
 {/* Navigation */}
@@ -38,8 +38,8 @@ import { siteUrl } from '../../utils/url';
     </div>
     <h1 class="text-3xl sm:text-4xl font-black mb-4">Initiation à l'ESP32 — Zéro câblage</h1>
     <p class="text-base-content/65 text-lg leading-relaxed max-w-2xl mb-8">
-      10 manipulations progressives pour découvrir ce qu'est un microcontrôleur.
-      Du premier clignotement jusqu'au contrôle d'une LED depuis ton smartphone — sans brancher quoi que ce soit.
+      11 manipulations progressives pour découvrir ce qu'est un microcontrôleur.
+      Du premier dialogue avec la machine jusqu'au contrôle d'une LED depuis ton smartphone — sans brancher quoi que ce soit.
     </p>
     <div class="flex flex-wrap gap-4">
       <div class="flex items-center gap-2 text-sm text-base-content/60">
@@ -87,7 +87,7 @@ import { siteUrl } from '../../utils/url';
 
 ---
 
-## Les 10 manipulations
+## Les 11 manipulations
 
 <div class="overflow-x-auto rounded-xl border border-base-200/80 my-6">
   <table class="table w-full">
@@ -101,6 +101,7 @@ import { siteUrl } from '../../utils/url';
       <tr><td class="font-mono text-primary">04</td><td class="font-medium">LED qui "respire"</td><td class="text-base-content/60">PWM, luminosité variable</td></tr>
       <tr><td class="font-mono text-primary">05</td><td class="font-medium">Lire le bouton BOOT</td><td class="text-base-content/60">GPIO en entrée, logique active bas</td></tr>
       <tr><td class="font-mono text-primary">06</td><td class="font-medium">LED commandée par le bouton</td><td class="text-base-content/60">Capteur → actionneur</td></tr>
+      <tr><td class="font-mono text-primary">06b</td><td class="font-medium">Temporisateur (minuterie d'escalier)</td><td class="text-base-content/60">Détection de front, minuterie</td></tr>
       <tr><td class="font-mono text-primary">07</td><td class="font-medium">Température du processeur</td><td class="text-base-content/60">Capteur interne, f-strings</td></tr>
       <tr><td class="font-mono text-primary">08</td><td class="font-medium">Scanner les réseaux WiFi</td><td class="text-base-content/60">Module réseau</td></tr>
       <tr><td class="font-mono text-primary">09</td><td class="font-medium">Créer un point d'accès WiFi</td><td class="text-base-content/60">L'ESP32 devient un routeur</td></tr>
@@ -111,10 +112,25 @@ import { siteUrl } from '../../utils/url';
 
 ---
 
+## Manip 01 — Le REPL : dialogue avec l'ESP32
+
+Le REPL (Read-Eval-Print Loop) est la console interactive de MicroPython.
+On tape une instruction, l'ESP32 l'exécute immédiatement.
+**Ce fichier sert de fiche de référence** — les commandes sont à taper directement dans le Shell de Thonny, pas à exécuter comme un programme.
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="atelier0-initiation/manip01_repl.py"
+  language="python"
+  title="manip01_repl.py — commandes à taper dans le Shell"
+/>
+
+---
+
 ## Manip 02 — Allumer la LED intégrée
 
 La LED bleue soudée sur la carte est connectée au **GPIO 2**.
-C'est la première interaction physique avec le matériel.
+`Pin(2, Pin.OUT)` crée un objet qui contrôle cette broche en sortie.
 
 <GitHubCodeBlock
   repo="vincent-herm/fablab-esp32-ateliers"
@@ -127,8 +143,8 @@ C'est la première interaction physique avec le matériel.
 
 ## Manip 03 — Faire clignoter la LED
 
-Le "Hello World" de l'électronique embarquée : une boucle infinie
-avec des pauses. `Ctrl+C` pour arrêter.
+Le "Hello World" de l'électronique embarquée : une boucle infinie avec des pauses.
+`Ctrl+C` dans Thonny pour arrêter.
 
 <GitHubCodeBlock
   repo="vincent-herm/fablab-esp32-ateliers"
@@ -141,9 +157,8 @@ avec des pauses. `Ctrl+C` pour arrêter.
 
 ## Manip 04 — La LED qui "respire" (PWM)
 
-Le **PWM** (Modulation de Largeur d'Impulsion) allume et éteint la LED
-des centaines de fois par seconde. L'œil perçoit une luminosité intermédiaire.
-`duty` va de **0** (éteint) à **1023** (pleine puissance).
+Le **PWM** allume et éteint la LED des centaines de fois par seconde.
+L'œil perçoit une luminosité intermédiaire. `duty` va de **0** (éteint) à **1023** (pleine puissance).
 
 <GitHubCodeBlock
   repo="vincent-herm/fablab-esp32-ateliers"
@@ -154,16 +169,86 @@ des centaines de fois par seconde. L'œil perçoit une luminosité intermédiair
 
 ---
 
+## Manip 05 — Lire le bouton BOOT
+
+Le bouton BOOT (GPIO 0) est sur toutes les cartes ESP32.
+Attention à la **logique inversée** : relâché = 1, appuyé = 0.
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="atelier0-initiation/manip05_bouton_boot.py"
+  language="python"
+  title="manip05_bouton_boot.py"
+/>
+
+---
+
 ## Manip 06 — La LED obéit au bouton
 
-Premier automatisme : une **entrée** (bouton) commande une **sortie** (LED).
-Le bouton BOOT utilise une logique inversée — appuyé = 0, relâché = 1.
+Premier automatisme : une **entrée** (bouton) commande une **sortie** (LED) en temps réel.
 
 <GitHubCodeBlock
   repo="vincent-herm/fablab-esp32-ateliers"
   file="atelier0-initiation/manip06_led_bouton.py"
   language="python"
   title="manip06_led_bouton.py"
+/>
+
+---
+
+## Manip 06b — Temporisateur (minuterie d'escalier)
+
+On appuie **une fois** sur le bouton → la LED s'allume **5 secondes** puis s'éteint seule.
+Concept nouveau : la **détection de front**. On ne réagit pas à l'état du bouton, mais au moment où il **change** d'état.
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="atelier0-initiation/manip06b_temporisateur.py"
+  language="python"
+  title="manip06b_temporisateur.py"
+/>
+
+---
+
+## Manip 07 — Température interne du processeur
+
+L'ESP32 a un capteur de température intégré dans le chip.
+Il mesure la chaleur du processeur (pas la température ambiante).
+Approcher le doigt près de la puce fait monter la valeur.
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="atelier0-initiation/manip07_temperature_interne.py"
+  language="python"
+  title="manip07_temperature_interne.py"
+/>
+
+---
+
+## Manip 08 — Scanner les réseaux WiFi
+
+L'ESP32 détecte tous les réseaux WiFi environnants et affiche leur nom et niveau de signal.
+Dans une salle remplie d'ESP32, l'effet est garanti.
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="atelier0-initiation/manip08_scan_wifi.py"
+  language="python"
+  title="manip08_scan_wifi.py"
+/>
+
+---
+
+## Manip 09 — Créer son propre réseau WiFi
+
+L'ESP32 devient un **point d'accès** : il crée son propre réseau WiFi,
+visible depuis n'importe quel téléphone ou ordinateur dans la pièce.
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="atelier0-initiation/manip09_point_acces_wifi.py"
+  language="python"
+  title="manip09_point_acces_wifi.py"
 />
 
 ---
@@ -178,7 +263,7 @@ et on allume la LED à distance.
 1. Lancer ce programme dans Thonny
 2. Sur le smartphone : réglages WiFi → se connecter à `ESP32-Polinno` (mot de passe : `micropython`)
 3. Ouvrir le navigateur → taper `192.168.4.1`
-4. Appuyer sur les boutons 🎉
+4. Appuyer sur les boutons
 
 <GitHubCodeBlock
   repo="vincent-herm/fablab-esp32-ateliers"
@@ -189,32 +274,11 @@ et on allume la LED à distance.
 
 ---
 
-## Tous les fichiers de l'atelier
-
-Les 10 fichiers sont disponibles sur GitHub dans le dossier `atelier0-initiation/` :
-
-<div class="rounded-xl overflow-hidden border border-base-200/60 bg-[#1a1b26] my-4">
-  <div class="px-4 py-2 border-b border-white/8 text-white/50 text-xs font-mono">github.com/vincent-herm/fablab-esp32-ateliers</div>
-  <pre class="p-4 text-xs font-mono text-white/70 leading-relaxed overflow-x-auto"><code>{`atelier0-initiation/
-├── manip01_repl.py                   # commandes à taper dans le Shell
-├── manip02_led_on_off.py             # GPIO sortie
-├── manip03_led_blink.py              # boucle infinie
-├── manip04_led_pwm.py                # respiration, duty cycle
-├── manip05_bouton_boot.py            # GPIO entrée
-├── manip06_led_bouton.py             # capteur → actionneur
-├── manip07_temperature_interne.py    # module esp32
-├── manip08_scan_wifi.py              # scan réseau
-├── manip09_point_acces_wifi.py       # créer un AP
-└── manip10_serveur_web_led.py        # serveur HTTP complet`}</code></pre>
-</div>
-
----
-
 ## Pour aller plus loin
 
 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6">
   {[
-    { title: 'Ajouter un capteur', desc: 'Affiche la température d\'un DHT22 directement sur la page web de la manip 10.' },
+    { title: 'Ajouter un capteur', desc: "Affiche la température d'un DHT22 directement sur la page web de la manip 10." },
     { title: 'LED externe', desc: 'Brancher une LED sur breadboard avec une résistance 220Ω — et passer à l\'atelier 01.' },
     { title: 'Plusieurs LEDs', desc: 'Contrôle 3 LEDs de couleurs différentes depuis la même interface web.' },
   ].map(card => (
