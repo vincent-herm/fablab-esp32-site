@@ -1,6 +1,6 @@
 ---
 title: "Initiation à l'ESP32 — Zéro câblage"
-description: "Découvre l'ESP32 et MicroPython en 10 manipulations progressives. Du REPL au serveur web contrôlé depuis ton smartphone — sans rien brancher."
+description: "Découvre l'ESP32 et MicroPython en 9 manipulations progressives. Du REPL au serveur web contrôlé depuis ton smartphone — sans rien brancher."
 level: 'debutant'
 duration: '3h'
 tags: ['ESP32', 'MicroPython', 'WiFi', 'LED', 'REPL', 'Débutant']
@@ -38,7 +38,7 @@ import { siteUrl } from '../../utils/url';
     </div>
     <h1 class="text-3xl sm:text-4xl font-black mb-4">Initiation à l'ESP32 — Zéro câblage</h1>
     <p class="text-base-content/65 text-lg leading-relaxed max-w-2xl mb-8">
-      10 manipulations progressives pour découvrir ce qu'est un microcontrôleur.
+      9 manipulations progressives pour découvrir ce qu'est un microcontrôleur.
       Du premier dialogue avec la machine jusqu'au contrôle d'une LED depuis ton smartphone — sans brancher quoi que ce soit.
     </p>
     <div class="flex flex-wrap gap-4">
@@ -87,7 +87,7 @@ import { siteUrl } from '../../utils/url';
 
 ---
 
-## Les 10 manipulations
+## Les 9 manipulations
 
 <div class="overflow-x-auto rounded-xl border border-base-200/80 my-6">
   <table class="table w-full">
@@ -103,8 +103,7 @@ import { siteUrl } from '../../utils/url';
       <tr><td class="font-mono text-primary">06</td><td class="font-medium">Temporisateur d'éclairage</td><td class="text-base-content/60">Compteur, minuterie d'escalier</td></tr>
       <tr><td class="font-mono text-primary">07</td><td class="font-medium">Température du processeur</td><td class="text-base-content/60">Capteur interne, f-strings</td></tr>
       <tr><td class="font-mono text-primary">08</td><td class="font-medium">Scanner les réseaux WiFi</td><td class="text-base-content/60">Module réseau</td></tr>
-      <tr><td class="font-mono text-primary">09</td><td class="font-medium">Créer un point d'accès WiFi</td><td class="text-base-content/60">L'ESP32 devient un routeur</td></tr>
-      <tr><td class="font-mono text-primary font-bold">10</td><td class="font-medium font-bold">Serveur web + LED depuis le smartphone</td><td class="text-base-content/60 font-medium">WiFi + HTTP + GPIO</td></tr>
+      <tr><td class="font-mono text-primary font-bold">09</td><td class="font-medium font-bold">Tableau de bord web + LED + température</td><td class="text-base-content/60 font-medium">WiFi + HTTP + PWM + capteur</td></tr>
     </tbody>
   </table>
 </div>
@@ -267,37 +266,23 @@ Dans une salle remplie d'ESP32, l'effet est garanti.
 
 ---
 
-## Manip 09 — Créer son propre réseau WiFi
+## Manip 09 — Tableau de bord web ✨
 
-L'ESP32 devient un **point d'accès** : il crée son propre réseau WiFi,
-visible depuis n'importe quel téléphone ou ordinateur dans la pièce.
-
-<GitHubCodeBlock
-  repo="vincent-herm/fablab-esp32-ateliers"
-  file="atelier0-initiation/manip09_point_acces_wifi.py"
-  language="python"
-  title="manip09_point_acces_wifi.py"
-/>
-
----
-
-## Manip 10 — Contrôler la LED depuis son smartphone ✨
-
-Le grand final. L'ESP32 crée son réseau WiFi, démarre un serveur web
-et sert une page avec deux boutons. On se connecte depuis son téléphone
-et on allume la LED à distance.
+Le grand final. L'ESP32 crée son réseau WiFi et sert un **vrai tableau de bord** avec :
+- Boutons **Allumer / Éteindre** la LED
+- **Slider de luminosité** (PWM) — glisser le doigt = LED qui varie en direct
+- **Température du processeur** rafraîchie toutes les 3 secondes
 
 **Comment faire :**
 1. Lancer ce programme dans Thonny
-2. Sur le smartphone : réglages WiFi → se connecter à `ESP32-Polinno` (mot de passe : `micropython`)
-3. Ouvrir le navigateur → taper `192.168.4.1`
-4. Appuyer sur les boutons
+2. Smartphone : réglages WiFi → se connecter à `ESP32-Polinno` (mot de passe : `micropython`)
+3. Navigateur → taper `192.168.4.1`
 
 <GitHubCodeBlock
   repo="vincent-herm/fablab-esp32-ateliers"
-  file="atelier0-initiation/manip10_serveur_web_led.py"
+  file="atelier0-initiation/manip09_serveur_web.py"
   language="python"
-  title="manip10_serveur_web_led.py"
+  title="manip09_serveur_web.py"
 />
 
 ---
@@ -306,8 +291,8 @@ et on allume la LED à distance.
 
 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6">
   {[
-    { title: 'Ajouter un capteur', desc: "Affiche la température d'un DHT22 directement sur la page web de la manip 10." },
-    { title: 'LED externe', desc: 'Brancher une LED sur breadboard avec une résistance 220Ω — et passer à l\'atelier 01.' },
+    { title: 'LED externe', desc: 'Brancher une LED sur breadboard avec une résistance 220Ω pour une lumière plus visible.' },
+    { title: 'Ajouter un capteur', desc: "Affiche la température d'un DHT22 directement sur le tableau de bord." },
     { title: 'Plusieurs LEDs', desc: 'Contrôle 3 LEDs de couleurs différentes depuis la même interface web.' },
   ].map(card => (
     <div class="rounded-xl border border-base-200/80 bg-base-200/30 p-5">
@@ -318,10 +303,10 @@ et on allume la LED à distance.
 </div>
 
 <div class="border-t border-base-200/60 pt-10 mt-10 flex justify-end">
-  <a href={siteUrl('/ateliers/serveur-web-esp32/')} class="group flex items-center gap-3 rounded-xl border border-base-200/80 bg-base-200/30 px-5 py-4 hover:border-primary/30 transition-colors">
+  <a href={siteUrl('/ateliers/neopixel/')} class="group flex items-center gap-3 rounded-xl border border-base-200/80 bg-base-200/30 px-5 py-4 hover:border-primary/30 transition-colors">
     <div class="text-right">
       <div class="text-xs text-base-content/50 mb-0.5">Atelier suivant</div>
-      <div class="font-semibold text-sm group-hover:text-primary transition-colors">Serveur web avec ESP32</div>
+      <div class="font-semibold text-sm group-hover:text-primary transition-colors">LED RGB et NeoPixel</div>
     </div>
     <svg class="w-5 h-5 text-base-content/40 group-hover:text-primary group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
   </a>

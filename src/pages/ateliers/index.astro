@@ -7,7 +7,7 @@ const ateliers = [
   {
     numero: 0,
     title: 'Initiation — Zéro câblage',
-    description: '10 manipulations pour découvrir l\'ESP32 : REPL, LED, PWM, bouton, WiFi, serveur web. Rien à brancher.',
+    description: '9 manipulations pour découvrir l\'ESP32 : REPL, LED, PWM, bouton, WiFi, serveur web. Rien à brancher.',
     href: siteUrl('/ateliers/initiation/'),
     level: 'debutant' as const,
     duration: '3h',
@@ -15,15 +15,6 @@ const ateliers = [
   },
   {
     numero: 1,
-    title: 'Serveur web avec ESP32',
-    description: 'Crée un point d\'accès WiFi, sers une page HTML et contrôle une LED depuis ton navigateur.',
-    href: siteUrl('/ateliers/serveur-web-esp32/'),
-    level: 'debutant' as const,
-    duration: '3h',
-    tags: ['ESP32', 'WiFi', 'MicroPython', 'HTML', 'LED'],
-  },
-  {
-    numero: 2,
     title: 'LED RGB et NeoPixel',
     description: 'Anime un bandeau de LED RGB WS2812 : couleurs, défilement, arc-en-ciel et effets aléatoires.',
     href: siteUrl('/ateliers/neopixel/'),
@@ -32,7 +23,7 @@ const ateliers = [
     tags: ['ESP32', 'NeoPixel', 'WS2812', 'RGB', 'Animations'],
   },
   {
-    numero: 3,
+    numero: 2,
     title: 'Station météo',
     description: 'Mesure la température avec un DS18B20 et affiche les données sur un écran OLED SSD1306.',
     href: siteUrl('/ateliers/station-meteo/'),
@@ -41,7 +32,7 @@ const ateliers = [
     tags: ['ESP32', 'DS18B20', 'OLED', 'I2C', '1-Wire'],
   },
   {
-    numero: 4,
+    numero: 3,
     title: 'Lumière automatique',
     description: 'Une cellule LDR détecte l\'obscurité et allume une LED en PWM — plus il fait sombre, plus c\'est lumineux.',
     href: siteUrl('/ateliers/lumiere-auto/'),
@@ -50,7 +41,7 @@ const ateliers = [
     tags: ['ESP32', 'ADC', 'PWM', 'LDR', 'Automatisme'],
   },
   {
-    numero: 5,
+    numero: 4,
     title: 'Clavier musical',
     description: '4 boutons jouent des notes sur un buzzer. Mode libre ou mélodie automatique — Frère Jacques inclus !',
     href: siteUrl('/ateliers/clavier-musical/'),
@@ -59,7 +50,7 @@ const ateliers = [
     tags: ['ESP32', 'PWM', 'Buzzer', 'Musique', 'Boutons'],
   },
   {
-    numero: 6,
+    numero: 5,
     title: 'Mesure de distance',
     description: 'Le capteur ultrason HC-SR04 mesure la distance et affiche une barre de progression sur l\'OLED.',
     href: siteUrl('/ateliers/distance/'),
@@ -68,7 +59,7 @@ const ateliers = [
     tags: ['ESP32', 'HC-SR04', 'Ultrason', 'OLED', 'Timing'],
   },
   {
-    numero: 7,
+    numero: 6,
     title: 'Minuterie et séquenceur',
     description: 'Minuterie réglable, séquenceur de LEDs et simulation de feux de circulation — la machine à états en pratique.',
     href: siteUrl('/ateliers/minuterie/'),
@@ -77,7 +68,7 @@ const ateliers = [
     tags: ['ESP32', 'Machine à états', 'LED', 'Temps réel', 'Boutons'],
   },
   {
-    numero: 8,
+    numero: 7,
     title: 'Badge RFID',
     description: 'Un lecteur RC522 identifie les badges. Accès accordé = LED verte. Badge inconnu = alarme sonore.',
     href: siteUrl('/ateliers/rfid/'),
@@ -103,7 +94,7 @@ const ateliers = [
         <div class="flex flex-wrap gap-3 mt-8">
           <div class="inline-flex items-center gap-2 bg-base-200/60 rounded-full px-4 py-2 text-sm">
             <span class="w-2 h-2 rounded-full bg-success"></span>
-            9 ateliers disponibles
+            8 ateliers disponibles
           </div>
           <div class="inline-flex items-center gap-2 bg-base-200/60 rounded-full px-4 py-2 text-sm font-semibold">
             20€ / 3h · 6 personnes max
