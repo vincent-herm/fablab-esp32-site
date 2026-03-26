@@ -17,7 +17,7 @@
 
 html { scroll-behavior: smooth; }
 
-/* Blocs de code */
+/* Blocs de code — thème sombre par défaut */
 pre {
   border-radius: 0.75rem !important;
   border: 1px solid oklch(50% 0.05 240 / 0.15);
@@ -25,6 +25,16 @@ pre {
   margin-bottom: 1.25rem !important;
   position: relative;
 }
+
+/* Shiki dual themes : sombre par défaut */
+.astro-code, .shiki { background-color: var(--shiki-dark-bg, #1a1b26) !important; }
+.astro-code span, .shiki span { color: var(--shiki-dark) !important; }
+
+/* Shiki dual themes : clair quand data-theme="light" */
+[data-theme="light"] .astro-code,
+[data-theme="light"] .shiki { background-color: var(--shiki-light-bg, #f6f8fa) !important; }
+[data-theme="light"] .astro-code span,
+[data-theme="light"] .shiki span { color: var(--shiki-light) !important; }
 
 /* Espacement des titres dans le contenu des cours/ateliers */
 .mdx-content h2 {
