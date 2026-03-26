@@ -1,0 +1,206 @@
+---
+title: "MAX7219 — Matrice LED 8×32"
+description: "Fiche composant MAX7219 (module 1088AS) : câblage, bibliothèque MicroPython, exemples de texte fixe, défilant et animations."
+---
+
+import Layout from '../../../layouts/Layout.astro';
+import GitHubCodeBlock from '../../../components/GitHubCodeBlock.astro';
+import { siteUrl } from '../../../utils/url';
+
+<Layout
+  title="MAX7219 — Matrice LED 8×32 (1088AS)"
+  description="Fiche composant MAX7219 : câblage, bibliothèque MicroPython, exemples."
+>
+
+{/* Navigation */}
+<div class="border-b border-base-200/60 bg-base-200/20">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+    <div class="flex items-center gap-2 text-sm text-base-content/50">
+      <a href={siteUrl('/')} class="hover:text-base-content transition-colors">Accueil</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <a href={siteUrl('/doc/')} class="hover:text-base-content transition-colors">Documentation</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <span class="text-base-content/80">MAX7219</span>
+    </div>
+  </div>
+</div>
+
+{/* En-tête */}
+<section class="py-12 hero-pattern border-b border-base-200/60">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center gap-3 mb-6">
+      <span class="text-xs font-mono font-bold text-orange-400 bg-orange-500/10 px-3 py-1 rounded-lg">SPI</span>
+      <span class="text-xs font-mono font-bold text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-lg">COMPOSANT</span>
+    </div>
+    <h1 class="text-3xl sm:text-4xl font-black mb-4">MAX7219 — Matrice LED 8×32</h1>
+    <p class="text-base-content/65 text-lg leading-relaxed max-w-2xl">
+      4 modules 1088AS en cascade, pilotés par des circuits MAX7219 via SPI.
+      Affiche du texte, des animations, des barres de progression — avec seulement 3 fils de données.
+    </p>
+  </div>
+</section>
+
+{/* Contenu */}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mdx-content">
+
+## Câblage
+
+<div class="rounded-xl border border-warning/30 bg-warning/5 p-5 my-6 flex gap-4 items-start">
+  <span class="text-2xl">⚠️</span>
+  <div>
+    <p class="font-semibold text-warning mb-1">Brancher sur le connecteur DIN (pas DOUT)</p>
+    <p class="text-sm text-base-content/60">
+      Le module a des connecteurs aux <strong>deux extrémités</strong>. Le côté DIN est l'entrée,
+      le côté DOUT est la sortie pour chaîner un autre module. Si on branche sur DOUT, rien ne s'affiche.
+    </p>
+  </div>
+</div>
+
+<div class="overflow-x-auto rounded-xl border border-base-200/80 my-6">
+  <table class="table table-zebra w-full">
+    <thead>
+      <tr><th>Module MAX7219</th><th>ESP32</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="font-medium font-mono">VCC</td><td class="font-mono">5V (VIN)</td><td class="text-base-content/60 text-error font-medium">Ne fonctionne PAS en 3.3V</td></tr>
+      <tr><td class="font-medium font-mono">GND</td><td class="font-mono">GND</td><td class="text-base-content/60"></td></tr>
+      <tr><td class="font-medium font-mono">DIN</td><td class="font-mono">D23 (GPIO23)</td><td class="text-base-content/60">MOSI — données SPI</td></tr>
+      <tr><td class="font-medium font-mono">CLK</td><td class="font-mono">D18 (GPIO18)</td><td class="text-base-content/60">SCK — horloge SPI</td></tr>
+      <tr><td class="font-medium font-mono">CS</td><td class="font-mono">D5 (GPIO5)</td><td class="text-base-content/60">Chip Select</td></tr>
+    </tbody>
+  </table>
+</div>
+
+5 fils, tous accessibles du côté bas de l'ESP32 (de 3V3 à D23), sauf le 5V (VIN) qui est de l'autre côté.
+
+---
+
+## Installation
+
+1. Copier `max7219.py` sur l'ESP32 via Thonny : **clic droit → Upload to /**
+2. Ouvrir un des exemples
+3. Lancer avec **F5**
+
+---
+
+## Bibliothèque
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="composants/max7219-matrice/max7219.py"
+  language="python"
+  title="max7219.py — à copier sur l'ESP32"
+/>
+
+Source : [mcauser/micropython-max7219](https://github.com/mcauser/micropython-max7219) — Licence MIT
+
+---
+
+## Utilisation rapide
+
+```python
+from machine import Pin, SPI
+import max7219
+
+spi = SPI(2, baudrate=10000000, polarity=0, phase=0,
+          sck=Pin(18), mosi=Pin(23))
+cs = Pin(5, Pin.OUT)
+
+ecran = max7219.Matrix8x8(spi, cs, 4)   # 4 modules en cascade
+ecran.brightness(5)                       # luminosité 0-15
+
+ecran.fill(0)                             # effacer
+ecran.text("HELLO", 0, 0, 1)             # écrire du texte
+ecran.show()                              # afficher
+```
+
+---
+
+## Méthodes disponibles
+
+<div class="overflow-x-auto rounded-xl border border-base-200/80 my-6">
+  <table class="table w-full">
+    <thead>
+      <tr><th>Méthode</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="font-mono text-sm">fill(0) / fill(1)</td><td>Tout éteindre / tout allumer</td></tr>
+      <tr><td class="font-mono text-sm">pixel(x, y, 1)</td><td>Allumer un pixel</td></tr>
+      <tr><td class="font-mono text-sm">text("ABC", x, y, 1)</td><td>Écrire du texte (~8px par caractère)</td></tr>
+      <tr><td class="font-mono text-sm">hline(x, y, w, 1)</td><td>Ligne horizontale</td></tr>
+      <tr><td class="font-mono text-sm">vline(x, y, h, 1)</td><td>Ligne verticale</td></tr>
+      <tr><td class="font-mono text-sm">line(x1, y1, x2, y2, 1)</td><td>Ligne quelconque</td></tr>
+      <tr><td class="font-mono text-sm">rect(x, y, w, h, 1)</td><td>Rectangle vide</td></tr>
+      <tr><td class="font-mono text-sm">fill_rect(x, y, w, h, 1)</td><td>Rectangle plein</td></tr>
+      <tr><td class="font-mono text-sm">scroll(dx, dy)</td><td>Décaler tout le contenu</td></tr>
+      <tr><td class="font-mono text-sm">brightness(0..15)</td><td>Luminosité</td></tr>
+      <tr><td class="font-mono text-sm font-bold">show()</td><td class="font-medium">Afficher (obligatoire après chaque modification)</td></tr>
+    </tbody>
+  </table>
+</div>
+
+**Coordonnées** : origine (0, 0) = coin haut-gauche. X : 0-31 (32 colonnes). Y : 0-7 (8 lignes).
+
+---
+
+## Exemple : texte fixe
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="composants/max7219-matrice/exemple_texte.py"
+  language="python"
+  title="exemple_texte.py"
+/>
+
+---
+
+## Exemple : texte défilant
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="composants/max7219-matrice/exemple_defilement.py"
+  language="python"
+  title="exemple_defilement.py"
+/>
+
+---
+
+## Exemple : animations
+
+5 animations incluses : remplissage pixel par pixel, balayage, rectangle qui grandit, compteur, barre de progression.
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="composants/max7219-matrice/exemple_animations.py"
+  language="python"
+  title="exemple_animations.py"
+/>
+
+---
+
+## Tous les fichiers
+
+<div class="rounded-xl overflow-hidden border border-base-200/60 bg-[#1a1b26] my-4">
+  <div class="px-4 py-2 border-b border-white/8 text-white/50 text-xs font-mono">github.com/vincent-herm/fablab-esp32-ateliers</div>
+  <pre class="p-4 text-xs font-mono text-white/70 leading-relaxed overflow-x-auto"><code>{`composants/max7219-matrice/
+├── max7219.py              # bibliothèque (copier sur l'ESP32)
+├── test_matrice.py         # test rapide
+├── exemple_texte.py        # texte fixe + luminosité
+├── exemple_defilement.py   # texte défilant
+├── exemple_animations.py   # 5 animations
+└── README.md               # documentation complète`}</code></pre>
+</div>
+
+<div class="border-t border-base-200/60 pt-10 mt-10 flex justify-start">
+  <a href={siteUrl('/doc/')} class="group flex items-center gap-3 rounded-xl border border-base-200/80 bg-base-200/30 px-5 py-4 hover:border-emerald-500/30 transition-colors">
+    <svg class="w-5 h-5 text-base-content/40 group-hover:text-emerald-400 group-hover:-translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+    <div>
+      <div class="text-xs text-base-content/50 mb-0.5">Retour</div>
+      <div class="font-semibold text-sm group-hover:text-emerald-400 transition-colors">Documentation</div>
+    </div>
+  </a>
+</div>
+
+</div>
+
+</Layout>
