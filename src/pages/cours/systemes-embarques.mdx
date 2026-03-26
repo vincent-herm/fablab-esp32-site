@@ -156,37 +156,52 @@ L'ESP32 a le meilleur rapport qualité/prix/fonctionnalités. Pour 5€, tu as W
 
 ## Pourquoi MicroPython — et pas Arduino ?
 
-Pour programmer un Arduino, on utilise le **C++** — un langage puissant, mais austère. Voici comment allumer une LED qui clignote :
+Pour programmer un Arduino, on utilise le **C++**. Pour chaque modification, il faut écrire le code, compiler, téléverser, tester. MicroPython change tout : on tape une commande, l'ESP32 l'exécute **immédiatement**.
+
+**Exemple : se connecter au WiFi et lire la température du processeur.**
+
+En Arduino C++, il faut inclure des bibliothèques, déclarer des types, gérer les chaînes de caractères — plus de 20 lignes :
 
 ```cpp
-// Arduino (C++)
+// Arduino C++
+#include <WiFi.h>
+
+const char* ssid = "MonWiFi";
+const char* password = "motdepasse";
+
 void setup() {
-  pinMode(2, OUTPUT);
+  Serial.begin(115200);
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.print("Connecté ! IP : ");
+  Serial.println(WiFi.localIP());
+
+  float temp = temperatureRead();
+  Serial.print("Température : ");
+  Serial.print(temp);
+  Serial.println(" °C");
 }
-void loop() {
-  digitalWrite(2, HIGH);
-  delay(500);
-  digitalWrite(2, LOW);
-  delay(500);
-}
+
+void loop() {}
 ```
 
-Avec **MicroPython**, le même programme :
+En MicroPython, **la même chose tient en 6 lignes**, tapées directement dans le Shell :
 
 ```python
-# MicroPython
-from machine import Pin
-import time
-
-led = Pin(2, Pin.OUT)
-while True:
-    led.toggle()
-    time.sleep_ms(500)
+>>> import network, esp32
+>>> wifi = network.WLAN(network.STA_IF)
+>>> wifi.active(True)
+>>> wifi.connect("MonWiFi", "motdepasse")
+>>> print("IP :", wifi.ifconfig()[0])
+IP : 192.168.1.42
+>>> print(f"Température : {(esp32.raw_temperature()-32)/1.8:.1f} °C")
+Température : 48.3 °C
 ```
 
-C'est plus court, plus lisible, et surtout — si tu as déjà fait un peu de Python, tu es déjà à moitié chez toi. Et si tu n'en as jamais fait, c'est le meilleur endroit pour commencer.
-
-L'autre avantage de MicroPython : le **REPL**. Tu branches l'ESP32 sur ton ordinateur, tu ouvres Thonny, et tu peux taper du code directement et voir le résultat en temps réel — comme si tu discutais avec la carte.
+La différence n'est pas juste la longueur — c'est la **manière de travailler**. En MicroPython, on dialogue avec la carte en temps réel. Pas besoin de compiler, pas besoin de téléverser. On essaie, on voit le résultat, on ajuste. C'est idéal pour apprendre et prototyper.
 
 ```python
 >>> from machine import Pin
