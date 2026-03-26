@@ -115,81 +115,59 @@ import { siteUrl } from '../../utils/url';
 ## Manip 01 — Le REPL : dialogue avec l'ESP32
 
 Le **REPL** (Read-Eval-Print Loop) est la console interactive de MicroPython.
-On tape une instruction dans le **Shell de Thonny**, l'ESP32 l'exécute immédiatement et affiche le résultat.
-
-<div class="rounded-xl border border-base-200/60 bg-base-200/20 p-5 my-6 space-y-4">
-  <p class="text-sm font-medium text-base-content/80">Taper ces commandes une par une dans le Shell :</p>
+On tape une instruction dans le **Shell de Thonny** (en bas de la fenêtre), l'ESP32 l'exécute et affiche le résultat. Taper ces commandes une par une :
 
 ```python
-1 + 1
+>>> 1 + 1
+2
+>>> 10 * 3
+30
+>>> 2 ** 8
+256
+>>> print("Bonjour Polinno !")
+Bonjour Polinno !
+>>> nom = "Fablab"
+>>> print("Bienvenue au", nom)
+Bienvenue au Fablab
+>>> for i in range(5):
+...     print("Compte :", i)
+...
+Compte : 0
+Compte : 1
+Compte : 2
+Compte : 3
+Compte : 4
 ```
 
-```python
-10 * 3
-```
-
-```python
-2 ** 8
-```
-
-```python
-print("Bonjour Polinno !")
-```
-
-```python
-nom = "Fablab"
-print("Bienvenue au", nom)
-```
-
-```python
-for i in range(5):
-    print("Compte :", i)
-```
-
-  <div class="mt-4 pt-3 border-t border-base-200/60">
-    <p class="text-xs text-base-content/50">
-      <strong>Ctrl+C</strong> : arrête le programme en cours ·
-      <strong>Ctrl+D</strong> : redémarre l'ESP32 ·
-      <strong>Flèche Haut</strong> : rappelle la dernière commande
-    </p>
-  </div>
+<div class="rounded-xl border border-base-200/60 bg-base-200/20 p-4 my-4">
+  <p class="text-xs text-base-content/50">
+    <strong>Ctrl+C</strong> : arrête le programme en cours ·
+    <strong>Ctrl+D</strong> : redémarre l'ESP32 ·
+    <strong>Flèche Haut</strong> : rappelle la dernière commande
+  </p>
 </div>
 
 ---
 
 ## Manip 02 — Allumer la LED intégrée
 
-Toutes les cartes ESP32 ont une **LED soudée sur GPIO 2**. On va la contrôler depuis le Shell.
-
-<div class="rounded-xl border border-base-200/60 bg-base-200/20 p-5 my-6 space-y-3">
-  <p class="text-sm font-medium text-base-content/80">Dans le Shell, taper :</p>
+Toutes les cartes ESP32 ont une **LED soudée sur GPIO 2**. On va la contrôler depuis le Shell :
 
 ```python
-from machine import Pin
+>>> from machine import Pin
+>>> led = Pin(2, Pin.OUT)
+>>> led.value(1)          # la LED s'allume !
+>>> led.value(0)          # la LED s'éteint
+>>> led.on()              # raccourci pour allumer
+>>> led.off()             # raccourci pour éteindre
 ```
 
-```python
-led = Pin(2, Pin.OUT)
-```
-
-```python
-led.value(1)
-```
-
-  <p class="text-xs text-base-content/50 mt-2">La LED s'allume. Pour l'éteindre :</p>
-
-```python
-led.value(0)
-```
-
-  <div class="mt-4 pt-3 border-t border-base-200/60">
-    <p class="text-xs text-base-content/50">
-      <code>Pin(2, Pin.OUT)</code> = broche GPIO 2 en sortie ·
-      <code>value(1)</code> = 3,3V → LED allumée ·
-      <code>value(0)</code> = 0V → LED éteinte ·
-      Raccourcis : <code>led.on()</code> / <code>led.off()</code>
-    </p>
-  </div>
+<div class="rounded-xl border border-base-200/60 bg-base-200/20 p-4 my-4">
+  <p class="text-xs text-base-content/50">
+    <code>Pin(2, Pin.OUT)</code> = broche GPIO 2 en sortie ·
+    <code>value(1)</code> = 3,3V → allumée ·
+    <code>value(0)</code> = 0V → éteinte
+  </p>
 </div>
 
 ---
