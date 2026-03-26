@@ -80,12 +80,21 @@ const protocoleColors: Record<string, string> = {
       <h2 class="text-2xl font-black mb-8">Composants</h2>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {composants.map(comp => (
-          <div class="rounded-xl border border-base-200/80 bg-base-100/50 p-5">
-            <span class={`text-xs font-mono font-bold px-2.5 py-1 rounded-lg ${protocoleColors[comp.protocole]}`}>{comp.protocole}</span>
-            <h3 class="font-bold text-sm mt-3 mb-1 font-mono">{comp.name}</h3>
-            <p class="text-xs text-base-content/50">{comp.desc}</p>
-            <p class="text-xs text-base-content/30 mt-2 italic">Fiche à venir</p>
-          </div>
+          comp.href ? (
+            <a href={comp.href} class="group rounded-xl border border-base-200/80 bg-base-100/50 p-5 hover:border-emerald-500/30 hover:bg-base-200/40 transition-all block">
+              <span class={`text-xs font-mono font-bold px-2.5 py-1 rounded-lg ${protocoleColors[comp.protocole]}`}>{comp.protocole}</span>
+              <h3 class="font-bold text-sm mt-3 mb-1 font-mono group-hover:text-emerald-400 transition-colors">{comp.name}</h3>
+              <p class="text-xs text-base-content/50">{comp.desc}</p>
+              <p class="text-xs text-emerald-400/60 mt-2 font-medium">Voir la fiche →</p>
+            </a>
+          ) : (
+            <div class="rounded-xl border border-base-200/80 bg-base-100/50 p-5">
+              <span class={`text-xs font-mono font-bold px-2.5 py-1 rounded-lg ${protocoleColors[comp.protocole]}`}>{comp.protocole}</span>
+              <h3 class="font-bold text-sm mt-3 mb-1 font-mono">{comp.name}</h3>
+              <p class="text-xs text-base-content/50">{comp.desc}</p>
+              <p class="text-xs text-base-content/30 mt-2 italic">Fiche à venir</p>
+            </div>
+          )
         ))}
       </div>
     </div>
