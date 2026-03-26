@@ -1,0 +1,170 @@
+---
+title: "RC522 — Lecteur RFID"
+description: "Fiche composant RFID RC522 (MFRC522) : câblage, bibliothèque MicroPython, test de lecture et contrôle d'accès complet."
+---
+
+import Layout from '../../../layouts/Layout.astro';
+import GitHubCodeBlock from '../../../components/GitHubCodeBlock.astro';
+import { siteUrl } from '../../../utils/url';
+
+<Layout
+  title="RC522 — Lecteur RFID"
+  description="Fiche composant RFID RC522 : câblage, bibliothèque MicroPython, exemples."
+>
+
+{/* Navigation */}
+<div class="border-b border-base-200/60 bg-base-200/20">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+    <div class="flex items-center gap-2 text-sm text-base-content/50">
+      <a href={siteUrl('/')} class="hover:text-base-content transition-colors">Accueil</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <a href={siteUrl('/doc/')} class="hover:text-base-content transition-colors">Documentation</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <span class="text-base-content/80">RC522</span>
+    </div>
+  </div>
+</div>
+
+{/* En-tête */}
+<section class="py-12 hero-pattern border-b border-base-200/60">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center gap-3 mb-6">
+      <span class="text-xs font-mono font-bold text-orange-400 bg-orange-500/10 px-3 py-1 rounded-lg">SPI</span>
+      <span class="text-xs font-mono font-bold text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-lg">COMPOSANT</span>
+    </div>
+    <h1 class="text-3xl sm:text-4xl font-black mb-4">RC522 — Lecteur RFID</h1>
+    <p class="text-base-content/65 text-lg leading-relaxed max-w-2xl">
+      Lecteur de badges sans contact 13,56 MHz (Mifare). Chaque badge a un identifiant unique (UID)
+      qui permet de reconnaître les personnes — parfait pour le contrôle d'accès et les escape games.
+    </p>
+  </div>
+</section>
+
+{/* Contenu */}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mdx-content">
+
+## Comment ça marche
+
+1. Le RC522 émet un champ radio à **13,56 MHz**
+2. Quand un badge Mifare entre dans le champ (~3 cm), il **s'alimente par induction** (sans pile)
+3. Le badge renvoie son **UID** (identifiant unique, 4 octets) : ex. `DE:AD:BE:EF`
+4. Le programme compare l'UID à une liste autorisée
+5. Décision : accès accordé ou refusé
+
+Chaque badge a un UID **gravé en usine** — impossible à modifier.
+
+---
+
+## Câblage
+
+<div class="rounded-xl border border-error/30 bg-error/5 p-5 my-6 flex gap-4 items-start">
+  <span class="text-2xl">⚠️</span>
+  <div>
+    <p class="font-semibold text-error mb-1">Le RC522 fonctionne en 3,3V uniquement</p>
+    <p class="text-sm text-base-content/60">
+      Ne <strong>JAMAIS</strong> brancher le VCC du RC522 sur le 5V — le module grille instantanément.
+    </p>
+  </div>
+</div>
+
+<div class="overflow-x-auto rounded-xl border border-base-200/80 my-6">
+  <table class="table table-zebra w-full">
+    <thead>
+      <tr><th>Module RC522</th><th>ESP32</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="font-medium font-mono">3.3V</td><td class="font-mono">3.3V</td><td class="text-base-content/60 text-error font-medium">3,3V uniquement</td></tr>
+      <tr><td class="font-medium font-mono">GND</td><td class="font-mono">GND</td><td class="text-base-content/60"></td></tr>
+      <tr><td class="font-medium font-mono">SCK</td><td class="font-mono">D18 (GPIO18)</td><td class="text-base-content/60">Horloge SPI</td></tr>
+      <tr><td class="font-medium font-mono">MOSI</td><td class="font-mono">D23 (GPIO23)</td><td class="text-base-content/60">Données ESP32 → RC522</td></tr>
+      <tr><td class="font-medium font-mono">MISO</td><td class="font-mono">D19 (GPIO19)</td><td class="text-base-content/60">Données RC522 → ESP32</td></tr>
+      <tr><td class="font-medium font-mono">SDA</td><td class="font-mono">D5 (GPIO5)</td><td class="text-base-content/60">Chip Select (CS)</td></tr>
+      <tr><td class="font-medium font-mono">RST</td><td class="font-mono">D22 (GPIO22)</td><td class="text-base-content/60">Reset</td></tr>
+      <tr><td class="font-medium font-mono">IRQ</td><td class="font-mono text-base-content/30">non connecté</td><td class="text-base-content/60">Optionnel</td></tr>
+    </tbody>
+  </table>
+</div>
+
+---
+
+## Installation de la bibliothèque
+
+La bibliothèque `mfrc522` s'installe une seule fois.
+
+**Dans Thonny** : Outils → Gérer les paquets → chercher `mfrc522` → Installer
+
+**Ou dans le Shell** :
+
+```python
+>>> import mip
+>>> mip.install("mfrc522")
+```
+
+---
+
+## Utilisation rapide
+
+```python
+>>> from machine import Pin, SPI
+>>> from mfrc522 import MFRC522
+>>> spi = SPI(1, baudrate=1000000, sck=Pin(18), mosi=Pin(23), miso=Pin(19))
+>>> rfid = MFRC522(spi, gpioRst=22, gpioCs=5)
+>>> # Présenter un badge, puis :
+>>> stat, tag = rfid.request(rfid.REQIDL)
+>>> stat, uid = rfid.anticoll()
+>>> print(':'.join(f'{b:02X}' for b in uid))
+DE:AD:BE:EF
+```
+
+---
+
+## Exemple : test de lecture
+
+Lit les badges présentés devant le lecteur et affiche leur UID.
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="composants/rc522-rfid/test_rfid.py"
+  language="python"
+  title="test_rfid.py"
+/>
+
+---
+
+## Exemple : contrôle d'accès complet
+
+Système de badge complet avec enrôlement, LED verte/rouge et buzzer.
+C'est le code de l'atelier Badge RFID.
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="composants/rc522-rfid/exemple_controle_acces.py"
+  language="python"
+  title="exemple_controle_acces.py — Contrôle d'accès avec LEDs et buzzer"
+/>
+
+---
+
+## Tous les fichiers
+
+<div class="rounded-xl overflow-hidden border border-base-200/60 bg-[#1a1b26] my-4">
+  <div class="px-4 py-2 border-b border-white/8 text-white/50 text-xs font-mono">github.com/vincent-herm/fablab-esp32-ateliers</div>
+  <pre class="p-4 text-xs font-mono text-white/70 leading-relaxed overflow-x-auto"><code>{`composants/rc522-rfid/
+├── test_rfid.py                  # test de lecture (UID)
+├── exemple_controle_acces.py     # contrôle d'accès complet
+└── README.md                     # documentation`}</code></pre>
+</div>
+
+<div class="border-t border-base-200/60 pt-10 mt-10 flex justify-start">
+  <a href={siteUrl('/doc/')} class="group flex items-center gap-3 rounded-xl border border-base-200/80 bg-base-200/30 px-5 py-4 hover:border-emerald-500/30 transition-colors">
+    <svg class="w-5 h-5 text-base-content/40 group-hover:text-emerald-400 group-hover:-translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+    <div>
+      <div class="text-xs text-base-content/50 mb-0.5">Retour</div>
+      <div class="font-semibold text-sm group-hover:text-emerald-400 transition-colors">Documentation</div>
+    </div>
+  </a>
+</div>
+
+</div>
+
+</Layout>
