@@ -25,7 +25,7 @@ const { title, description, href, level, duration, tags = [], image, numero } = 
       ) : (
         <div class="absolute inset-0 flex items-center justify-center">
           <div class="text-6xl font-black font-mono text-base-content/5 select-none">
-            {numero ? `0${numero}` : '??'}
+            {numero !== undefined ? (numero < 10 ? `0${numero}` : `${numero}`) : '??'}
           </div>
           <!-- Motif circuit -->
           <svg class="absolute inset-0 w-full h-full opacity-5" viewBox="0 0 100 100" preserveAspectRatio="none">
@@ -41,9 +41,9 @@ const { title, description, href, level, duration, tags = [], image, numero } = 
       )}
 
       <!-- Numéro de l'atelier -->
-      {numero && (
+      {numero !== undefined && (
         <div class="absolute top-3 left-3 bg-base-100/80 backdrop-blur-sm rounded-lg px-2.5 py-1 text-xs font-bold font-mono text-base-content/60">
-          ATELIER {numero < 10 ? `0${numero}` : numero}
+          {numero === 0 ? 'DÉCOUVERTE' : `ATELIER ${numero < 10 ? `0${numero}` : numero}`}
         </div>
       )}
     </div>
