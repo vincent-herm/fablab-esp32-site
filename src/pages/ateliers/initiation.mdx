@@ -1,6 +1,6 @@
 ---
 title: "Initiation à l'ESP32 — Zéro câblage"
-description: "Découvre l'ESP32 et MicroPython en 11 manipulations progressives. Du REPL au serveur web contrôlé depuis ton smartphone — sans rien brancher."
+description: "Découvre l'ESP32 et MicroPython en 10 manipulations progressives. Du REPL au serveur web contrôlé depuis ton smartphone — sans rien brancher."
 level: 'debutant'
 duration: '3h'
 tags: ['ESP32', 'MicroPython', 'WiFi', 'LED', 'REPL', 'Débutant']
@@ -38,7 +38,7 @@ import { siteUrl } from '../../utils/url';
     </div>
     <h1 class="text-3xl sm:text-4xl font-black mb-4">Initiation à l'ESP32 — Zéro câblage</h1>
     <p class="text-base-content/65 text-lg leading-relaxed max-w-2xl mb-8">
-      11 manipulations progressives pour découvrir ce qu'est un microcontrôleur.
+      10 manipulations progressives pour découvrir ce qu'est un microcontrôleur.
       Du premier dialogue avec la machine jusqu'au contrôle d'une LED depuis ton smartphone — sans brancher quoi que ce soit.
     </p>
     <div class="flex flex-wrap gap-4">
@@ -87,7 +87,7 @@ import { siteUrl } from '../../utils/url';
 
 ---
 
-## Les 11 manipulations
+## Les 10 manipulations
 
 <div class="overflow-x-auto rounded-xl border border-base-200/80 my-6">
   <table class="table w-full">
@@ -95,13 +95,12 @@ import { siteUrl } from '../../utils/url';
       <tr><th>#</th><th>Manipulation</th><th>Concept clé</th></tr>
     </thead>
     <tbody>
-      <tr><td class="font-mono text-primary">01</td><td class="font-medium">Le REPL</td><td class="text-base-content/60">Dialogue interactif avec l'ESP32</td></tr>
-      <tr><td class="font-mono text-primary">02</td><td class="font-medium">LED on / off</td><td class="text-base-content/60">GPIO en sortie</td></tr>
-      <tr><td class="font-mono text-primary">03</td><td class="font-medium">LED qui clignote</td><td class="text-base-content/60">Boucle infinie, <code>while True</code></td></tr>
-      <tr><td class="font-mono text-primary">04</td><td class="font-medium">LED qui "respire"</td><td class="text-base-content/60">PWM, luminosité variable</td></tr>
-      <tr><td class="font-mono text-primary">05</td><td class="font-medium">Lire le bouton BOOT</td><td class="text-base-content/60">GPIO en entrée, logique active bas</td></tr>
-      <tr><td class="font-mono text-primary">06</td><td class="font-medium">LED commandée par le bouton</td><td class="text-base-content/60">Capteur → actionneur</td></tr>
-      <tr><td class="font-mono text-primary">06b</td><td class="font-medium">Temporisateur (minuterie d'escalier)</td><td class="text-base-content/60">Détection de front, minuterie</td></tr>
+      <tr><td class="font-mono text-primary">01</td><td class="font-medium">Le REPL et la LED</td><td class="text-base-content/60">Console interactive, variables, GPIO sortie</td></tr>
+      <tr><td class="font-mono text-primary">02</td><td class="font-medium">LED qui clignote</td><td class="text-base-content/60">Boucle infinie, <code>while True</code></td></tr>
+      <tr><td class="font-mono text-primary">03</td><td class="font-medium">LED qui "respire"</td><td class="text-base-content/60">PWM, luminosité variable</td></tr>
+      <tr><td class="font-mono text-primary">04</td><td class="font-medium">Lire le bouton BOOT</td><td class="text-base-content/60">GPIO en entrée, logique active bas</td></tr>
+      <tr><td class="font-mono text-primary">05</td><td class="font-medium">LED commandée par le bouton</td><td class="text-base-content/60">Capteur → actionneur</td></tr>
+      <tr><td class="font-mono text-primary">06</td><td class="font-medium">Temporisateur d'éclairage</td><td class="text-base-content/60">Compteur, minuterie d'escalier</td></tr>
       <tr><td class="font-mono text-primary">07</td><td class="font-medium">Température du processeur</td><td class="text-base-content/60">Capteur interne, f-strings</td></tr>
       <tr><td class="font-mono text-primary">08</td><td class="font-medium">Scanner les réseaux WiFi</td><td class="text-base-content/60">Module réseau</td></tr>
       <tr><td class="font-mono text-primary">09</td><td class="font-medium">Créer un point d'accès WiFi</td><td class="text-base-content/60">L'ESP32 devient un routeur</td></tr>
@@ -112,59 +111,56 @@ import { siteUrl } from '../../utils/url';
 
 ---
 
-## Manip 01 — Le REPL : dialogue avec l'ESP32
+## Manip 01 — Le REPL et la LED
 
-Le **REPL** (Read-Eval-Print Loop) est la console interactive de MicroPython.
-On tape une instruction dans le **Shell de Thonny** (en bas de la fenêtre), l'ESP32 l'exécute et affiche le résultat. Taper ces commandes une par une :
+Tout se fait dans le **Shell de Thonny** (la console en bas). On tape une instruction, l'ESP32 l'exécute et affiche le résultat.
+
+### Découverte : calculs et variables
 
 ```python
->>> 1 + 1
-2
->>> 10 * 3
-30
->>> 2 ** 8
+>>> 2 + 3 * 4                     # la multiplication est prioritaire
+14
+>>> 15 / 3 - 1                    # la division retourne un "float"
+4.0
+>>> 13 // 4                       # division entière
+3
+>>> 13 % 4                        # modulo (reste de la division)
+1
+>>> 2 ** 8                        # puissance : 2 exposant 8
 256
->>> print("Bonjour Polinno !")
-Bonjour Polinno !
->>> nom = "Fablab"
->>> print("Bienvenue au", nom)
-Bienvenue au Fablab
->>> for i in range(5):
-...     print("Compte :", i)
-...
-Compte : 0
-Compte : 1
-Compte : 2
-Compte : 3
-Compte : 4
+```
+
+```python
+>>> vitesse1 = 36
+>>> vitesse2 = 42
+>>> print("Moyenne :", (vitesse1 + vitesse2) / 2)
+Moyenne : 39.0
+>>> type(vitesse1)                 # int = nombre entier
+<class 'int'>
+>>> type("Bonjour")               # str = chaîne de caractères
+<class 'str'>
+```
+
+### Contrôler la LED intégrée
+
+La LED bleue sur la carte est connectée au **GPIO 2**. On la commande depuis le Shell :
+
+```python
+>>> from machine import Pin
+>>> led = Pin(2, Pin.OUT)          # GPIO 2 en sortie
+>>> led.value(1)                   # la LED s'allume !
+>>> led.value(0)                   # la LED s'éteint
+>>> led.on()                       # raccourci pour allumer
+>>> led.off()                      # raccourci pour éteindre
+>>> Pin(2, Pin.OUT).value(1)       # tout en une seule ligne
 ```
 
 <div class="rounded-xl border border-base-200/60 bg-base-200/20 p-4 my-4">
   <p class="text-xs text-base-content/50">
     <strong>Ctrl+C</strong> : arrête le programme en cours ·
     <strong>Ctrl+D</strong> : redémarre l'ESP32 ·
-    <strong>Flèche Haut</strong> : rappelle la dernière commande
-  </p>
-</div>
-
----
-
-## Manip 02 — Allumer la LED intégrée
-
-Toutes les cartes ESP32 ont une **LED soudée sur GPIO 2**. On va la contrôler depuis le Shell :
-
-```python
->>> from machine import Pin
->>> led = Pin(2, Pin.OUT)
->>> led.value(1)          # la LED s'allume !
->>> led.value(0)          # la LED s'éteint
->>> led.on()              # raccourci pour allumer
->>> led.off()             # raccourci pour éteindre
-```
-
-<div class="rounded-xl border border-base-200/60 bg-base-200/20 p-4 my-4">
-  <p class="text-xs text-base-content/50">
-    <code>Pin(2, Pin.OUT)</code> = broche GPIO 2 en sortie ·
+    <strong>Flèche Haut</strong> : rappelle la dernière commande ·
+    <code>Pin(n, Pin.OUT)</code> = broche en sortie ·
     <code>value(1)</code> = 3,3V → allumée ·
     <code>value(0)</code> = 0V → éteinte
   </p>
@@ -172,71 +168,72 @@ Toutes les cartes ESP32 ont une **LED soudée sur GPIO 2**. On va la contrôler 
 
 ---
 
-## Manip 03 — Faire clignoter la LED
+## Manip 02 — Faire clignoter la LED
 
 Le "Hello World" de l'électronique embarquée : une boucle infinie avec des pauses.
 `Ctrl+C` dans Thonny pour arrêter.
 
 <GitHubCodeBlock
   repo="vincent-herm/fablab-esp32-ateliers"
-  file="atelier0-initiation/manip03_led_blink.py"
+  file="atelier0-initiation/manip02_led_blink.py"
   language="python"
-  title="manip03_led_blink.py"
+  title="manip02_led_blink.py"
 />
 
 ---
 
-## Manip 04 — La LED qui "respire" (PWM)
+## Manip 03 — La LED qui "respire" (PWM)
 
 Le **PWM** allume et éteint la LED des centaines de fois par seconde.
 L'œil perçoit une luminosité intermédiaire. `duty` va de **0** (éteint) à **1023** (pleine puissance).
 
 <GitHubCodeBlock
   repo="vincent-herm/fablab-esp32-ateliers"
-  file="atelier0-initiation/manip04_led_pwm.py"
+  file="atelier0-initiation/manip03_led_pwm.py"
   language="python"
-  title="manip04_led_pwm.py"
+  title="manip03_led_pwm.py"
 />
 
 ---
 
-## Manip 05 — Lire le bouton BOOT
+## Manip 04 — Lire le bouton BOOT
 
 Le bouton BOOT (GPIO 0) est sur toutes les cartes ESP32.
 Attention à la **logique inversée** : relâché = 1, appuyé = 0.
 
 <GitHubCodeBlock
   repo="vincent-herm/fablab-esp32-ateliers"
-  file="atelier0-initiation/manip05_bouton_boot.py"
+  file="atelier0-initiation/manip04_bouton_boot.py"
   language="python"
-  title="manip05_bouton_boot.py"
+  title="manip04_bouton_boot.py"
 />
 
 ---
 
-## Manip 06 — La LED obéit au bouton
+## Manip 05 — La LED obéit au bouton
 
 Premier automatisme : une **entrée** (bouton) commande une **sortie** (LED) en temps réel.
 
 <GitHubCodeBlock
   repo="vincent-herm/fablab-esp32-ateliers"
-  file="atelier0-initiation/manip06_led_bouton.py"
+  file="atelier0-initiation/manip05_led_bouton.py"
   language="python"
-  title="manip06_led_bouton.py"
+  title="manip05_led_bouton.py"
 />
 
 ---
 
-## Manip 06b — Temporisateur (minuterie d'escalier)
+## Manip 06 — Temporisateur d'éclairage
 
-On appuie **une fois** sur le bouton → la LED s'allume **5 secondes** puis s'éteint seule.
-Concept nouveau : la **détection de front**. On ne réagit pas à l'état du bouton, mais au moment où il **change** d'état.
+On appuie sur le bouton → la LED s'allume **2 secondes** puis s'éteint seule. Si on réappuie pendant que c'est allumé, le compteur repart — exactement comme une **minuterie d'escalier**.
+
+Le principe : un **compteur** démarre à 20 à chaque appui. À chaque tour de boucle (0,1 s), le compteur descend de 1. La LED est allumée tant que le compteur est positif.
 
 <GitHubCodeBlock
   repo="vincent-herm/fablab-esp32-ateliers"
-  file="atelier0-initiation/manip06b_temporisateur.py"
+  file="atelier0-initiation/manip06_temporisateur.py"
   language="python"
-  title="manip06b_temporisateur.py"
+  title="manip06_temporisateur.py"
 />
 
 ---
