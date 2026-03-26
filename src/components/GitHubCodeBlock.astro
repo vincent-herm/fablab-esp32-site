@@ -45,17 +45,21 @@ import { codeToHtml } from 'shiki';
 
 const highlighted = await codeToHtml(code, {
   lang: language,
-  theme: 'tokyo-night',
+  themes: {
+    light: 'github-light',
+    dark: 'tokyo-night',
+  },
+  defaultColor: false,
 });
 
 const displayTitle = title || file.split('/').pop() || file;
 const lineCount = code.split('\n').length;
 ---
 
-<div class="rounded-2xl overflow-hidden border border-base-200/60 bg-[#1a1b26] my-6">
+<div class="code-block rounded-2xl overflow-hidden border border-base-200/60 my-6">
 
   <!-- En-tête -->
-  <div class="flex items-center justify-between px-4 py-3 border-b border-white/8 bg-white/3">
+  <div class="code-header flex items-center justify-between px-4 py-3 border-b">
     <div class="flex items-center gap-3 min-w-0">
       <!-- Pastilles macOS -->
       <div class="flex gap-1.5 flex-shrink-0">
@@ -67,20 +71,20 @@ const lineCount = code.split('\n').length;
       <!-- Titre + fichier -->
       <div class="min-w-0">
         <div class="flex items-center gap-2">
-          <span class="text-white/80 text-sm font-medium truncate">{displayTitle}</span>
-          <span class="text-white/30 text-xs font-mono flex-shrink-0">.{language}</span>
+          <span class="code-title text-sm font-medium truncate">{displayTitle}</span>
+          <span class="code-dim text-xs font-mono flex-shrink-0">.{language}</span>
         </div>
-        <div class="text-white/30 text-xs font-mono truncate">{file}</div>
+        <div class="code-dim text-xs font-mono truncate">{file}</div>
       </div>
     </div>
 
     <!-- Actions -->
     <div class="flex items-center gap-2 flex-shrink-0">
-      <span class="text-white/25 text-xs font-mono">{lineCount} lignes</span>
+      <span class="code-dim text-xs font-mono">{lineCount} lignes</span>
 
       <!-- Bouton Copier -->
       <button
-        class="copy-btn flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white/8 hover:bg-white/15 text-white/60 hover:text-white/90 text-xs font-medium transition-all"
+        class="copy-btn flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg code-btn text-xs font-medium transition-all"
         data-code={code}
         title="Copier le code"
       >
@@ -98,7 +102,7 @@ const lineCount = code.split('\n').length;
         href={githubUrl}
         target="_blank"
         rel="noopener noreferrer"
-        class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white/8 hover:bg-white/15 text-white/60 hover:text-white/90 text-xs font-medium transition-all"
+        class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg code-btn text-xs font-medium transition-all"
         title="Voir sur GitHub"
       >
         <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
@@ -127,17 +131,33 @@ const lineCount = code.split('\n').length;
 </div>
 
 <style>
-  .code-content :global(pre) {
-    margin: 0 !important;
-    border-radius: 0 !important;
-    border: none !important;
-    background: transparent !important;
-    padding: 1.25rem 1.5rem !important;
-  }
-  .code-content :global(code) {
-    font-size: 0.825rem !important;
-    line-height: 1.7 !important;
-  }
+  /* --- Thème sombre (défaut) --- */
+  .code-block { background: #1a1b26; }
+  .code-header { border-color: rgba(255,255,255,0.08); background: rgba(255,255,255,0.03); }
+  .code-title { color: rgba(255,255,255,0.8); }
+  .code-dim { color: rgba(255,255,255,0.3); }
+  .code-btn { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6); }
+  .code-btn:hover { background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.9); }
+
+  .code-content :global(.shiki) { background: transparent !important; }
+  .code-content :global(pre) { margin: 0 !important; border-radius: 0 !important; border: none !important; background: transparent !important; padding: 1.25rem 1.5rem !important; }
+  .code-content :global(code) { font-size: 0.825rem !important; line-height: 1.7 !important; }
+
+  /* Shiki dual themes : appliquer les couleurs dark par défaut */
+  .code-content :global(span) { color: var(--shiki-dark) !important; }
+
+  /* --- Thème clair --- */
+  :global([data-theme="light"]) .code-block { background: #f6f8fa; }
+  :global([data-theme="light"]) .code-header { border-color: rgba(0,0,0,0.08); background: rgba(0,0,0,0.03); }
+  :global([data-theme="light"]) .code-title { color: rgba(0,0,0,0.8); }
+  :global([data-theme="light"]) .code-dim { color: rgba(0,0,0,0.4); }
+  :global([data-theme="light"]) .code-btn { background: rgba(0,0,0,0.06); color: rgba(0,0,0,0.5); }
+  :global([data-theme="light"]) .code-btn:hover { background: rgba(0,0,0,0.1); color: rgba(0,0,0,0.8); }
+
+  /* Shiki dual themes : appliquer les couleurs light */
+  :global([data-theme="light"]) .code-content :global(span) { color: var(--shiki-light) !important; }
+
+  /* Pastilles macOS : même style dans les deux thèmes */
 </style>
 
 <script>
