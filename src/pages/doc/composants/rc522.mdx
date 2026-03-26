@@ -119,61 +119,31 @@ DE:AD:BE:EF
 
 ---
 
-## Exemple : test de lecture
+## Test de lecture
 
-Lit les badges présentés devant le lecteur et affiche leur UID.
+Lit les badges présentés devant le lecteur et affiche leur UID. Utile pour vérifier le câblage.
 
 <GitHubCodeBlock
   repo="vincent-herm/fablab-esp32-ateliers"
   file="composants/rc522-rfid/test_rfid.py"
   language="python"
-  title="test_rfid.py"
+  title="test_rfid.py — vérifier que le module fonctionne"
 />
 
 ---
 
-## Exemple : contrôle d'accès complet
+## Aller plus loin
 
-Système de badge complet avec enrôlement, LED verte/rouge et buzzer.
-C'est le code de l'atelier Badge RFID.
+Pour construire un vrai projet avec le RC522, voir l'**atelier Badge RFID** qui propose un système de contrôle d'accès complet avec 3 niveaux (Visiteur, Membre, Admin) :
 
-<GitHubCodeBlock
-  repo="vincent-herm/fablab-esp32-ateliers"
-  file="composants/rc522-rfid/exemple_controle_acces.py"
-  language="python"
-  title="exemple_controle_acces.py — Contrôle d'accès avec LEDs et buzzer"
-/>
-
----
-
-## Exemple : contrôle d'accès 3 niveaux
-
-Système complet avec programmation des badges via le Shell et 3 niveaux d'accès (Visiteur, Membre, Admin). Les badges sont sauvegardés en JSON sur l'ESP32 et persistent après redémarrage.
-
-Le menu propose :
-- **Programmation** : scanner un badge, saisir nom + prénom, choisir le niveau
-- **Production** : scanner → LED bleue si accès accordé, rien si refusé
-- **Lister / supprimer** des badges
-
-<GitHubCodeBlock
-  repo="vincent-herm/fablab-esp32-ateliers"
-  file="composants/rc522-rfid/controle_acces_3niveaux.py"
-  language="python"
-  title="controle_acces_3niveaux.py — Visiteur / Membre / Admin"
-/>
-
----
-
-## Tous les fichiers
-
-<div class="rounded-xl overflow-hidden border border-base-200/60 bg-[#1a1b26] my-4">
-  <div class="px-4 py-2 border-b border-white/8 text-white/50 text-xs font-mono">github.com/vincent-herm/fablab-esp32-ateliers</div>
-  <pre class="p-4 text-xs font-mono text-white/70 leading-relaxed overflow-x-auto"><code>{`composants/rc522-rfid/
-├── mfrc522.py                       # bibliothèque (copier sur l'ESP32)
-├── test_rfid.py                     # test de lecture (UID)
-├── exemple_controle_acces.py        # contrôle d'accès simple
-├── controle_acces_3niveaux.py       # contrôle d'accès 3 niveaux
-└── README.md                        # documentation`}</code></pre>
+<div class="my-6">
+  <a href={siteUrl('/ateliers/rfid/')} class="group flex items-center gap-3 rounded-xl border border-base-200/80 bg-base-200/30 px-5 py-4 hover:border-primary/30 transition-colors">
+    <div>
+      <div class="text-xs text-base-content/50 mb-0.5">Atelier</div>
+      <div class="font-semibold text-sm group-hover:text-primary transition-colors">Badge RFID — Contrôle d'accès 3 niveaux</div>
+    </div>
+    <svg class="w-5 h-5 text-base-content/40 group-hover:text-primary group-hover:translate-x-1 transition-all ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+  </a>
 </div>
 
 <div class="border-t border-base-200/60 pt-10 mt-10 flex justify-start">

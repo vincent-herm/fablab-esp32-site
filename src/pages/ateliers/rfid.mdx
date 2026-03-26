@@ -11,7 +11,7 @@ import GitHubCodeBlock from '../../components/GitHubCodeBlock.astro';
 import DifficultyBadge from '../../components/DifficultyBadge.astro';
 import { siteUrl } from '../../utils/url';
 
-<Layout title="Atelier 08 — Badge RFID" description="Un lecteur RC522 identifie les badges. Accès accordé = LED verte. Badge inconnu = alarme sonore.">
+<Layout title="Atelier 07 — Badge RFID" description="Contrôle d'accès RFID 3 niveaux : Visiteur, Membre, Admin. Programmation et production.">
 
 <div class="border-b border-base-200/60 bg-base-200/20">
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
@@ -28,12 +28,13 @@ import { siteUrl } from '../../utils/url';
 <section class="py-12 hero-pattern border-b border-base-200/60">
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex items-center gap-3 mb-6">
-      <span class="font-mono text-primary/60 text-sm font-bold bg-primary/10 px-3 py-1 rounded-lg">ATELIER 08</span>
+      <span class="font-mono text-primary/60 text-sm font-bold bg-primary/10 px-3 py-1 rounded-lg">ATELIER 07</span>
       <DifficultyBadge level="intermediaire" />
     </div>
     <h1 class="text-3xl sm:text-4xl font-black mb-4">Badge RFID</h1>
     <p class="text-base-content/65 text-lg leading-relaxed max-w-2xl mb-8">
-      Un lecteur RC522 identifie les badges par leur identifiant unique. Accès accordé : LED verte et bip de bienvenue. Badge inconnu : LED rouge et alarme sonore.
+      Un système de contrôle d'accès complet avec 3 niveaux (Visiteur, Membre, Admin).
+      Phase de programmation pour enregistrer les badges, puis phase de production pour autoriser ou refuser l'accès.
     </p>
     <div class="flex flex-wrap gap-4">
       <div class="flex items-center gap-2 text-sm text-base-content/60">
@@ -53,11 +54,11 @@ import { siteUrl } from '../../utils/url';
 
 ## Ce que tu vas créer
 
-Un système de contrôle d'accès par badge RFID :
-- **Mode enrôlement** : présente un badge pour l'enregistrer dans la liste autorisée
-- **Mode lecture** : chaque badge présenté est comparé à la liste
-- Accès accordé → LED verte + bip court
-- Badge refusé → LED rouge + alarme
+Un système de contrôle d'accès RFID complet avec :
+- **3 niveaux** : Visiteur (1), Membre (2), Admin (3)
+- **Phase de programmation** : scanner un badge, saisir nom + prénom, choisir le niveau
+- **Phase de production** : scanner → LED bleue si accès accordé, rien si refusé
+- **Sauvegarde persistante** : les badges sont stockés en JSON sur l'ESP32
 
 ---
 
@@ -72,35 +73,12 @@ Un système de contrôle d'accès par badge RFID :
       <tr><td class="font-medium">ESP32</td><td>1</td><td class="text-base-content/60">Fourni en atelier</td></tr>
       <tr><td class="font-medium">Module RC522</td><td>1</td><td class="text-base-content/60">Alimentation 3.3V UNIQUEMENT</td></tr>
       <tr><td class="font-medium">Badges / cartes RFID</td><td>3 à 5</td><td class="text-base-content/60">Fréquence 13.56 MHz (Mifare)</td></tr>
-      <tr><td class="font-medium">LED verte</td><td>1</td><td class="text-base-content/60">Accès accordé</td></tr>
-      <tr><td class="font-medium">LED rouge</td><td>1</td><td class="text-base-content/60">Accès refusé</td></tr>
-      <tr><td class="font-medium">Résistances 220 Ω</td><td>2</td><td class="text-base-content/60">Une par LED</td></tr>
-      <tr><td class="font-medium">Buzzer passif</td><td>1</td><td class="text-base-content/60">Feedback sonore</td></tr>
       <tr><td class="font-medium">Câble micro-USB</td><td>1</td><td class="text-base-content/60">Fourni en atelier</td></tr>
     </tbody>
   </table>
 </div>
 
-## Connexions
-
-<div class="rounded-xl overflow-hidden border border-base-200/60 bg-[#1a1b26] my-4">
-  <div class="px-4 py-2 border-b border-white/8 text-white/50 text-xs font-mono">câblage</div>
-  <pre class="p-4 text-xs font-mono text-white/70 leading-relaxed"><code>{`RC522 (bus SPI) — ATTENTION : 3.3V UNIQUEMENT, jamais 5V !
-  RC522 VCC  ──── ESP32 3.3V
-  RC522 GND  ──── ESP32 GND
-  RC522 SCK  ──── ESP32 GPIO18
-  RC522 MOSI ──── ESP32 GPIO23
-  RC522 MISO ──── ESP32 GPIO19
-  RC522 SDA  ──── ESP32 GPIO5   (Chip Select)
-  RC522 RST  ──── ESP32 GPIO22
-
-LEDs (avec résistance 220Ω) :
-  LED verte ──── ESP32 GPIO2
-  LED rouge ──── ESP32 GPIO4
-
-Buzzer :
-  Buzzer    ──── ESP32 GPIO15`}</code></pre>
-</div>
+Pour le câblage et l'installation de la bibliothèque `mfrc522.py`, voir la <a href={siteUrl('/doc/composants/rc522/')} class="text-primary hover:underline">fiche composant RC522</a>.
 
 ---
 
@@ -108,50 +86,30 @@ Buzzer :
 
 <GitHubCodeBlock
   repo="vincent-herm/fablab-esp32-ateliers"
-  file="atelier8-rfid/main.py"
+  file="composants/rc522-rfid/controle_acces_3niveaux.py"
   language="python"
-  title="Badge RFID MicroPython — main.py"
+  title="controle_acces_3niveaux.py — Contrôle d'accès 3 niveaux"
 />
 
 ---
 
 ## Comment ça marche
 
-### Convertir l'UID en chaîne lisible
+### Le menu principal
 
-Chaque carte RFID possède un identifiant unique (UID) de 4 à 7 octets. On le convertit en chaîne hexadécimale pour le stocker et le comparer :
+Au lancement, le Shell affiche un menu :
+- **1. Programmation** : enregistrer des badges (nom + niveau)
+- **2-4. Production** : contrôle d'accès avec niveau minimum requis
+- **5. Lister** : voir tous les badges enregistrés
+- **6. Supprimer** : retirer un badge
 
-```python
-def uid_vers_str(uid):
-    """Convertit une liste d'octets en chaîne hex lisible."""
-    return ':'.join('{:02X}'.format(b) for b in uid)
+### Les 3 niveaux
 
-# Exemple : [0xDE, 0xAD, 0xBE, 0xEF] → "DE:AD:BE:EF"
-```
+En mode production, on choisit le niveau minimum requis. Un badge de niveau 3 (Admin) passe partout, un badge de niveau 1 (Visiteur) ne passe que si le niveau requis est 1.
 
-### La fonction d'enrôlement
+### Sauvegarde en JSON
 
-Le mode enrôlement permet d'ajouter facilement de nouveaux badges sans modifier le code :
-
-```python
-badges_autorises = []
-
-def enrolement(rdr):
-    """Attend un badge et l'ajoute à la liste autorisée."""
-    print("Présente le badge à enrôler...")
-    while True:
-        stat, tag_type = rdr.request(rdr.REQIDL)
-        if stat == rdr.OK:
-            stat, uid = rdr.anticoll()
-            if stat == rdr.OK:
-                uid_str = uid_vers_str(uid)
-                if uid_str not in badges_autorises:
-                    badges_autorises.append(uid_str)
-                    print(f"Badge enrôlé : {uid_str}")
-                else:
-                    print(f"Badge déjà enrôlé : {uid_str}")
-                return uid_str
-```
+Les badges sont stockés dans `badges.json` sur l'ESP32. Le fichier persiste après un redémarrage — pas besoin de reprogrammer les badges à chaque fois.
 
 ---
 
