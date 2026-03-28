@@ -56,17 +56,15 @@ const displayTitle = title || file.split('/').pop() || file;
 const lineCount = code.split('\n').length;
 ---
 
-<div class="code-block rounded-2xl overflow-hidden border border-base-200/60 my-6">
+<details class="code-block rounded-2xl overflow-hidden border border-base-200/60 my-6">
 
-  <!-- En-tête -->
-  <div class="code-header flex items-center justify-between px-4 py-3 border-b">
+  <!-- En-tête cliquable -->
+  <summary class="code-header flex items-center justify-between px-4 py-3 cursor-pointer select-none list-none">
     <div class="flex items-center gap-3 min-w-0">
-      <!-- Pastilles macOS -->
-      <div class="flex gap-1.5 flex-shrink-0">
-        <div class="w-3 h-3 rounded-full bg-[#ff5f57]"></div>
-        <div class="w-3 h-3 rounded-full bg-[#ffbd2e]"></div>
-        <div class="w-3 h-3 rounded-full bg-[#28c840]"></div>
-      </div>
+      <!-- Flèche dépliable -->
+      <svg class="code-chevron w-4 h-4 code-dim flex-shrink-0 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+      </svg>
 
       <!-- Titre + fichier -->
       <div class="min-w-0">
@@ -111,7 +109,7 @@ const lineCount = code.split('\n').length;
         GitHub
       </a>
     </div>
-  </div>
+  </summary>
 
   <!-- Avertissement si erreur de chargement -->
   {error && (
@@ -123,12 +121,12 @@ const lineCount = code.split('\n').length;
     </div>
   )}
 
-  <!-- Code coloré -->
+  <!-- Code coloré (visible quand déplié) -->
   <div class="overflow-x-auto">
     <div class="code-content text-sm" set:html={highlighted} />
   </div>
 
-</div>
+</details>
 
 <style>
   /* --- Thème sombre (défaut) --- */
@@ -157,7 +155,10 @@ const lineCount = code.split('\n').length;
   /* Shiki dual themes : appliquer les couleurs light */
   :global([data-theme="light"]) .code-content :global(span) { color: var(--shiki-light) !important; }
 
-  /* Pastilles macOS : même style dans les deux thèmes */
+  /* Flèche qui tourne quand ouvert */
+  .code-block summary::-webkit-details-marker { display: none; }
+  .code-block[open] .code-chevron { transform: rotate(90deg); }
+  .code-header:hover { opacity: 0.85; }
 </style>
 
 <script>
