@@ -75,7 +75,7 @@ const description = 'Implémentation MicroPython du GRAFCET (IEC 60848) sur ESP3
     <h3 class="text-xl font-bold mb-4 mt-8">Le cycle d'exécution normalisé</h3>
 
     <p class="text-base-content/80 leading-relaxed mb-4">
-      Un automate GRAFCET tourne en boucle infinie selon un cycle en <strong>6 phases séquentielles</strong>.
+      Un automate GRAFCET tourne en boucle infinie selon un cycle en <strong>7 phases séquentielles</strong>.
       Respecter cet ordre garantit un comportement déterministe — chaque phase lit le résultat de la précédente :
     </p>
 
@@ -85,12 +85,13 @@ const description = 'Implémentation MicroPython du GRAFCET (IEC 60848) sur ESP3
           <tr><th>Phase</th><th>Fonction</th><th>Ce qu'elle fait</th></tr>
         </thead>
         <tbody>
+          <tr><td class="font-mono text-cyan-400 text-sm">franchir(T, trans)</td><td class="font-medium">Évolution</td><td class="text-sm text-base-content/60">Reset des fronts d'étape, puis active/désactive les étapes selon les transitions validées</td></tr>
           <tr><td class="font-mono text-cyan-400 text-sm">tick()</td><td class="font-medium">Timers</td><td class="text-sm text-base-content/60">Incrémente les compteurs de temps des étapes actives</td></tr>
-          <tr><td class="font-mono text-cyan-400 text-sm">gerer_actions()</td><td class="font-medium">Actions</td><td class="text-sm text-base-content/60">Calcule les variables logiques selon les étapes actives</td></tr>
+          <tr><td class="font-mono text-cyan-400 text-sm">gerer_actions()</td><td class="font-medium">Actions</td><td class="text-sm text-base-content/60">Calcule les variables logiques selon les étapes actives — les fronts <code>rising</code>/<code>falling</code> sont lisibles ici</td></tr>
           <tr><td class="font-mono text-cyan-400 text-sm">affecter_sorties()</td><td class="font-medium">Sorties</td><td class="text-sm text-base-content/60">Applique les variables sur le matériel (LEDs, moteurs...)</td></tr>
           <tr><td class="font-mono text-cyan-400 text-sm">lire_entrees()</td><td class="font-medium">Entrées</td><td class="text-sm text-base-content/60">Lit les capteurs et boutons</td></tr>
+          <tr><td class="font-mono text-cyan-400 text-sm">detecter_fronts_entrees()</td><td class="font-medium">Fronts d'entrée</td><td class="text-sm text-base-content/60">Détecte les changements d'état des capteurs — <code>fm[i]</code> / <code>fd[i]</code> (optionnel)</td></tr>
           <tr><td class="font-mono text-cyan-400 text-sm">calculer_transitions()</td><td class="font-medium">Transitions</td><td class="text-sm text-base-content/60">Évalue les conditions de franchissement</td></tr>
-          <tr><td class="font-mono text-cyan-400 text-sm">franchir(T, trans)</td><td class="font-medium">Évolution</td><td class="text-sm text-base-content/60">Active/désactive les étapes selon les transitions validées</td></tr>
         </tbody>
       </table>
     </div>
@@ -98,7 +99,7 @@ const description = 'Implémentation MicroPython du GRAFCET (IEC 60848) sur ESP3
     <div class="rounded-xl border border-amber-500/20 bg-amber-500/5 p-5 my-6">
       <h4 class="font-bold text-amber-400 mb-2">⚠️ Pourquoi cet ordre ?</h4>
       <p class="text-sm text-base-content/70 leading-relaxed">
-        Les sorties sont affectées <strong>avant</strong> la lecture des entrées. Cela évite qu'une sortie activée dans le même cycle influence une entrée dans le même cycle — comportement non-déterministe à éviter dans un automate industriel.
+        <code>franchir()</code> est en <strong>début de cycle</strong> : il pose les fronts d'étape (<code>rising</code>/<code>falling</code>) qui restent visibles par <code>gerer_actions()</code> dans le même cycle. Les sorties sont affectées <strong>avant</strong> la lecture des entrées pour éviter qu'une sortie activée dans le même cycle influence une entrée — comportement non-déterministe à éviter dans un automate industriel.
       </p>
     </div>
 
@@ -132,13 +133,30 @@ const description = 'Implémentation MicroPython du GRAFCET (IEC 60848) sur ESP3
     (1, (1,), (2,)),   # T1 : désactive étape 1, active étape 2
     (2, (2,), (0,)),   # T2 : désactive étape 2, active étape 0
 ]</code></pre>
-            <p class="mt-2">Les <strong>fronts montants/descendants</strong> (<code>rising</code> / <code>falling</code>) sont True pendant un seul cycle, au moment précis où une étape s'active ou se désactive — équivalent du <em>StepRising</em> / <em>StepFalling</em> des PLCs industriels.</p>
+            <p class="mt-2">Les <strong>fronts d'étape</strong> (<code>rising</code> / <code>falling</code>) sont True pendant un seul cycle, au moment précis où une étape s'active ou se désactive — équivalent du <em>StepRising</em> / <em>StepFalling</em> des PLCs industriels.</p>
             <ul class="list-disc list-inside mt-2 space-y-1">
               <li><code>g.etapes[i]</code> — True si l'étape i est active</li>
               <li><code>g.tempo[i]</code> — durée en ms depuis l'activation (remis à 0 à la désactivation)</li>
               <li><code>g.rising[i]</code> — True pendant 1 cycle au moment de l'activation</li>
               <li><code>g.falling[i]</code> — True pendant 1 cycle au moment de la désactivation</li>
             </ul>
+            <p class="mt-3">Les <strong>fronts d'entrée</strong> (optionnels, avec <code>nb_entrees</code>) détectent le changement d'état des capteurs — utile pour distinguer "bouton pressé" de "bouton maintenu" :</p>
+            <ul class="list-disc list-inside mt-2 space-y-1">
+              <li><code>g.entrees[i]</code> — état courant de l'entrée (à remplir dans <code>lire_entrees()</code>)</li>
+              <li><code>g.fm[i]</code> — front montant : True pendant 1 cycle quand l'entrée passe de False à True</li>
+              <li><code>g.fd[i]</code> — front descendant : True pendant 1 cycle quand l'entrée passe de True à False</li>
+            </ul>
+            <pre class="bg-base-300/30 rounded p-3 text-xs mt-3 overflow-x-auto"><code># Exemple : ascenseur avec fronts d'entrée sur 3 boutons
+g = Grafcet(nb_etapes=3, etape_initiale=0, nb_entrees=3)
+
+def lire_entrees():
+    g.entrees[0] = not bpA.value()  # bouton Appel
+    g.entrees[1] = not bpB.value()  # bouton Montée
+    g.entrees[2] = not bpC.value()  # bouton Descente
+
+def calculer_transitions():
+    trans[0] = g.etapes[0] and g.fm[0]  # front montant du bouton Appel
+    # → ne franchit qu'à l'APPUI, pas si le bouton reste enfoncé</code></pre>
           </div>
           <GitHubCodeBlock repo={REPO} file="avance/grafcet/grafcet.py" title="grafcet.py — Moteur GRAFCET réutilisable" />
         </div>
