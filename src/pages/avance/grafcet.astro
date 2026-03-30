@@ -219,6 +219,89 @@ transitions[0] = g.etapes[0] and g.fm[0]  # front montant au lieu de niveau</cod
       </div>
     </div>
 
+    <!-- VARIANTE IEC 60848 -->
+    <div>
+      <h3 class="text-xl font-black mb-1 flex items-center gap-2">
+        <span>🔬</span> Variante conforme IEC 60848
+      </h3>
+      <p class="text-sm text-base-content/50 mb-8">Version expérimentale — en cours de validation. Trois améliorations par rapport au moteur de base.</p>
+
+      <div class="rounded-xl border border-amber-500/20 bg-amber-500/5 p-5 mb-8 text-sm text-base-content/75 leading-relaxed">
+        <h4 class="font-bold text-amber-400 mb-2">⚠️ Version en cours de validation</h4>
+        <p>Ces fichiers sont des variantes expérimentales. Les versions stables restent <code>grafcet.py</code> et <code>ascenseur_enim_led.py</code>.</p>
+      </div>
+
+      <div class="space-y-10">
+
+        <div>
+          <h4 class="font-bold mb-3 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xs font-black shrink-0">1</span>
+            Moteur GRAFCET variante — 3 corrections IEC 60848
+          </h4>
+          <div class="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
+
+            <p class="font-bold mb-2">Correction 1 — Validation automatique des transitions (Règle 2)</p>
+            <p>Le moteur vérifie lui-même que toutes les étapes sources d'une transition sont actives. L'utilisateur n'écrit que la <strong>réceptivité pure</strong> dans <code>calculer_transitions()</code> :</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 my-3">
+              <div class="rounded-lg bg-base-300/30 p-3">
+                <p class="font-bold text-xs text-base-content/50 mb-1">grafcet.py (version stable)</p>
+                <pre class="text-xs"><code>transitions[0] = g.etapes[0] and Start and (g.tempo[0] > 200)</code></pre>
+              </div>
+              <div class="rounded-lg bg-base-300/30 p-3">
+                <p class="font-bold text-xs text-cyan-400 mb-1">grafcet_variante.py</p>
+                <pre class="text-xs"><code>transitions[0] = Start and (g.tempo[0] > 200)</code></pre>
+              </div>
+            </div>
+
+            <p class="font-bold mb-2 mt-4">Correction 2 — Franchissement simultané en deux passes (Règle 4)</p>
+            <p>Toutes les transitions simultanément franchissables sont franchies ensemble. Le moteur collecte d'abord, applique ensuite :</p>
+            <ul class="list-disc list-inside mt-2 space-y-1">
+              <li><strong>Passe 1</strong> : parcourt toute la table T, collecte les étapes à désactiver et à activer</li>
+              <li><strong>Règle 5</strong> : si une étape apparaît dans les deux ensembles (conflit), elle reste active — son tempo et son compteur ne sont pas remis à 0</li>
+              <li><strong>Passe 2</strong> : applique toutes les désactivations puis toutes les activations</li>
+            </ul>
+
+            <p class="font-bold mb-2 mt-4">Correction 3 — Modes de sortie documentés (§3.2)</p>
+            <p>Deux modes d'action sur les sorties, à ne jamais mélanger pour une même variable :</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 my-3">
+              <div class="rounded-lg bg-base-300/30 p-3">
+                <p class="font-bold text-xs text-cyan-400 mb-1">Mode CONTINU (assignation)</p>
+                <p class="text-xs">La sortie suit l'état de l'étape. Vraie tant que l'étape est active.</p>
+                <pre class="text-xs mt-1"><code>Descendre = g.etapes[1]
+led.value(g.etapes[0])</code></pre>
+              </div>
+              <div class="rounded-lg bg-base-300/30 p-3">
+                <p class="font-bold text-xs text-cyan-400 mb-1">Mode MÉMORISÉ (SET/RESET)</p>
+                <p class="text-xs">La sortie prend une valeur et la conserve. Utilise les fronts.</p>
+                <pre class="text-xs mt-1"><code>if g.rising[1]: alarme = True   # SET
+if g.rising[0]: alarme = False  # RESET</code></pre>
+              </div>
+            </div>
+          </div>
+          <GitHubCodeBlock repo={REPO} file="avance/grafcet/grafcet_variante.py" title="grafcet_variante.py — Moteur GRAFCET variante IEC 60848" />
+        </div>
+
+        <div>
+          <h4 class="font-bold mb-3 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xs font-black shrink-0">2</span>
+            Ascenseur variante — réceptivités simplifiées
+          </h4>
+          <div class="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
+            <p>Même ascenseur que la version de base, adapté à <code>grafcet_variante.py</code>. La seule différence visible est dans <code>calculer_transitions()</code> — les <code>g.etapes[i] and</code> ont disparu :</p>
+            <pre class="bg-base-300/30 rounded p-3 text-xs mt-2 overflow-x-auto"><code>def calculer_transitions():
+    # Réceptivités UNIQUEMENT — le moteur vérifie les étapes sources
+    transitions[0] = Start and (g.tempo[0] > 200)    # T0 : départ
+    transitions[1] = Bas                               # T1 : fond atteint
+    transitions[2] = Haut                              # T2 : haut atteint</code></pre>
+            <p class="mt-2">Toutes les sorties sont en <strong>mode continu</strong> : la LED suit directement l'état de l'étape.</p>
+            <p class="mt-2"><strong>Fichiers nécessaires sur l'ESP32 :</strong> <code>grafcet_variante.py</code>, <code>essential.py</code> (sans OLED).</p>
+          </div>
+          <GitHubCodeBlock repo={REPO} file="avance/grafcet/ascenseur_enim_led_variante.py" title="ascenseur_enim_led_variante.py — Ascenseur avec réceptivités pures" />
+        </div>
+
+      </div>
+    </div>
+
   </div>
 
   <!-- Retour / Suite -->
