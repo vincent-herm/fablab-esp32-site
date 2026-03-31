@@ -272,6 +272,11 @@ if g.falling[2]:  alarme = False  # RESET</code></pre>
     </div>
 
     <div class="rounded-xl border border-amber-500/20 bg-amber-500/5 p-5">
+      <h4 class="font-bold text-amber-400 mb-2 text-sm">rising au démarrage (conforme IEC 60848)</h4>
+      <p class="text-xs text-base-content/70">Le moteur pose <code>rising</code> sur les étapes initiales au démarrage et après <code>reinitialiser()</code>. C'est conforme à la norme : l'étape initiale "devient active" = événement d'activation (P1). Si tu utilises <code>rising[0]</code> pour compter des cycles, le démarrage compte comme un cycle — initialise le compteur à -1 pour l'ignorer.</p>
+    </div>
+
+    <div class="rounded-xl border border-amber-500/20 bg-amber-500/5 p-5">
       <h4 class="font-bold text-amber-400 mb-2 text-sm">Arrêt d'urgence</h4>
       <p class="text-xs text-base-content/70">L'AU est testé dans la boucle principale, en dehors du GRAFCET. C'est un raccourci acceptable. Le <strong>GEMMA</strong> (cours futur) gérera les modes de marche/arrêt proprement avec un GRAFCET hiérarchique.</p>
     </div>
