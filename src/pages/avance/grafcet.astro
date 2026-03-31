@@ -266,16 +266,22 @@ transitions[0] = g.etapes[0] and g.fm[0]  # front montant au lieu de niveau</cod
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 my-3">
               <div class="rounded-lg bg-base-300/30 p-3">
                 <p class="font-bold text-xs text-cyan-400 mb-1">Mode CONTINU (assignation)</p>
-                <p class="text-xs">La sortie suit l'état de l'étape. Vraie tant que l'étape est active.</p>
-                <pre class="text-xs mt-1"><code>Descendre = g.etapes[1]
-led.value(g.etapes[0])</code></pre>
+                <p class="text-xs"><strong>Quand :</strong> la sortie est liée à <strong>une seule étape</strong>. Active = ON, inactive = OFF.</p>
+                <p class="text-xs mt-1"><strong>Sécurité :</strong> si le programme plante, les sorties passent à 0 (état sûr).</p>
+                <pre class="text-xs mt-1"><code>Descendre = g.etapes[1]   # moteur
+led.value(g.etapes[0])    # témoin</code></pre>
               </div>
               <div class="rounded-lg bg-base-300/30 p-3">
                 <p class="font-bold text-xs text-cyan-400 mb-1">Mode MÉMORISÉ (SET/RESET)</p>
-                <p class="text-xs">La sortie prend une valeur et la conserve. Utilise les fronts.</p>
-                <pre class="text-xs mt-1"><code>if g.rising[1]: alarme = True   # SET
-if g.rising[0]: alarme = False  # RESET</code></pre>
+                <p class="text-xs"><strong>Quand :</strong> la sortie <strong>traverse plusieurs étapes</strong> — SET dans une étape, RESET dans une autre.</p>
+                <p class="text-xs mt-1"><strong>Attention :</strong> si le programme plante entre SET et RESET, la sortie reste dans son dernier état.</p>
+                <pre class="text-xs mt-1"><code>if g.rising[1]:   alarme = True   # SET
+if g.falling[2]:  alarme = False  # RESET</code></pre>
               </div>
+            </div>
+
+            <div class="rounded-xl border border-cyan-500/10 bg-cyan-500/5 p-4 my-3">
+              <p class="text-xs text-base-content/70"><strong>Règle simple :</strong> sortie liée à 1 étape → <strong>continu</strong>. Sortie qui traverse plusieurs étapes → <strong>mémorisé</strong>. Dans l'exemple de l'ascenseur, les LEDs verte/jaune et les moteurs sont en continu (1 étape chacun). La LED rouge clignotante est en mémorisé (SET à l'étape Descente, RESET à la fin de l'étape Montée — elle couvre 2 étapes).</p>
             </div>
             <p class="font-bold mb-2 mt-4">Étapes initiales multiples (Règle 1)</p>
             <p><code>etape_initiale</code> accepte un entier ou une liste. Utile quand plusieurs branches parallèles doivent démarrer actives :</p>
