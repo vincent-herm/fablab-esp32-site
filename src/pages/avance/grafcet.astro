@@ -6,7 +6,7 @@ import { siteUrl } from '../../utils/url';
 
 const REPO = 'vincent-herm/fablab-esp32-ateliers';
 const title = 'GRAFCET & Programmation séquentielle';
-const description = 'Implémentation MicroPython du GRAFCET (IEC 60848) sur ESP32 — moteur séquentiel, timers, interpolation NeoPixel. Exemple complet : ascenseur simulé sur carte ENIM.';
+const description = 'Moteur GRAFCET complet conforme IEC 60848 en MicroPython sur ESP32 — validation automatique, fronts, compteurs, modes de sortie, arrêt d\'urgence. Exemple de référence : ascenseur simulé.';
 ---
 <Layout title={title} description={description}>
 
@@ -32,14 +32,16 @@ const description = 'Implémentation MicroPython du GRAFCET (IEC 60848) sur ESP3
     <h1 class="text-3xl sm:text-4xl font-black mb-4">GRAFCET & Programmation séquentielle</h1>
     <p class="text-base-content/65 text-lg leading-relaxed max-w-2xl">
       Le standard industriel français pour commander des systèmes séquentiels — implémenté en MicroPython sur ESP32.
-      Ascenseurs, chaînes de production, machines automatisées : tout ce qui doit faire des choses <em>dans un ordre précis</em>.
+      Ascenseurs, escape games, machines automatisées : tout ce qui doit faire des choses <em>dans un ordre précis</em>.
     </p>
   </div>
 </section>
 
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
 
+  <!-- ============================================================ -->
   <!-- THÉORIE -->
+  <!-- ============================================================ -->
   <section class="mb-20 prose-section">
 
     <h2 class="text-2xl font-black mb-6 mt-12">C'est quoi le GRAFCET ?</h2>
@@ -57,346 +59,270 @@ const description = 'Implémentation MicroPython du GRAFCET (IEC 60848) sur ESP3
 
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-6">
       <div class="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-5">
-        <h4 class="font-bold text-cyan-400 mb-2">□ Étape</h4>
+        <h4 class="font-bold text-cyan-400 mb-2">Étape</h4>
         <p class="text-sm text-base-content/70 leading-relaxed">
-          Un état stable du système. Quand une étape est <strong>active</strong>, ses actions s'exécutent en continu.
+          Un état stable du système. Quand une étape est <strong>active</strong>, ses actions s'exécutent.
           Plusieurs étapes peuvent être simultanément actives (divergence ET = parallélisme).
         </p>
       </div>
       <div class="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-5">
-        <h4 class="font-bold text-cyan-400 mb-2">— Transition</h4>
+        <h4 class="font-bold text-cyan-400 mb-2">Transition</h4>
         <p class="text-sm text-base-content/70 leading-relaxed">
           Une condition logique entre deux étapes. Quand la réceptivité est vraie
-          <em>et</em> l'étape source est active, la transition est franchie.
+          <em>et</em> toutes les étapes sources sont actives, la transition est franchie.
         </p>
       </div>
     </div>
 
+    <!-- RÈGLES IEC 60848 -->
+    <h3 class="text-xl font-bold mb-4 mt-8">Les règles IEC 60848</h3>
+
+    <div class="overflow-x-auto rounded-xl border border-base-200/80 my-6">
+      <table class="table table-zebra w-full">
+        <thead>
+          <tr><th>Règle</th><th>Principe</th><th>Dans le moteur</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="font-medium">1</td><td class="text-sm">Situation initiale</td><td class="text-sm text-base-content/60"><code>etape_initiale</code> — int ou liste</td></tr>
+          <tr><td class="font-medium">2</td><td class="text-sm">Validation = sources actives + réceptivité</td><td class="text-sm text-base-content/60"><code>franchir()</code> vérifie automatiquement</td></tr>
+          <tr><td class="font-medium">3</td><td class="text-sm">Évolution : désactivation sources, activation cibles</td><td class="text-sm text-base-content/60">Passe 2 de <code>franchir()</code></td></tr>
+          <tr><td class="font-medium">4</td><td class="text-sm">Franchissement simultané</td><td class="text-sm text-base-content/60">Deux passes : collecte puis application</td></tr>
+          <tr><td class="font-medium">5</td><td class="text-sm">Activation/désactivation simultanées</td><td class="text-sm text-base-content/60">L'étape reste active (tempo, compt conservés)</td></tr>
+          <tr><td class="font-medium">6</td><td class="text-sm">Réinitialisation</td><td class="text-sm text-base-content/60"><code>g.reinitialiser()</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- CYCLE D'EXÉCUTION -->
     <h3 class="text-xl font-bold mb-4 mt-8">Le cycle d'exécution normalisé</h3>
 
     <p class="text-base-content/80 leading-relaxed mb-4">
       Un automate GRAFCET tourne en boucle infinie selon un cycle en <strong>7 phases séquentielles</strong>.
-      Respecter cet ordre garantit un comportement déterministe — chaque phase lit le résultat de la précédente :
+      Respecter cet ordre garantit un comportement déterministe :
     </p>
 
     <div class="overflow-x-auto rounded-xl border border-base-200/80 my-6">
       <table class="table table-zebra w-full">
         <thead>
-          <tr><th>Phase</th><th>Fonction</th><th>Ce qu'elle fait</th></tr>
+          <tr><th>#</th><th>Phase</th><th>Ce qu'elle fait</th></tr>
         </thead>
         <tbody>
-          <tr><td class="font-mono text-cyan-400 text-sm">franchir(T, trans)</td><td class="font-medium">Évolution</td><td class="text-sm text-base-content/60">Reset des fronts d'étape, puis active/désactive les étapes selon les transitions validées</td></tr>
-          <tr><td class="font-mono text-cyan-400 text-sm">tick()</td><td class="font-medium">Timers</td><td class="text-sm text-base-content/60">Incrémente les compteurs de temps des étapes actives</td></tr>
-          <tr><td class="font-mono text-cyan-400 text-sm">gerer_actions()</td><td class="font-medium">Actions</td><td class="text-sm text-base-content/60">Calcule les variables logiques selon les étapes actives — les fronts <code>rising</code>/<code>falling</code> sont lisibles ici</td></tr>
-          <tr><td class="font-mono text-cyan-400 text-sm">affecter_sorties()</td><td class="font-medium">Sorties</td><td class="text-sm text-base-content/60">Applique les variables sur le matériel (LEDs, moteurs...)</td></tr>
-          <tr><td class="font-mono text-cyan-400 text-sm">lire_entrees()</td><td class="font-medium">Entrées</td><td class="text-sm text-base-content/60">Lit les capteurs et boutons</td></tr>
-          <tr><td class="font-mono text-cyan-400 text-sm">detecter_fronts_entrees()</td><td class="font-medium">Fronts d'entrée</td><td class="text-sm text-base-content/60">Détecte les changements d'état des capteurs — <code>fm[i]</code> / <code>fd[i]</code> (optionnel)</td></tr>
-          <tr><td class="font-mono text-cyan-400 text-sm">calculer_transitions()</td><td class="font-medium">Transitions</td><td class="text-sm text-base-content/60">Évalue les conditions de franchissement</td></tr>
+          <tr><td>1</td><td class="font-mono text-cyan-400 text-sm">franchir(T, trans)</td><td class="text-sm text-base-content/60">Évolution : reset des fronts d'étape, validation auto des sources, franchissement simultané</td></tr>
+          <tr><td>2</td><td class="font-mono text-cyan-400 text-sm">tick()</td><td class="text-sm text-base-content/60">Incrémente les timers des étapes actives</td></tr>
+          <tr><td>3</td><td class="font-mono text-cyan-400 text-sm">gerer_actions()</td><td class="text-sm text-base-content/60">Calcule les actions — les fronts <code>rising</code>/<code>falling</code> sont lisibles ici</td></tr>
+          <tr><td>4</td><td class="font-mono text-cyan-400 text-sm">affecter_sorties()</td><td class="text-sm text-base-content/60">Applique sur le matériel (LEDs, moteurs...)</td></tr>
+          <tr><td>5</td><td class="font-mono text-cyan-400 text-sm">lire_entrees()</td><td class="text-sm text-base-content/60">Lit les capteurs et boutons → <code>g.entrees[i]</code></td></tr>
+          <tr><td>6</td><td class="font-mono text-cyan-400 text-sm">detecter_fronts_entrees()</td><td class="text-sm text-base-content/60">Détecte les changements d'état → <code>g.fm[i]</code> / <code>g.fd[i]</code></td></tr>
+          <tr><td>7</td><td class="font-mono text-cyan-400 text-sm">calculer_transitions()</td><td class="text-sm text-base-content/60">Évalue les réceptivités (pas de <code>g.etapes[i]</code> — le moteur vérifie)</td></tr>
         </tbody>
       </table>
     </div>
 
     <div class="rounded-xl border border-amber-500/20 bg-amber-500/5 p-5 my-6">
-      <h4 class="font-bold text-amber-400 mb-2">⚠️ Pourquoi cet ordre ?</h4>
+      <h4 class="font-bold text-amber-400 mb-2">Pourquoi cet ordre ?</h4>
       <p class="text-sm text-base-content/70 leading-relaxed">
-        <code>franchir()</code> est en <strong>début de cycle</strong> : il pose les fronts d'étape (<code>rising</code>/<code>falling</code>) qui restent visibles par <code>gerer_actions()</code> dans le même cycle. Les sorties sont affectées <strong>avant</strong> la lecture des entrées pour éviter qu'une sortie activée dans le même cycle influence une entrée — comportement non-déterministe à éviter dans un automate industriel.
+        <code>franchir()</code> est en <strong>début de cycle</strong> : les fronts d'étape qu'il pose sont visibles par <code>gerer_actions()</code>.
+        Les sorties sont affectées <strong>avant</strong> la lecture des entrées pour éviter qu'une sortie influence une entrée dans le même cycle.
       </p>
+    </div>
+
+    <!-- MODES DE SORTIE -->
+    <h3 class="text-xl font-bold mb-4 mt-8">Les modes de sortie (IEC 60848 §3.2)</h3>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-6">
+      <div class="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-5">
+        <h4 class="font-bold text-cyan-400 mb-2">Mode CONTINU (assignation)</h4>
+        <p class="text-sm text-base-content/70 leading-relaxed mb-2">
+          <strong>Quand :</strong> la sortie est liée à <strong>une seule étape</strong>. Active = ON, inactive = OFF.
+        </p>
+        <p class="text-sm text-base-content/70 leading-relaxed mb-2">
+          <strong>Sécurité :</strong> si le programme plante, tout s'éteint.
+        </p>
+        <pre class="bg-base-300/30 rounded p-3 text-xs mt-2"><code>Descendre = g.etapes[1]
+led.value(g.etapes[0])</code></pre>
+      </div>
+      <div class="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-5">
+        <h4 class="font-bold text-cyan-400 mb-2">Mode MÉMORISÉ (SET/RESET)</h4>
+        <p class="text-sm text-base-content/70 leading-relaxed mb-2">
+          <strong>Quand :</strong> la sortie <strong>traverse plusieurs étapes</strong>. SET dans une étape, RESET dans une autre.
+        </p>
+        <p class="text-sm text-base-content/70 leading-relaxed mb-2">
+          <strong>Attention :</strong> si le programme plante entre SET et RESET, la sortie reste active.
+        </p>
+        <pre class="bg-base-300/30 rounded p-3 text-xs mt-2"><code>if g.rising[1]:   alarme = True   # SET
+if g.falling[2]:  alarme = False  # RESET</code></pre>
+      </div>
+    </div>
+
+    <div class="rounded-xl border border-cyan-500/10 bg-cyan-500/5 p-4 my-4">
+      <p class="text-xs text-base-content/70"><strong>Règle simple :</strong> sortie liée à 1 étape → <strong>continu</strong>. Sortie qui traverse plusieurs étapes → <strong>mémorisé</strong>. Ne jamais mélanger les deux modes pour la même variable.</p>
+    </div>
+
+    <!-- ATTRIBUTS -->
+    <h3 class="text-xl font-bold mb-4 mt-8">Les attributs du moteur</h3>
+
+    <div class="overflow-x-auto rounded-xl border border-base-200/80 my-6">
+      <table class="table table-zebra w-full">
+        <thead>
+          <tr><th>Attribut</th><th>Type</th><th>Rôle</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="font-mono text-cyan-400 text-sm">g.etapes[i]</td><td class="text-sm">bool</td><td class="text-sm text-base-content/60">True si l'étape i est active</td></tr>
+          <tr><td class="font-mono text-cyan-400 text-sm">g.tempo[i]</td><td class="text-sm">int</td><td class="text-sm text-base-content/60">Durée en ms depuis l'activation (reset auto à la désactivation)</td></tr>
+          <tr><td class="font-mono text-cyan-400 text-sm">g.compt[i]</td><td class="text-sm">int</td><td class="text-sm text-base-content/60">Compteur libre dans l'étape (reset auto à la désactivation)</td></tr>
+          <tr><td class="font-mono text-cyan-400 text-sm">g.compt_final[i]</td><td class="text-sm">int</td><td class="text-sm text-base-content/60">Dernière valeur de compt avant reset (lisible sur falling)</td></tr>
+          <tr><td class="font-mono text-cyan-400 text-sm">g.rising[i]</td><td class="text-sm">bool</td><td class="text-sm text-base-content/60">True pendant 1 cycle à l'activation de l'étape</td></tr>
+          <tr><td class="font-mono text-cyan-400 text-sm">g.falling[i]</td><td class="text-sm">bool</td><td class="text-sm text-base-content/60">True pendant 1 cycle à la désactivation de l'étape</td></tr>
+          <tr><td class="font-mono text-cyan-400 text-sm">g.entrees[i]</td><td class="text-sm">bool</td><td class="text-sm text-base-content/60">État brut de l'entrée (à remplir dans lire_entrees)</td></tr>
+          <tr><td class="font-mono text-cyan-400 text-sm">g.fm[i]</td><td class="text-sm">bool</td><td class="text-sm text-base-content/60">Front montant d'entrée (True pendant 1 cycle)</td></tr>
+          <tr><td class="font-mono text-cyan-400 text-sm">g.fd[i]</td><td class="text-sm">bool</td><td class="text-sm text-base-content/60">Front descendant d'entrée (True pendant 1 cycle)</td></tr>
+        </tbody>
+      </table>
     </div>
 
   </section>
 
+  <!-- ============================================================ -->
+  <!-- FICHIERS DE RÉFÉRENCE -->
+  <!-- ============================================================ -->
   <hr class="border-base-200/60 my-12" />
-  <h2 class="text-2xl font-black mb-2">Fichiers commentés</h2>
-  <p class="text-base-content/60 mb-10">Chaque fichier est précédé de son contexte. Le code est affiché directement — bouton copier + lien GitHub disponibles.</p>
+  <h2 class="text-2xl font-black mb-2">Fichiers de référence</h2>
+  <p class="text-base-content/60 mb-10">Le moteur GRAFCET complet + l'exemple de référence qui démontre toutes les fonctionnalités.</p>
 
   <div class="space-y-14">
 
-    <!-- LE MOTEUR GRAFCET -->
+    <!-- MOTEUR -->
     <div>
       <h3 class="text-xl font-black mb-1 flex items-center gap-2">
-        <span>⚙️</span> Le moteur GRAFCET
+        <span>⚙️</span> Le moteur GRAFCET complet
       </h3>
-      <p class="text-sm text-base-content/50 mb-8">La classe réutilisable — indépendante du matériel, utilisable dans n'importe quel projet.</p>
+      <p class="text-sm text-base-content/50 mb-8">Conforme IEC 60848. Un seul fichier, aucune dépendance. La base pour tous les projets.</p>
 
-      <div class="space-y-10">
-
-        <div>
-          <h4 class="font-bold mb-3 flex items-center gap-2">
-            <span class="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xs font-black shrink-0">1</span>
-            La classe Grafcet — étapes, timers, fronts montants/descendants
-          </h4>
-          <div class="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
-            <p>La classe <code>Grafcet</code> encapsule tout l'état interne du séquenceur. Elle ne connaît <strong>aucun composant matériel</strong> — pas de Pin, pas de LED, pas de capteur. Elle ne manipule que des listes de booléens et d'entiers. C'est ce qui la rend réutilisable dans n'importe quel projet.</p>
-            <p class="mt-2">La <strong>table de transitions T</strong> décrit la structure de l'automate sous forme de données :</p>
-            <pre class="bg-base-300/30 rounded p-3 text-xs mt-2 overflow-x-auto"><code>T = [
-    (0, (0,), (1,)),   # T0 : désactive étape 0, active étape 1
-    (1, (1,), (2,)),   # T1 : désactive étape 1, active étape 2
-    (2, (2,), (0,)),   # T2 : désactive étape 2, active étape 0
-]</code></pre>
-            <p class="mt-2">Les <strong>fronts d'étape</strong> (<code>rising</code> / <code>falling</code>) sont True pendant un seul cycle, au moment précis où une étape s'active ou se désactive — équivalent du <em>StepRising</em> / <em>StepFalling</em> des PLCs industriels.</p>
-            <ul class="list-disc list-inside mt-2 space-y-1">
-              <li><code>g.etapes[i]</code> — True si l'étape i est active</li>
-              <li><code>g.tempo[i]</code> — durée en ms depuis l'activation (remis à 0 à la désactivation)</li>
-              <li><code>g.rising[i]</code> — True pendant 1 cycle au moment de l'activation</li>
-              <li><code>g.falling[i]</code> — True pendant 1 cycle au moment de la désactivation</li>
-            </ul>
-            <p class="mt-3">Les <strong>fronts d'entrée</strong> (optionnels, avec <code>nb_entrees</code>) détectent le changement d'état des capteurs — utile pour distinguer "bouton pressé" de "bouton maintenu" :</p>
-            <ul class="list-disc list-inside mt-2 space-y-1">
-              <li><code>g.entrees[i]</code> — état courant de l'entrée (à remplir dans <code>lire_entrees()</code>)</li>
-              <li><code>g.fm[i]</code> — front montant : True pendant 1 cycle quand l'entrée passe de False à True</li>
-              <li><code>g.fd[i]</code> — front descendant : True pendant 1 cycle quand l'entrée passe de True à False</li>
-            </ul>
-            <pre class="bg-base-300/30 rounded p-3 text-xs mt-3 overflow-x-auto"><code># Exemple : ascenseur avec front montant sur le bouton Start
-g = Grafcet(nb_etapes=3, nb_fronts=1)
-
-def lire_entrees():
-    g.entrees[0] = bpA.value()   # état brut du bouton Start
-
-def calculer_transitions():
-    trans[0] = g.etapes[0] and g.fm[0]  # front montant de bpA
-    # → ne franchit qu'à l'APPUI, pas si le bouton reste enfoncé</code></pre>
-          </div>
-          <GitHubCodeBlock repo={REPO} file="avance/grafcet/grafcet.py" title="grafcet.py — Moteur GRAFCET réutilisable" />
-        </div>
-
+      <div class="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
+        <p>La classe <code>Grafcet</code> encapsule tout l'état interne du séquenceur. Elle ne connaît <strong>aucun composant matériel</strong> — pas de Pin, pas de LED. Elle ne manipule que des listes de booléens et d'entiers. C'est ce qui la rend réutilisable dans n'importe quel projet.</p>
+        <ul class="list-disc list-inside mt-3 space-y-1">
+          <li>Validation automatique des étapes sources (Règle 2)</li>
+          <li>Franchissement simultané en deux passes (Règle 4 + Règle 5)</li>
+          <li>Fronts d'étape <code>rising</code>/<code>falling</code> et fronts d'entrée <code>fm</code>/<code>fd</code></li>
+          <li>Timers <code>tempo</code>, compteurs <code>compt</code> + <code>compt_final</code></li>
+          <li>Étapes initiales multiples, réinitialisation (Règle 6)</li>
+        </ul>
       </div>
+      <GitHubCodeBlock repo={REPO} file="avance/grafcet/grafcet_complet.py" title="grafcet_complet.py — Moteur GRAFCET de référence" />
     </div>
 
-    <!-- L'ASCENSEUR -->
+    <!-- ASCENSEUR COMPLET -->
     <div>
       <h3 class="text-xl font-black mb-1 flex items-center gap-2">
-        <span>🏗️</span> L'ascenseur simulé
+        <span>🎯</span> L'ascenseur complet — exemple de référence
       </h3>
-      <p class="text-sm text-base-content/50 mb-8">Exemple complet sur carte ENIM — 3 étapes, 3 transitions, LEDs de statut.</p>
+      <p class="text-sm text-base-content/50 mb-8">3 étapes, 3 transitions — mais TOUTES les fonctionnalités du moteur sont utilisées.</p>
 
-      <div class="space-y-10">
+      <div class="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
 
-        <div>
-          <h4 class="font-bold mb-3 flex items-center gap-2">
-            <span class="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xs font-black shrink-0">1</span>
-            Ascenseur avec LEDs — version de base
-          </h4>
-          <div class="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
-            <p>L'ascenseur est l'exemple pédagogique classique du GRAFCET. Trois étapes, trois transitions — une logique qui se lit comme un schéma :</p>
-            <pre class="bg-base-300/30 rounded p-3 text-xs mt-2 overflow-x-auto"><code>Étape 0 — Repos     │ T0 : bpA AND tempo[0] > 200 ms
-Étape 1 — Descente  │ T1 : bpC OR niveau ≤ -99
-Étape 2 — Montée    │ T2 : bpB OR niveau ≥ -1
-                    └──────────────────► Étape 0</code></pre>
-            <p class="mt-2">Le niveau simulé (<code>0</code> = haut, <code>-100</code> = bas) remplace les fins de course physiques. Les LEDs de la carte ENIM indiquent l'étape active. Version minimaliste : seuls <code>grafcet.py</code> et <code>essential.py</code> sont nécessaires.</p>
-            <p class="mt-2"><strong>Fichiers nécessaires sur l'ESP32 :</strong> <code>grafcet.py</code>, <code>essential.py</code> (sans OLED).</p>
-          </div>
-          <GitHubCodeBlock repo={REPO} file="avance/grafcet/ascenseur_enim_led.py" title="ascenseur_enim_led.py — Ascenseur ENIM avec LEDs" />
+        <div class="overflow-x-auto rounded-xl border border-base-200/80 my-4">
+          <table class="table table-zebra w-full">
+            <thead>
+              <tr><th>Fonctionnalité</th><th>Comment c'est utilisé</th></tr>
+            </thead>
+            <tbody>
+              <tr><td class="font-medium">Mode continu</td><td class="text-sm text-base-content/60">led_bleue, led_verte, led_jaune, moteurs — suivent l'étape</td></tr>
+              <tr><td class="font-medium">Mode mémorisé</td><td class="text-sm text-base-content/60">led_rouge clignote 2 Hz — SET <code>rising[1]</code>, RESET <code>falling[2]</code></td></tr>
+              <tr><td class="font-medium">Front d'entrée <code>fm</code></td><td class="text-sm text-base-content/60">bpA en front montant (1 appui = 1 cycle), bpD pour l'AU</td></tr>
+              <tr><td class="font-medium">Front d'étape <code>rising</code></td><td class="text-sm text-base-content/60">SET clignoter + compteur de cycles</td></tr>
+              <tr><td class="font-medium">Front d'étape <code>falling</code></td><td class="text-sm text-base-content/60">RESET clignoter + affiche compt_final</td></tr>
+              <tr><td class="font-medium">Temporisation <code>tempo</code></td><td class="text-sm text-base-content/60">500 ms d'anti-rebond au repos</td></tr>
+              <tr><td class="font-medium">Compteur d'étape <code>compt</code></td><td class="text-sm text-base-content/60">Appuis bpA pendant la montée (remis à 0 auto)</td></tr>
+              <tr><td class="font-medium">Compteur inter-cycles</td><td class="text-sm text-base-content/60"><code>nb_cycles</code> (variable Python) — maintenance après 5</td></tr>
+              <tr><td class="font-medium">Réinitialisation</td><td class="text-sm text-base-content/60">bpD = arrêt d'urgence → <code>g.reinitialiser()</code></td></tr>
+              <tr><td class="font-medium">Validation auto</td><td class="text-sm text-base-content/60"><code>calculer_transitions()</code> = réceptivités pures</td></tr>
+            </tbody>
+          </table>
         </div>
 
-        <div>
-          <h4 class="font-bold mb-3 flex items-center gap-2">
-            <span class="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xs font-black shrink-0">2</span>
-            Ascenseur avec front montant — détection d'appui
-          </h4>
-          <div class="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
-            <p>Même ascenseur, mais le bouton Start est traité en <strong>front montant</strong> au lieu d'un simple niveau logique. La différence est visible quand on maintient le bouton enfoncé :</p>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 my-3">
-              <div class="rounded-lg bg-base-300/30 p-3">
-                <p class="font-bold text-xs text-base-content/50 mb-1">SANS front (version de base)</p>
-                <p class="text-xs">Si on maintient bpA, l'ascenseur <strong>redémarre automatiquement</strong> à chaque retour en étape 0.</p>
-              </div>
-              <div class="rounded-lg bg-base-300/30 p-3">
-                <p class="font-bold text-xs text-cyan-400 mb-1">AVEC front (cette version)</p>
-                <p class="text-xs">Il faut <strong>relâcher puis ré-appuyer</strong> pour relancer un cycle. Un seul appui = un seul cycle.</p>
-              </div>
-            </div>
-            <p class="mt-2">Ce qui change dans le code :</p>
-            <pre class="bg-base-300/30 rounded p-3 text-xs mt-2 overflow-x-auto"><code>g = Grafcet(nb_etapes=3, nb_fronts=1)   # 1 front à surveiller
-g.entrees[0] = bpA.value()              # état brut dans lire_entrees()
-g.detecter_fronts_entrees()             # phase 6 de la boucle
-transitions[0] = g.etapes[0] and g.fm[0]  # front montant au lieu de niveau</code></pre>
-            <p class="mt-2"><code>g.fm[0]</code> n'est <code>True</code> que pendant <strong>1 seul cycle</strong>, à l'instant précis où le bouton passe de relâché à enfoncé. Même si on maintient le bouton, <code>fm[0]</code> retombe à <code>False</code> au cycle suivant.</p>
-            <p class="mt-2"><strong>Fichiers nécessaires sur l'ESP32 :</strong> <code>grafcet.py</code>, <code>essential.py</code> (sans OLED).</p>
-          </div>
-          <GitHubCodeBlock repo={REPO} file="avance/grafcet/ascenseur_enim_led_front.py" title="ascenseur_enim_led_front.py — Ascenseur ENIM avec front montant" />
-        </div>
-
+        <p class="mt-2"><strong>Fichiers nécessaires sur l'ESP32 :</strong> <code>grafcet_complet.py</code>, <code>essential.py</code>.</p>
+        <p class="mt-1 text-base-content/50 text-xs">Console Thonny : numéro de cycle, compteur d'appuis, maintenance, arrêt d'urgence.</p>
       </div>
+      <GitHubCodeBlock repo={REPO} file="avance/grafcet/ascenseur_complet.py" title="ascenseur_complet.py — Exemple de référence complet" />
     </div>
 
-    <!-- VARIANTE IEC 60848 -->
-    <div>
-      <h3 class="text-xl font-black mb-1 flex items-center gap-2">
-        <span>🔬</span> Variante conforme IEC 60848
-      </h3>
-      <p class="text-sm text-base-content/50 mb-8">Version expérimentale — en cours de validation. Trois améliorations par rapport au moteur de base.</p>
+  </div>
 
-      <div class="rounded-xl border border-amber-500/20 bg-amber-500/5 p-5 mb-8 text-sm text-base-content/75 leading-relaxed">
-        <h4 class="font-bold text-amber-400 mb-2">⚠️ Version en cours de validation</h4>
-        <p>Ces fichiers sont des variantes expérimentales. Les versions stables restent <code>grafcet.py</code> et <code>ascenseur_enim_led.py</code>.</p>
-      </div>
+  <!-- ============================================================ -->
+  <!-- PIÈGES ET BONNES PRATIQUES -->
+  <!-- ============================================================ -->
+  <hr class="border-base-200/60 my-12" />
+  <h2 class="text-2xl font-black mb-6">Pièges et bonnes pratiques</h2>
 
-      <div class="space-y-10">
+  <div class="space-y-4">
 
-        <div>
-          <h4 class="font-bold mb-3 flex items-center gap-2">
-            <span class="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xs font-black shrink-0">1</span>
-            Moteur GRAFCET variante — 3 corrections IEC 60848
-          </h4>
-          <div class="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
-
-            <p class="font-bold mb-2">Correction 1 — Validation automatique des transitions (Règle 2)</p>
-            <p>Le moteur vérifie lui-même que toutes les étapes sources d'une transition sont actives. L'utilisateur n'écrit que la <strong>réceptivité pure</strong> dans <code>calculer_transitions()</code> :</p>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 my-3">
-              <div class="rounded-lg bg-base-300/30 p-3">
-                <p class="font-bold text-xs text-base-content/50 mb-1">grafcet.py (version stable)</p>
-                <pre class="text-xs"><code>transitions[0] = g.etapes[0] and Start and (g.tempo[0] > 200)</code></pre>
-              </div>
-              <div class="rounded-lg bg-base-300/30 p-3">
-                <p class="font-bold text-xs text-cyan-400 mb-1">grafcet_variante.py</p>
-                <pre class="text-xs"><code>transitions[0] = Start and (g.tempo[0] > 200)</code></pre>
-              </div>
-            </div>
-
-            <p class="font-bold mb-2 mt-4">Correction 2 — Franchissement simultané en deux passes (Règle 4)</p>
-            <p>Toutes les transitions simultanément franchissables sont franchies ensemble. Le moteur collecte d'abord, applique ensuite :</p>
-            <ul class="list-disc list-inside mt-2 space-y-1">
-              <li><strong>Passe 1</strong> : parcourt toute la table T, collecte les étapes à désactiver et à activer</li>
-              <li><strong>Règle 5</strong> : si une étape apparaît dans les deux ensembles (conflit), elle reste active — son tempo et son compteur ne sont pas remis à 0</li>
-              <li><strong>Passe 2</strong> : applique toutes les désactivations puis toutes les activations</li>
-            </ul>
-
-            <p class="font-bold mb-2 mt-4">Correction 3 — Modes de sortie documentés (§3.2)</p>
-            <p>Deux modes d'action sur les sorties, à ne jamais mélanger pour une même variable :</p>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 my-3">
-              <div class="rounded-lg bg-base-300/30 p-3">
-                <p class="font-bold text-xs text-cyan-400 mb-1">Mode CONTINU (assignation)</p>
-                <p class="text-xs"><strong>Quand :</strong> la sortie est liée à <strong>une seule étape</strong>. Active = ON, inactive = OFF.</p>
-                <p class="text-xs mt-1"><strong>Sécurité :</strong> si le programme plante, les sorties passent à 0 (état sûr).</p>
-                <pre class="text-xs mt-1"><code>Descendre = g.etapes[1]   # moteur
-led.value(g.etapes[0])    # témoin</code></pre>
-              </div>
-              <div class="rounded-lg bg-base-300/30 p-3">
-                <p class="font-bold text-xs text-cyan-400 mb-1">Mode MÉMORISÉ (SET/RESET)</p>
-                <p class="text-xs"><strong>Quand :</strong> la sortie <strong>traverse plusieurs étapes</strong> — SET dans une étape, RESET dans une autre.</p>
-                <p class="text-xs mt-1"><strong>Attention :</strong> si le programme plante entre SET et RESET, la sortie reste dans son dernier état.</p>
-                <pre class="text-xs mt-1"><code>if g.rising[1]:   alarme = True   # SET
-if g.falling[2]:  alarme = False  # RESET</code></pre>
-              </div>
-            </div>
-
-            <div class="rounded-xl border border-cyan-500/10 bg-cyan-500/5 p-4 my-3">
-              <p class="text-xs text-base-content/70"><strong>Règle simple :</strong> sortie liée à 1 étape → <strong>continu</strong>. Sortie qui traverse plusieurs étapes → <strong>mémorisé</strong>. Dans l'exemple de l'ascenseur, les LEDs verte/jaune et les moteurs sont en continu (1 étape chacun). La LED rouge clignotante est en mémorisé (SET à l'étape Descente, RESET à la fin de l'étape Montée — elle couvre 2 étapes).</p>
-            </div>
-            <p class="font-bold mb-2 mt-4">Étapes initiales multiples (Règle 1)</p>
-            <p><code>etape_initiale</code> accepte un entier ou une liste. Utile quand plusieurs branches parallèles doivent démarrer actives :</p>
-            <pre class="bg-base-300/30 rounded p-3 text-xs mt-2 overflow-x-auto"><code>g = Grafcet(nb_etapes=6, etape_initiale=[0, 3])  # étapes 0 et 3 actives au démarrage
-g = Grafcet(nb_etapes=3, etape_initiale=0)        # un seul entier : fonctionne comme avant</code></pre>
-
-            <p class="font-bold mb-2 mt-4">Réinitialisation (Règle 6)</p>
-            <p><code>g.reinitialiser()</code> remet le GRAFCET dans sa situation initiale : désactive toutes les étapes, réactive les étapes initiales, remet les timers et compteurs à 0.</p>
-            <pre class="bg-base-300/30 rounded p-3 text-xs mt-2 overflow-x-auto"><code>if arret_urgence:
-    g.reinitialiser()   # retour à la situation initiale</code></pre>
-
-            <div class="rounded-xl border border-amber-500/20 bg-amber-500/5 p-4 mt-4">
-              <h4 class="font-bold text-amber-400 mb-2 text-sm">⚠️ Divergence en OU</h4>
-              <p class="text-xs text-base-content/70">Si deux transitions partent de la même étape, leurs réceptivités <strong>doivent être exclusives</strong> (jamais vraies en même temps). Le moteur ne gère pas de priorité — si les deux sont vraies simultanément, les deux branches seront activées. C'est conforme à la norme (la responsabilité est au concepteur).</p>
-            </div>
-
-          </div>
-          <GitHubCodeBlock repo={REPO} file="avance/grafcet/grafcet_variante.py" title="grafcet_variante.py — Moteur GRAFCET variante IEC 60848" />
-        </div>
-
-        <div>
-          <h4 class="font-bold mb-3 flex items-center gap-2">
-            <span class="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xs font-black shrink-0">2</span>
-            Ascenseur variante — réceptivités simplifiées
-          </h4>
-          <div class="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
-            <p>Même ascenseur que la version de base, adapté à <code>grafcet_variante.py</code>. La seule différence visible est dans <code>calculer_transitions()</code> — les <code>g.etapes[i] and</code> ont disparu :</p>
-            <pre class="bg-base-300/30 rounded p-3 text-xs mt-2 overflow-x-auto"><code>def calculer_transitions():
-    # Réceptivités UNIQUEMENT — le moteur vérifie les étapes sources
-    transitions[0] = Start and (g.tempo[0] > 200)    # T0 : départ
-    transitions[1] = Bas                               # T1 : fond atteint
-    transitions[2] = Haut                              # T2 : haut atteint</code></pre>
-            <p class="mt-2">Toutes les sorties sont en <strong>mode continu</strong> : la LED suit directement l'état de l'étape.</p>
-            <p class="mt-2"><strong>Fichiers nécessaires sur l'ESP32 :</strong> <code>grafcet_variante.py</code>, <code>essential.py</code> (sans OLED).</p>
-          </div>
-          <GitHubCodeBlock repo={REPO} file="avance/grafcet/ascenseur_enim_led_variante.py" title="ascenseur_enim_led_variante.py — Ascenseur avec réceptivités pures" />
-        </div>
-
-      </div>
+    <div class="rounded-xl border border-amber-500/20 bg-amber-500/5 p-5">
+      <h4 class="font-bold text-amber-400 mb-2 text-sm">fm traverse les transitions</h4>
+      <p class="text-xs text-base-content/70">Le <code>fm[0]</code> qui déclenche une transition est encore True quand l'étape suivante s'active. Ne pas compter avec <code>fm</code> dans l'étape qui vient d'être activée par ce même front. Compter dans une étape plus tardive.</p>
     </div>
 
-    <!-- VERSION COMPLÈTE -->
-    <div>
-      <h3 class="text-xl font-black mb-1 flex items-center gap-2">
-        <span>🎯</span> Version complète — référence pédagogique
-      </h3>
-      <p class="text-sm text-base-content/50 mb-8">Un seul moteur + un seul exemple qui démontrent TOUTES les fonctionnalités. C'est la base pour tous les projets.</p>
-
-      <div class="space-y-10">
-
-        <div>
-          <h4 class="font-bold mb-3 flex items-center gap-2">
-            <span class="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xs font-black shrink-0">1</span>
-            Moteur GRAFCET complet
-          </h4>
-          <div class="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
-            <p>Version de référence intégrant toutes les fonctionnalités en un seul fichier :</p>
-            <ul class="list-disc list-inside mt-2 space-y-1">
-              <li>Validation automatique des étapes sources (Règle 2)</li>
-              <li>Franchissement simultané en deux passes (Règle 4 + Règle 5)</li>
-              <li>Fronts d'étape : <code>rising[i]</code> / <code>falling[i]</code></li>
-              <li>Fronts d'entrée : <code>fm[i]</code> / <code>fd[i]</code> (optionnel via <code>nb_fronts</code>)</li>
-              <li>Timers <code>tempo[i]</code> et compteurs <code>compt[i]</code></li>
-              <li>Étapes initiales multiples</li>
-              <li><code>reinitialiser()</code> — arrêt d'urgence (Règle 6)</li>
-            </ul>
-          </div>
-          <GitHubCodeBlock repo={REPO} file="avance/grafcet/grafcet_complet.py" title="grafcet_complet.py — Moteur GRAFCET de référence" />
-        </div>
-
-        <div>
-          <h4 class="font-bold mb-3 flex items-center gap-2">
-            <span class="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xs font-black shrink-0">2</span>
-            Ascenseur complet — toutes les fonctionnalités en action
-          </h4>
-          <div class="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
-            <p>Le même ascenseur 3 étapes, mais qui démontre <strong>chaque fonctionnalité</strong> du moteur :</p>
-
-            <div class="overflow-x-auto rounded-xl border border-base-200/80 my-4">
-              <table class="table table-zebra w-full">
-                <thead>
-                  <tr><th>Fonctionnalité</th><th>Comment c'est utilisé</th></tr>
-                </thead>
-                <tbody>
-                  <tr><td class="font-medium">Mode continu</td><td class="text-sm text-base-content/60">led_bleue, led_verte, led_jaune, moteurs — suivent l'étape</td></tr>
-                  <tr><td class="font-medium">Mode mémorisé</td><td class="text-sm text-base-content/60">led_rouge clignote 2 Hz — SET sur <code>rising[1]</code>, RESET sur <code>falling[2]</code></td></tr>
-                  <tr><td class="font-medium">Front d'entrée <code>fm</code></td><td class="text-sm text-base-content/60">bpA détecté en front montant — un appui = un cycle</td></tr>
-                  <tr><td class="font-medium">Front d'étape <code>rising</code></td><td class="text-sm text-base-content/60">SET clignoter + incrémente le compteur de cycles</td></tr>
-                  <tr><td class="font-medium">Front d'étape <code>falling</code></td><td class="text-sm text-base-content/60">RESET clignoter à la fin de la montée</td></tr>
-                  <tr><td class="font-medium">Temporisation <code>tempo</code></td><td class="text-sm text-base-content/60">500 ms d'anti-rebond au repos avant nouveau départ</td></tr>
-                  <tr><td class="font-medium">Compteur <code>compt</code></td><td class="text-sm text-base-content/60">Compte les aller-retours — après 5 → "MAINTENANCE"</td></tr>
-                  <tr><td class="font-medium">Réinitialisation</td><td class="text-sm text-base-content/60">bpD = arrêt d'urgence → <code>g.reinitialiser()</code></td></tr>
-                  <tr><td class="font-medium">Validation auto</td><td class="text-sm text-base-content/60"><code>calculer_transitions()</code> ne contient que les réceptivités</td></tr>
-                </tbody>
-              </table>
-            </div>
-
-            <p class="mt-2"><strong>Fichiers nécessaires sur l'ESP32 :</strong> <code>grafcet_complet.py</code>, <code>essential.py</code>.</p>
-            <p class="mt-1 text-base-content/50 text-xs">La console Thonny affiche les événements : numéro de cycle, maintenance, arrêt d'urgence.</p>
-          </div>
-          <GitHubCodeBlock repo={REPO} file="avance/grafcet/ascenseur_complet.py" title="ascenseur_complet.py — Exemple de référence complet" />
-        </div>
-
-      </div>
+    <div class="rounded-xl border border-amber-500/20 bg-amber-500/5 p-5">
+      <h4 class="font-bold text-amber-400 mb-2 text-sm">compt vs variable Python</h4>
+      <p class="text-xs text-base-content/70"><code>g.compt[i]</code> compte dans UNE étape (remis à 0 à la désactivation). Pour compter ENTRE les cycles, utiliser une variable Python classique. Pour lire la valeur au moment de la désactivation, utiliser <code>g.compt_final[i]</code> sur <code>g.falling[i]</code>.</p>
     </div>
 
+    <div class="rounded-xl border border-amber-500/20 bg-amber-500/5 p-5">
+      <h4 class="font-bold text-amber-400 mb-2 text-sm">Divergence en OU</h4>
+      <p class="text-xs text-base-content/70">Si deux transitions partent de la même étape, leurs réceptivités <strong>doivent être exclusives</strong>. Le moteur ne gère pas de priorité — si les deux sont vraies, les deux branches s'activent.</p>
+    </div>
+
+    <div class="rounded-xl border border-amber-500/20 bg-amber-500/5 p-5">
+      <h4 class="font-bold text-amber-400 mb-2 text-sm">Arrêt d'urgence</h4>
+      <p class="text-xs text-base-content/70">L'AU est testé dans la boucle principale, en dehors du GRAFCET. C'est un raccourci acceptable. Le <strong>GEMMA</strong> (cours futur) gérera les modes de marche/arrêt proprement avec un GRAFCET hiérarchique.</p>
+    </div>
+
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- CRÉER TON PROPRE PROJET -->
+  <!-- ============================================================ -->
+  <hr class="border-base-200/60 my-12" />
+  <h2 class="text-2xl font-black mb-6">Créer ton propre projet</h2>
+
+  <div class="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-5 mb-6 text-sm text-base-content/75 leading-relaxed">
+    <p>Garde <code>grafcet_complet.py</code> intact. Crée ton propre fichier avec :</p>
+    <ol class="list-decimal list-inside mt-3 space-y-1">
+      <li>Ta <strong>table T</strong> (structure du GRAFCET)</li>
+      <li>Tes <strong>4 fonctions</strong> : <code>gerer_actions</code>, <code>affecter_sorties</code>, <code>lire_entrees</code>, <code>calculer_transitions</code></li>
+      <li>La <strong>boucle principale</strong> avec les 7 phases</li>
+    </ol>
+    <pre class="bg-base-300/30 rounded p-3 text-xs mt-4 overflow-x-auto"><code>from grafcet_complet import Grafcet
+
+g = Grafcet(nb_etapes=4, nb_fronts=2)
+
+T = [
+    (0, (0,), (1,)),
+    (1, (1,), (2, 3)),    # divergence ET
+    (2, (2, 3), (0,)),    # convergence ET
+]
+
+transitions = [False] * len(T)
+
+# ... tes 4 fonctions ...
+
+while True:
+    g.franchir(T, transitions)
+    g.tick(20)
+    gerer_actions()
+    affecter_sorties()
+    lire_entrees()
+    g.detecter_fronts_entrees()
+    calculer_transitions()
+    synchro_ms(20)</code></pre>
   </div>
 
   <!-- Retour / Suite -->
   <div class="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-6 my-12">
     <div class="flex items-center justify-between gap-4 flex-wrap">
       <div>
-        <h4 class="font-bold mb-1">Adapter à ton propre système</h4>
-        <p class="text-sm text-base-content/60">Garde <code>grafcet.py</code> intact. Crée ton propre fichier avec ta table <code>T</code> et tes 4 fonctions. Divergence ET : <code>(0, (0,), (1, 2))</code> active les étapes 1 et 2 simultanément.</p>
-        <p class="text-sm text-base-content/60 mt-2">Pour aller plus loin : voir le module <strong>NeoPixel progressif</strong> qui ajoute un affichage visuel fluide au même ascenseur.</p>
+        <h4 class="font-bold mb-1">Pour aller plus loin</h4>
+        <p class="text-sm text-base-content/60">Le module <strong>NeoPixel progressif</strong> ajoute un affichage visuel fluide au même ascenseur.</p>
+        <p class="text-sm text-base-content/50 mt-2"><a href={siteUrl('/avance/grafcet-archive/')} class="hover:text-base-content transition-colors underline">Voir les anciennes versions (archive)</a></p>
       </div>
       <div class="flex flex-col gap-2">
         <a href={siteUrl('/avance/neoprog/')} class="btn btn-outline btn-sm whitespace-nowrap">
