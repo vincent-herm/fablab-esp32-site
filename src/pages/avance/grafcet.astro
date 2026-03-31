@@ -351,6 +351,14 @@ if g.falling[2]:  alarme = False  # RESET</code></pre>
         action mémorisée sur plusieurs étapes, sauvegarde de <code>tempo</code>.
       </p>
 
+      <div class="my-6 flex justify-center">
+        <img
+          src="/images/grafcet_demo_2.png"
+          alt="Dessin GRAFCET de la démo 2 — 12 étapes"
+          class="rounded-xl border border-base-200/80 max-w-full"
+        />
+      </div>
+
       <div class="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
 
         <p class="mb-3">Les deux nouvelles étapes par rapport à la démo 1 :</p>
@@ -460,6 +468,20 @@ def gerer_actions():
       <p class="text-xs text-base-content/70">L'AU est testé dans la boucle principale, en dehors du GRAFCET. C'est un raccourci acceptable. Le <strong>GEMMA</strong> (cours futur) gérera les modes de marche/arrêt proprement avec un GRAFCET hiérarchique. Le bip buzzer sonne aussi après AU (= "système prêt à redémarrer").</p>
     </div>
 
+    <div class="rounded-xl border border-amber-500/20 bg-amber-500/5 p-5">
+      <h4 class="font-bold text-amber-400 mb-2 text-sm">tempo non lisible sur falling</h4>
+      <p class="text-xs text-base-content/70 mb-2"><code>franchir()</code> remet <code>tempo[i]</code> à 0 dans la même passe qu'il pose <code>falling[i]</code>. Résultat : dans <code>gerer_actions()</code>, quand <code>falling[i]</code> est True, <code>tempo[i]</code> vaut déjà 0. Contrairement à <code>compt_final[i]</code> qui est sauvegardé automatiquement par le moteur, il n'existe pas de <code>tempo_final</code>.</p>
+      <p class="text-xs text-base-content/70"><strong>Solution :</strong> sauvegarder <code>tempo[i]</code> dans une variable Python à chaque cycle où l'étape est active. La valeur est disponible avec une précision de ±20 ms.</p>
+      <pre class="bg-base-300/30 rounded p-3 text-xs mt-2 overflow-x-auto"><code>_tempo_sauve = 0
+
+def gerer_actions():
+    global _tempo_sauve
+    if g.etapes[3]:
+        _tempo_sauve = g.tempo[3]   # mis à jour chaque cycle
+    if g.falling[3]:
+        print("durée :", _tempo_sauve, "ms")  # tempo réel avant reset</code></pre>
+    </div>
+
   </div>
 
   <!-- ============================================================ -->
@@ -506,7 +528,10 @@ while True:
       <div>
         <h4 class="font-bold mb-1">Pour aller plus loin</h4>
         <p class="text-sm text-base-content/60">Le module <strong>NeoPixel progressif</strong> ajoute un affichage visuel fluide au même ascenseur.</p>
-        <p class="text-sm text-base-content/50 mt-2"><a href={siteUrl('/avance/grafcet-archive/')} class="hover:text-base-content transition-colors underline">Voir les anciennes versions (archive)</a></p>
+        <p class="text-sm text-base-content/60 mt-1">Le <strong>GEMMA</strong> introduira la gestion des modes de marche et d'arrêt via un GRAFCET hiérarchique.</p>
+        <p class="text-sm text-base-content/50 mt-2">
+          <a href={siteUrl('/avance/grafcet-archive/')} class="hover:text-base-content transition-colors underline">Voir les versions historiques (archive)</a>
+        </p>
       </div>
       <div class="flex flex-col gap-2">
         <a href={siteUrl('/avance/neoprog/')} class="btn btn-outline btn-sm whitespace-nowrap">
