@@ -323,6 +323,71 @@ g = Grafcet(nb_etapes=3, etape_initiale=0)        # un seul entier : fonctionne 
       </div>
     </div>
 
+    <!-- VERSION COMPLÈTE -->
+    <div>
+      <h3 class="text-xl font-black mb-1 flex items-center gap-2">
+        <span>🎯</span> Version complète — référence pédagogique
+      </h3>
+      <p class="text-sm text-base-content/50 mb-8">Un seul moteur + un seul exemple qui démontrent TOUTES les fonctionnalités. C'est la base pour tous les projets.</p>
+
+      <div class="space-y-10">
+
+        <div>
+          <h4 class="font-bold mb-3 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xs font-black shrink-0">1</span>
+            Moteur GRAFCET complet
+          </h4>
+          <div class="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
+            <p>Version de référence intégrant toutes les fonctionnalités en un seul fichier :</p>
+            <ul class="list-disc list-inside mt-2 space-y-1">
+              <li>Validation automatique des étapes sources (Règle 2)</li>
+              <li>Franchissement simultané en deux passes (Règle 4 + Règle 5)</li>
+              <li>Fronts d'étape : <code>rising[i]</code> / <code>falling[i]</code></li>
+              <li>Fronts d'entrée : <code>fm[i]</code> / <code>fd[i]</code> (optionnel via <code>nb_fronts</code>)</li>
+              <li>Timers <code>tempo[i]</code> et compteurs <code>compt[i]</code></li>
+              <li>Étapes initiales multiples</li>
+              <li><code>reinitialiser()</code> — arrêt d'urgence (Règle 6)</li>
+            </ul>
+          </div>
+          <GitHubCodeBlock repo={REPO} file="avance/grafcet/grafcet_complet.py" title="grafcet_complet.py — Moteur GRAFCET de référence" />
+        </div>
+
+        <div>
+          <h4 class="font-bold mb-3 flex items-center gap-2">
+            <span class="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xs font-black shrink-0">2</span>
+            Ascenseur complet — toutes les fonctionnalités en action
+          </h4>
+          <div class="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
+            <p>Le même ascenseur 3 étapes, mais qui démontre <strong>chaque fonctionnalité</strong> du moteur :</p>
+
+            <div class="overflow-x-auto rounded-xl border border-base-200/80 my-4">
+              <table class="table table-zebra w-full">
+                <thead>
+                  <tr><th>Fonctionnalité</th><th>Comment c'est utilisé</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td class="font-medium">Mode continu</td><td class="text-sm text-base-content/60">led_bleue, led_verte, led_jaune, moteurs — suivent l'étape</td></tr>
+                  <tr><td class="font-medium">Mode mémorisé</td><td class="text-sm text-base-content/60">led_rouge clignote 2 Hz — SET sur <code>rising[1]</code>, RESET sur <code>falling[2]</code></td></tr>
+                  <tr><td class="font-medium">Front d'entrée <code>fm</code></td><td class="text-sm text-base-content/60">bpA détecté en front montant — un appui = un cycle</td></tr>
+                  <tr><td class="font-medium">Front d'étape <code>rising</code></td><td class="text-sm text-base-content/60">SET clignoter + incrémente le compteur de cycles</td></tr>
+                  <tr><td class="font-medium">Front d'étape <code>falling</code></td><td class="text-sm text-base-content/60">RESET clignoter à la fin de la montée</td></tr>
+                  <tr><td class="font-medium">Temporisation <code>tempo</code></td><td class="text-sm text-base-content/60">500 ms d'anti-rebond au repos avant nouveau départ</td></tr>
+                  <tr><td class="font-medium">Compteur <code>compt</code></td><td class="text-sm text-base-content/60">Compte les aller-retours — après 5 → "MAINTENANCE"</td></tr>
+                  <tr><td class="font-medium">Réinitialisation</td><td class="text-sm text-base-content/60">bpD = arrêt d'urgence → <code>g.reinitialiser()</code></td></tr>
+                  <tr><td class="font-medium">Validation auto</td><td class="text-sm text-base-content/60"><code>calculer_transitions()</code> ne contient que les réceptivités</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p class="mt-2"><strong>Fichiers nécessaires sur l'ESP32 :</strong> <code>grafcet_complet.py</code>, <code>essential.py</code>.</p>
+            <p class="mt-1 text-base-content/50 text-xs">La console Thonny affiche les événements : numéro de cycle, maintenance, arrêt d'urgence.</p>
+          </div>
+          <GitHubCodeBlock repo={REPO} file="avance/grafcet/ascenseur_complet.py" title="ascenseur_complet.py — Exemple de référence complet" />
+        </div>
+
+      </div>
+    </div>
+
   </div>
 
   <!-- Retour / Suite -->
