@@ -277,6 +277,21 @@ led.value(g.etapes[0])</code></pre>
 if g.rising[0]: alarme = False  # RESET</code></pre>
               </div>
             </div>
+            <p class="font-bold mb-2 mt-4">Étapes initiales multiples (Règle 1)</p>
+            <p><code>etape_initiale</code> accepte un entier ou une liste. Utile quand plusieurs branches parallèles doivent démarrer actives :</p>
+            <pre class="bg-base-300/30 rounded p-3 text-xs mt-2 overflow-x-auto"><code>g = Grafcet(nb_etapes=6, etape_initiale=[0, 3])  # étapes 0 et 3 actives au démarrage
+g = Grafcet(nb_etapes=3, etape_initiale=0)        # un seul entier : fonctionne comme avant</code></pre>
+
+            <p class="font-bold mb-2 mt-4">Réinitialisation (Règle 6)</p>
+            <p><code>g.reinitialiser()</code> remet le GRAFCET dans sa situation initiale : désactive toutes les étapes, réactive les étapes initiales, remet les timers et compteurs à 0.</p>
+            <pre class="bg-base-300/30 rounded p-3 text-xs mt-2 overflow-x-auto"><code>if arret_urgence:
+    g.reinitialiser()   # retour à la situation initiale</code></pre>
+
+            <div class="rounded-xl border border-amber-500/20 bg-amber-500/5 p-4 mt-4">
+              <h4 class="font-bold text-amber-400 mb-2 text-sm">⚠️ Divergence en OU</h4>
+              <p class="text-xs text-base-content/70">Si deux transitions partent de la même étape, leurs réceptivités <strong>doivent être exclusives</strong> (jamais vraies en même temps). Le moteur ne gère pas de priorité — si les deux sont vraies simultanément, les deux branches seront activées. C'est conforme à la norme (la responsabilité est au concepteur).</p>
+            </div>
+
           </div>
           <GitHubCodeBlock repo={REPO} file="avance/grafcet/grafcet_variante.py" title="grafcet_variante.py — Moteur GRAFCET variante IEC 60848" />
         </div>
