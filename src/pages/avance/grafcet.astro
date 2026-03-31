@@ -254,61 +254,61 @@ if g.falling[2]:  alarme = False  # RESET</code></pre>
       <GitHubCodeBlock repo={REPO} file="avance/grafcet/ascenseur_complet.py" title="ascenseur_complet.py — Exemple de référence complet" />
     </div>
 
-    <!-- DÉMO COMPLÈTE 12 ÉTAPES -->
+    <!-- DÉMO 1 — 10 ÉTAPES -->
     <div>
       <h3 class="text-xl font-black mb-1 flex items-center gap-2">
-        <span>🎮</span> La démo complète — 12 étapes
+        <span>🎮</span> Démo 1 — 10 étapes : divergences, convergences, TouchPad
       </h3>
       <p class="text-sm text-base-content/50 mb-6">
-        Un parcours pédagogique non-réaliste conçu pour mettre en évidence les features absentes de l'ascenseur :
-        divergences ET/OU, convergences ET/OU, TouchPad, front descendant <code>fd</code>, OLED, chenillard mémorisé, meilleur temps.
+        Un parcours pédagogique non-réaliste qui ajoute tout ce que l'ascenseur ne montre pas :
+        divergence ET, convergence ET, divergence OU, convergence OU, et TouchPad.
       </p>
 
       <div class="my-6 flex justify-center">
         <img
           src="/images/grafcet_demo.png"
-          alt="Dessin GRAFCET de la démo complète — 12 étapes"
+          alt="Dessin GRAFCET de la démo 1 — 10 étapes"
           class="rounded-xl border border-base-200/80 max-w-full"
         />
       </div>
 
       <div class="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
 
-        <p class="mb-4">Le parcours en 12 étapes :</p>
-
         <div class="overflow-x-auto rounded-xl border border-base-200/80 mb-6">
           <table class="table table-zebra w-full text-xs">
             <thead><tr><th>Étape</th><th>Rôle</th><th>Sorties</th></tr></thead>
             <tbody>
-              <tr><td class="font-mono text-cyan-400">É0</td><td>Veille</td><td>LED bleue respire (PWM sinus) — OLED "PRÊT"</td></tr>
-              <tr><td class="font-mono text-cyan-400">É1</td><td>Démarrage</td><td>LED bleue fixe — OLED compte à rebours 2…1…GO!</td></tr>
-              <tr><td class="font-mono text-cyan-400">É2</td><td>Branche G</td><td class="text-base-content/50">LED verte — OLED "Branche G" — <strong>DIVERGENCE OU →</strong></td></tr>
-              <tr><td class="font-mono text-cyan-400">É3</td><td>Choix G-gauche (bpB)</td><td>NeoPixel rouge — compt : appuis bpA</td></tr>
-              <tr><td class="font-mono text-cyan-400">É4</td><td>Choix G-droite (bpC)</td><td>NeoPixel bleu — compt : appuis bpA</td></tr>
-              <tr><td class="font-mono text-cyan-400">É5</td><td>Fin branche G</td><td class="text-base-content/50">Attente <strong>CONVERGENCE ET</strong></td></tr>
-              <tr><td class="font-mono text-cyan-400">É6</td><td>Branche D</td><td>LED jaune — OLED "Branche D" — fm tp1</td></tr>
+              <tr><td class="font-mono text-cyan-400">É0</td><td>Veille</td><td>LED bleue respire (PWM sinus)</td></tr>
+              <tr><td class="font-mono text-cyan-400">É1</td><td>Démarrage (2 s)</td><td>LED bleue fixe — [M] SET led_rouge clignote</td></tr>
+              <tr><td class="font-mono text-cyan-400">É2 + É6</td><td class="font-bold">DIVERGENCE ET</td><td>T1 active É2 et É6 simultanément</td></tr>
+              <tr><td class="font-mono text-cyan-400">É2</td><td>Branche G</td><td>LED verte — <strong>DIVERGENCE OU →</strong> bpB ou bpC</td></tr>
+              <tr><td class="font-mono text-cyan-400">É3</td><td>Choix G-gauche (bpB)</td><td>NeoPixel rouge — <code>compt[3]</code> : appuis bpA</td></tr>
+              <tr><td class="font-mono text-cyan-400">É4</td><td>Choix G-droite (bpC)</td><td>NeoPixel bleu — <code>compt[4]</code> : appuis bpA</td></tr>
+              <tr><td class="font-mono text-cyan-400">É5</td><td>Fin branche G</td><td>Attente convergence ET</td></tr>
+              <tr><td class="font-mono text-cyan-400">É6</td><td>Branche D</td><td>LED jaune — fm tp1</td></tr>
               <tr><td class="font-mono text-cyan-400">É7</td><td>Suite D</td><td>NeoPixel tout vert — fm tp2</td></tr>
-              <tr><td class="font-mono text-cyan-400">É8</td><td>Fin branche D</td><td class="text-base-content/50">OLED "Synchro…" — attente <strong>CONVERGENCE ET</strong></td></tr>
-              <tr><td class="font-mono text-cyan-400">É9</td><td>Finale</td><td>NeoPixel jaune — OLED "BRAVO!" — double bip</td></tr>
-              <tr><td class="font-mono text-cyan-400 font-bold">É10</td><td class="font-bold">Chenillard</td><td class="font-bold">NeoPixel 1 LED orange tourne — OLED barre rebondissante</td></tr>
-              <tr><td class="font-mono text-cyan-400 font-bold">É11</td><td class="font-bold">Bilan</td><td class="font-bold">OLED : nb parcours + meilleur temps G — fd[0] pour skipper</td></tr>
+              <tr><td class="font-mono text-cyan-400">É8</td><td>Fin branche D</td><td>Attente convergence ET</td></tr>
+              <tr><td class="font-mono text-cyan-400">É5 + É8</td><td class="font-bold">CONVERGENCE ET</td><td>T8 franchie seulement si É5 ET É8 actives</td></tr>
+              <tr><td class="font-mono text-cyan-400">É9</td><td>Finale (3 s)</td><td>[M] RESET led_rouge — double bip — NeoPixel jaune</td></tr>
             </tbody>
           </table>
         </div>
-
-        <p class="font-bold mb-3">Features démontrées au-delà de l'ascenseur :</p>
 
         <div class="overflow-x-auto rounded-xl border border-base-200/80 mb-4">
           <table class="table table-zebra w-full">
             <thead><tr><th>Fonctionnalité</th><th>Comment c'est utilisé</th></tr></thead>
             <tbody>
               <tr>
+                <td class="font-medium">LED qui respire</td>
+                <td class="text-sm text-base-content/60">PWM sinus en É0 : <code>duty = int(511 + 511 * sin(tempo[0] * π / 1000))</code></td>
+              </tr>
+              <tr>
                 <td class="font-medium">Divergence ET</td>
                 <td class="text-sm text-base-content/60">T1 active É2 et É6 simultanément — les deux branches s'exécutent en parallèle</td>
               </tr>
               <tr>
                 <td class="font-medium">Convergence ET</td>
-                <td class="text-sm text-base-content/60">T8 attend que É5 <em>et</em> É8 soient toutes deux actives avant de passer en finale</td>
+                <td class="text-sm text-base-content/60">T8 attend que É5 <em>et</em> É8 soient toutes deux actives — la validation est automatique (Règle 2)</td>
               </tr>
               <tr>
                 <td class="font-medium">Divergence OU</td>
@@ -316,19 +316,63 @@ if g.falling[2]:  alarme = False  # RESET</code></pre>
               </tr>
               <tr>
                 <td class="font-medium">Convergence OU</td>
-                <td class="text-sm text-base-content/60">T4 et T5 mènent toutes deux à É5 — la première arrivée gagne</td>
+                <td class="text-sm text-base-content/60">T4 et T5 mènent toutes deux à É5 — la première arrivée gagne, É5 attend la convergence ET</td>
               </tr>
               <tr>
                 <td class="font-medium">TouchPad <code>fm[2]</code> / <code>fm[3]</code></td>
-                <td class="text-sm text-base-content/60">tp1 et tp2 détectés en front montant pour la branche D</td>
+                <td class="text-sm text-base-content/60">tp1 et tp2 détectés en front montant — un effleurement = un franchissement</td>
               </tr>
               <tr>
-                <td class="font-medium">Front descendant <code>fd[0]</code></td>
-                <td class="text-sm text-base-content/60">Relâcher bpA pendant le bilan (É11) passe immédiatement à l'étape suivante</td>
+                <td class="font-medium"><code>compt[3]</code> / <code>compt[4]</code></td>
+                <td class="text-sm text-base-content/60">Compte les appuis bpA <em>pendant</em> l'étape — <code>compt_final</code> lu sur <code>falling</code></td>
               </tr>
               <tr>
-                <td class="font-medium">OLED — dynamique</td>
-                <td class="text-sm text-base-content/60">Countdown seconde par seconde en É1. Chenillard barre rebondissante (période 2 s) en É10. Bilan en É11.</td>
+                <td class="font-medium">Compteur inter-cycles</td>
+                <td class="text-sm text-base-content/60"><code>nb_parcours</code> (variable Python) incrémenté sur <code>rising[0]</code> — initialisé à <code>-1</code> pour ignorer le démarrage</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p><strong>Fichiers nécessaires sur l'ESP32 :</strong> <code>grafcet_complet.py</code>, <code>essential.py</code>.</p>
+        <p class="mt-1 text-base-content/50 text-xs">Console Thonny : appuis bpA par branche, compteur de parcours, arrêt d'urgence.</p>
+      </div>
+      <GitHubCodeBlock repo={REPO} file="avance/grafcet/demo_1.py" title="demo_1.py — Démo 10 étapes : divergences, convergences, TouchPad" />
+    </div>
+
+    <!-- DÉMO 2 — 12 ÉTAPES -->
+    <div>
+      <h3 class="text-xl font-black mb-1 flex items-center gap-2">
+        <span>🖥️</span> Démo 2 — 12 étapes : OLED, chenillard, fd, meilleur temps
+      </h3>
+      <p class="text-sm text-base-content/50 mb-6">
+        La démo 1 étendue avec deux étapes supplémentaires et l'OLED.
+        Met en évidence les features qui manquent encore : front descendant <code>fd</code>,
+        action mémorisée sur plusieurs étapes, sauvegarde de <code>tempo</code>.
+      </p>
+
+      <div class="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-5 mb-5 text-sm text-base-content/75 leading-relaxed">
+
+        <p class="mb-3">Les deux nouvelles étapes par rapport à la démo 1 :</p>
+
+        <div class="overflow-x-auto rounded-xl border border-base-200/80 mb-6">
+          <table class="table table-zebra w-full text-xs">
+            <thead><tr><th>Étape</th><th>Rôle</th><th>Sorties</th></tr></thead>
+            <tbody>
+              <tr><td class="font-mono text-cyan-400">É0 → É9</td><td colspan="2" class="text-base-content/50 italic">Identiques à la démo 1 + OLED sur chaque étape</td></tr>
+              <tr><td class="font-mono text-cyan-400 font-bold">É10</td><td class="font-bold">Chenillard (3 s)</td><td class="font-bold">NeoPixel 1 LED orange tourne (150 ms) — OLED barre rebondissante (période 2 s)</td></tr>
+              <tr><td class="font-mono text-cyan-400 font-bold">É11</td><td class="font-bold">Bilan (2 s)</td><td class="font-bold">OLED : nb parcours + meilleur temps G — relâcher bpA (<code>fd[0]</code>) pour skipper</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="overflow-x-auto rounded-xl border border-base-200/80 mb-4">
+          <table class="table table-zebra w-full">
+            <thead><tr><th>Fonctionnalité</th><th>Comment c'est utilisé</th></tr></thead>
+            <tbody>
+              <tr>
+                <td class="font-medium">OLED dynamique</td>
+                <td class="text-sm text-base-content/60">Countdown seconde par seconde en É1. Labels "Branche G / D". Barre rebondissante en É10. Bilan en É11.</td>
               </tr>
               <tr>
                 <td class="font-medium">Chenillard mémorisé</td>
@@ -336,15 +380,19 @@ if g.falling[2]:  alarme = False  # RESET</code></pre>
               </tr>
               <tr>
                 <td class="font-medium">NeoPixel chenillard</td>
-                <td class="text-sm text-base-content/60">1 LED orange tourne toutes les 150 ms : <code>pos = (g.tempo[10] // 150) % 8</code></td>
+                <td class="text-sm text-base-content/60"><code>pos = (g.tempo[10] // 150) % 8</code> — 1 LED orange qui tourne, calculé à partir du timer de l'étape</td>
+              </tr>
+              <tr>
+                <td class="font-medium">Front descendant <code>fd[0]</code></td>
+                <td class="text-sm text-base-content/60">Relâcher bpA en É11 franchit T11 immédiatement — sans attendre les 2 s</td>
               </tr>
               <tr>
                 <td class="font-medium">Sauvegarde de <code>tempo</code></td>
-                <td class="text-sm text-base-content/60"><code>franchir()</code> remet <code>tempo[i]</code> à 0 avant que <code>falling</code> soit lisible. Solution : sauvegarder <code>tempo[i]</code> dans une variable Python à chaque cycle où l'étape est active.</td>
+                <td class="text-sm text-base-content/60"><code>franchir()</code> remet <code>tempo[i]</code> à 0 avant que <code>falling</code> soit lisible. Il faut sauvegarder <code>tempo[i]</code> dans une variable Python à chaque cycle où l'étape est active.</td>
               </tr>
               <tr>
                 <td class="font-medium">Meilleur temps</td>
-                <td class="text-sm text-base-content/60">Variable Python <code>meilleur_temps_G</code> mise à jour sur <code>falling[3]</code> et <code>falling[4]</code> — affiché dans le bilan OLED</td>
+                <td class="text-sm text-base-content/60"><code>meilleur_temps_G</code> mis à jour sur <code>falling[3]</code> et <code>falling[4]</code> à partir de la valeur sauvegardée — affiché dans le bilan OLED</td>
               </tr>
             </tbody>
           </table>
@@ -356,9 +404,6 @@ if g.falling[2]:  alarme = False  # RESET</code></pre>
             <code>franchir()</code> remet <code>tempo[i]</code> à zéro dans la même passe qu'il pose <code>falling[i]</code>.
             Résultat : quand <code>gerer_actions()</code> lit <code>falling[3]</code>, <code>tempo[3]</code> vaut déjà 0.
           </p>
-          <p class="text-xs text-base-content/70 mb-2">
-            Solution : mettre à jour une variable de sauvegarde à chaque cycle où l'étape est active, et lire cette variable sur <code>falling</code>.
-          </p>
           <pre class="bg-base-300/30 rounded p-3 text-xs mt-2 overflow-x-auto"><code>_tempo3_sauve = 0
 
 def gerer_actions():
@@ -366,13 +411,13 @@ def gerer_actions():
     if g.etapes[3]:
         _tempo3_sauve = g.tempo[3]   # mis à jour chaque cycle
     if g.falling[3]:
-        meilleur = _tempo3_sauve     # tempo réel avant reset</code></pre>
+        meilleur = _tempo3_sauve     # tempo réel avant reset (±20 ms)</code></pre>
         </div>
 
         <p><strong>Fichiers nécessaires sur l'ESP32 :</strong> <code>grafcet_complet.py</code>, <code>essential.py</code>, <code>ssd1306.py</code>.</p>
-        <p class="mt-1 text-base-content/50 text-xs">Console Thonny : appuis bpA par branche, meilleur temps, compteur de parcours, arrêt d'urgence.</p>
+        <p class="mt-1 text-base-content/50 text-xs">Console Thonny : appuis bpA par branche, meilleur temps G, compteur de parcours, arrêt d'urgence.</p>
       </div>
-      <GitHubCodeBlock repo={REPO} file="avance/grafcet/demo_2.py" title="demo_2.py — Démo complète 12 étapes" />
+      <GitHubCodeBlock repo={REPO} file="avance/grafcet/demo_2.py" title="demo_2.py — Démo 12 étapes : OLED, chenillard, fd, meilleur temps" />
     </div>
 
   </div>
