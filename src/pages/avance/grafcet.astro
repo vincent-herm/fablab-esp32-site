@@ -227,9 +227,9 @@ if g.falling[2]:  alarme = False  # RESET</code></pre>
             </thead>
             <tbody>
               <tr><td class="font-medium">Mode continu</td><td class="text-sm text-base-content/60">led_bleue, led_verte, led_jaune, moteurs — suivent l'étape</td></tr>
-              <tr><td class="font-medium">Mode mémorisé</td><td class="text-sm text-base-content/60">led_rouge clignote 2 Hz — SET <code>rising[1]</code>, RESET <code>falling[2]</code></td></tr>
+              <tr><td class="font-medium">Mode mémorisé</td><td class="text-sm text-base-content/60">led_rouge clignote 2 Hz (SET <code>rising[1]</code>, RESET <code>falling[2]</code>). Buzzer bip 200 ms (<code>rising[0]</code> + <code>tempo[0]</code>).</td></tr>
               <tr><td class="font-medium">Front d'entrée <code>fm</code></td><td class="text-sm text-base-content/60">bpA en front montant (1 appui = 1 cycle), bpD pour l'AU</td></tr>
-              <tr><td class="font-medium">Front d'étape <code>rising</code></td><td class="text-sm text-base-content/60">SET clignoter + compteur de cycles</td></tr>
+              <tr><td class="font-medium">Front d'étape <code>rising</code></td><td class="text-sm text-base-content/60"><code>rising[0]</code> : bip buzzer 200 ms ("système prêt"). <code>rising[1]</code> : SET clignoter. Compteur de cycles.</td></tr>
               <tr><td class="font-medium">Front d'étape <code>falling</code></td><td class="text-sm text-base-content/60">RESET clignoter + affiche compt_final</td></tr>
               <tr><td class="font-medium">Temporisation <code>tempo</code></td><td class="text-sm text-base-content/60">500 ms d'anti-rebond au repos</td></tr>
               <tr><td class="font-medium">Compteur d'étape <code>compt</code></td><td class="text-sm text-base-content/60">Appuis bpA pendant la montée (remis à 0 auto)</td></tr>
@@ -277,8 +277,13 @@ if g.falling[2]:  alarme = False  # RESET</code></pre>
     </div>
 
     <div class="rounded-xl border border-amber-500/20 bg-amber-500/5 p-5">
+      <h4 class="font-bold text-amber-400 mb-2 text-sm">Buzzer PWM inactif après essential.py</h4>
+      <p class="text-xs text-base-content/70"><code>essential.py</code> appelle <code>buzzer.deinit()</code> à l'import. Pour utiliser le buzzer : <code>buzzer.init(freq=1000, duty=50)</code> (pas <code>buzzer.freq()</code> qui crashe). Pour couper : <code>buzzer.deinit()</code>.</p>
+    </div>
+
+    <div class="rounded-xl border border-amber-500/20 bg-amber-500/5 p-5">
       <h4 class="font-bold text-amber-400 mb-2 text-sm">Arrêt d'urgence</h4>
-      <p class="text-xs text-base-content/70">L'AU est testé dans la boucle principale, en dehors du GRAFCET. C'est un raccourci acceptable. Le <strong>GEMMA</strong> (cours futur) gérera les modes de marche/arrêt proprement avec un GRAFCET hiérarchique.</p>
+      <p class="text-xs text-base-content/70">L'AU est testé dans la boucle principale, en dehors du GRAFCET. C'est un raccourci acceptable. Le <strong>GEMMA</strong> (cours futur) gérera les modes de marche/arrêt proprement avec un GRAFCET hiérarchique. Le bip buzzer sonne aussi après AU (= "système prêt à redémarrer").</p>
     </div>
 
   </div>
