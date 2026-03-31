@@ -156,7 +156,7 @@ def calculer_transitions():
     trans[0] = g.etapes[0] and g.fm[0]  # front montant de bpA
     # → ne franchit qu'à l'APPUI, pas si le bouton reste enfoncé</code></pre>
           </div>
-          <GitHubCodeBlock repo={REPO} file="avance/grafcet/grafcet.py" title="grafcet.py — Moteur GRAFCET réutilisable" />
+          <GitHubCodeBlock repo={REPO} file="avance/grafcet/ancien/grafcet.py" title="grafcet.py — Moteur GRAFCET réutilisable" />
         </div>
 
       </div>
@@ -185,7 +185,7 @@ def calculer_transitions():
             <p class="mt-2">Le niveau simulé (<code>0</code> = haut, <code>-100</code> = bas) remplace les fins de course physiques. Les LEDs de la carte ENIM indiquent l'étape active. Version minimaliste : seuls <code>grafcet.py</code> et <code>essential.py</code> sont nécessaires.</p>
             <p class="mt-2"><strong>Fichiers nécessaires sur l'ESP32 :</strong> <code>grafcet.py</code>, <code>essential.py</code> (sans OLED).</p>
           </div>
-          <GitHubCodeBlock repo={REPO} file="avance/grafcet/ascenseur_enim_led.py" title="ascenseur_enim_led.py — Ascenseur ENIM avec LEDs" />
+          <GitHubCodeBlock repo={REPO} file="avance/grafcet/ancien/ascenseur_enim_led.py" title="ascenseur_enim_led.py — Ascenseur ENIM avec LEDs" />
         </div>
 
         <div>
@@ -213,7 +213,7 @@ transitions[0] = g.etapes[0] and g.fm[0]  # front montant au lieu de niveau</cod
             <p class="mt-2"><code>g.fm[0]</code> n'est <code>True</code> que pendant <strong>1 seul cycle</strong>, à l'instant précis où le bouton passe de relâché à enfoncé. Même si on maintient le bouton, <code>fm[0]</code> retombe à <code>False</code> au cycle suivant.</p>
             <p class="mt-2"><strong>Fichiers nécessaires sur l'ESP32 :</strong> <code>grafcet.py</code>, <code>essential.py</code> (sans OLED).</p>
           </div>
-          <GitHubCodeBlock repo={REPO} file="avance/grafcet/ascenseur_enim_led_front.py" title="ascenseur_enim_led_front.py — Ascenseur ENIM avec front montant" />
+          <GitHubCodeBlock repo={REPO} file="avance/grafcet/ancien/ascenseur_enim_led_front.py" title="ascenseur_enim_led_front.py — Ascenseur ENIM avec front montant" />
         </div>
 
       </div>
@@ -299,7 +299,7 @@ g = Grafcet(nb_etapes=3, etape_initiale=0)        # un seul entier : fonctionne 
             </div>
 
           </div>
-          <GitHubCodeBlock repo={REPO} file="avance/grafcet/grafcet_variante.py" title="grafcet_variante.py — Moteur GRAFCET variante IEC 60848" />
+          <GitHubCodeBlock repo={REPO} file="avance/grafcet/ancien/grafcet_variante.py" title="grafcet_variante.py — Moteur GRAFCET variante IEC 60848" />
         </div>
 
         <div>
@@ -317,7 +317,7 @@ g = Grafcet(nb_etapes=3, etape_initiale=0)        # un seul entier : fonctionne 
             <p class="mt-2">Toutes les sorties sont en <strong>mode continu</strong> : la LED suit directement l'état de l'étape.</p>
             <p class="mt-2"><strong>Fichiers nécessaires sur l'ESP32 :</strong> <code>grafcet_variante.py</code>, <code>essential.py</code> (sans OLED).</p>
           </div>
-          <GitHubCodeBlock repo={REPO} file="avance/grafcet/ascenseur_enim_led_variante.py" title="ascenseur_enim_led_variante.py — Ascenseur avec réceptivités pures" />
+          <GitHubCodeBlock repo={REPO} file="avance/grafcet/ancien/ascenseur_enim_led_variante.py" title="ascenseur_enim_led_variante.py — Ascenseur avec réceptivités pures" />
         </div>
 
       </div>
