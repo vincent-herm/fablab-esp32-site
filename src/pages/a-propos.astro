@@ -12,7 +12,7 @@ import Layout from '../layouts/Layout.astro';
       <p class="text-base-content/50 text-sm font-mono font-medium mb-3">// à propos</p>
       <h1 class="text-4xl sm:text-5xl font-black mb-5">Le fablab & Vincent</h1>
       <p class="text-base-content/65 text-lg leading-relaxed max-w-2xl">
-        Un projet né d'une passion pour l'électronique et d'une envie de la rendre accessible à tous, dans un coin d'Ardèche.
+        Un projet né d'une passion pour l'électronique et d'une envie de la rendre accessible à tous, dans un coin d'Ardèche. Le fablab est en cours de création.
       </p>
     </div>
   </section>
@@ -25,10 +25,13 @@ import Layout from '../layouts/Layout.astro';
           <h2 class="text-2xl font-black mb-5">Vincent</h2>
           <div class="space-y-4 text-base-content/70 leading-relaxed">
             <p>
-              Ingénieur diplômé de l'École Nationale d'Ingénieurs de Metz, j'ai enseigné l'électronique, le génie électrique et la mesure à l'Université de Lorraine pendant 25 ans, jusqu'en 2021. Ma conviction : <strong class="text-base-content">l'électronique est accessible à tous</strong> quand on l'aborde par la pratique.
+              Ingénieur diplômé de l'École Nationale d'Ingénieurs de Metz, j'ai enseigné l'électronique, le génie électrique et la mesure à l'Université de Lorraine pendant 25 ans, jusqu'en 2021.
             </p>
             <p>
-              Mon fablab en Ardèche, c'est un espace pour expérimenter, apprendre, et surtout créer des choses qui fonctionnent vraiment. Pas de théorie abstraite — des objets qui s'allument, qui sonnent, qui réagissent.
+              Régulation, capteurs, actionneurs, programmation de microcontrôleurs — pendant deux décennies, j'ai accompagné des étudiants ingénieurs dans le passage du concept au prototype fonctionnel. Ce qui m'a toujours motivé, c'est le moment où ça s'allume, où le capteur répond, où l'étudiant comprend pourquoi son code ne marchait pas.
+            </p>
+            <p>
+              Aujourd'hui, je transmets cette expérience de deux façons :
             </p>
           </div>
         </div>
@@ -56,43 +59,76 @@ import Layout from '../layouts/Layout.astro';
           </div>
         </div>
       </div>
+
+      <!-- Deux activités -->
+      <div class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="rounded-xl border border-primary/20 bg-primary/5 p-6">
+          <div class="text-2xl mb-3">⚡</div>
+          <h3 class="font-bold text-lg mb-3">Ateliers ESP32 & MicroPython</h3>
+          <p class="text-base-content/65 text-sm leading-relaxed">
+            Mon fablab en Ardèche est en cours de création. L'idée : un espace pour expérimenter, apprendre, et créer des choses qui fonctionnent vraiment. Pas de théorie abstraite — des objets qui s'allument, qui sonnent, qui réagissent. Des projets réels, du vrai matériel, et quelqu'un à côté pour expliquer quand ça ne marche pas.
+          </p>
+        </div>
+        <div class="rounded-xl border border-secondary/20 bg-secondary/5 p-6">
+          <div class="text-2xl mb-3">🤖</div>
+          <h3 class="font-bold text-lg mb-3">Formation en intelligence artificielle</h3>
+          <p class="text-base-content/65 text-sm leading-relaxed">
+            Je propose des formations d'initiation à l'IA pour les particuliers et les entreprises. Mon approche est la même que pour l'électronique : partir de la pratique, démystifier la technologie, rendre les concepts accessibles à ceux qui n'ont pas de bagage en data science. Je m'intéresse en particulier à la façon dont l'IA peut transformer l'enseignement technique — des chatbots tuteurs qui aident à déboguer du code ESP32, à la génération automatique d'exercices adaptés au niveau de chacun.
+          </p>
+        </div>
+      </div>
+
+      <!-- Conviction -->
+      <blockquote class="mt-10 border-l-4 border-primary pl-6 py-2">
+        <p class="text-lg text-base-content/80 italic leading-relaxed">
+          "L'électronique et l'IA sont accessibles à tous quand on les aborde par la pratique."
+        </p>
+      </blockquote>
     </div>
   </section>
 
-  <!-- Ateliers -->
+  <!-- Réserver -->
   <section id="inscription" class="py-16 bg-base-200/30">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       <h2 class="text-2xl font-black mb-8">Réserver un atelier</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div class="prose prose-invert max-w-none">
+        <div class="space-y-4 text-base-content/70 leading-relaxed">
           <p>Les ateliers ont lieu en présentiel en Ardèche. Pour réserver :</p>
-          <ul>
-            <li>Envoie un email ou un message</li>
-            <li>Indique l'atelier qui t'intéresse</li>
-            <li>Je te confirme une date disponible</li>
-            <li>Paiement de 20€ sur place le jour J</li>
-          </ul>
-          <p class="text-base-content/60 text-sm">
+          <ol class="space-y-2 text-sm list-none">
+            {[
+              'Envoie un email ou un message',
+              'Indique l\'atelier qui t\'intéresse',
+              'Je te confirme une date disponible',
+              'Paiement de 20 € sur place le jour J',
+            ].map((step, i) => (
+              <li class="flex items-start gap-3">
+                <span class="flex-shrink-0 w-6 h-6 rounded-full bg-primary/20 text-primary text-xs flex items-center justify-center font-bold">{i + 1}</span>
+                <span class="text-sm text-base-content/65">{step}</span>
+              </li>
+            ))}
+          </ol>
+          <p class="text-base-content/50 text-sm mt-4">
             Petits groupes (6 personnes max) pour assurer un suivi personnalisé. Tout le matériel est fourni.
           </p>
         </div>
+
         <div class="rounded-xl border border-primary/20 bg-primary/5 p-6">
-          <h3 class="font-bold mb-4">Contact</h3>
+          <h3 class="font-bold mb-2">Contact</h3>
           <p class="text-base-content/60 text-sm mb-6">
-            Pour réserver ou pour toute question sur les ateliers :
+            Pour réserver ou pour toute question :
           </p>
-          <a href="mailto:contact@fablab-esp32.fr" class="btn btn-primary w-full gap-2 mb-3">
+          <a href="mailto:vincent@opentek.fr" class="btn btn-primary w-full gap-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
             </svg>
-            contact@fablab-esp32.fr
+            vincent@opentek.fr
           </a>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Section B2B -->
+  <!-- B2B -->
   <section id="b2b" class="py-16">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       <h2 class="text-2xl font-black mb-3">Services B2B</h2>
