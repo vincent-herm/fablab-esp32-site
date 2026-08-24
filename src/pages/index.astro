@@ -47,193 +47,181 @@ const prochainsDates = [
   { date: 'Sam. 19 Avril 2026', atelier: 'Animations NeoPixel', places: 4 },
   { date: 'Sam. 3 Mai 2026', atelier: 'Serveur web ESP32', places: 6 },
 ];
-
-const stats = [
-  { value: '40+', label: 'cartes ESP32', icon: '⚡' },
-  { value: '6', label: 'participants max', icon: '👥' },
-  { value: '20€', label: 'par atelier (3h)', icon: '🎯' },
-  { value: '100%', label: 'pratique', icon: '🔧' },
-];
 ---
 
 <Layout
   title="Apprends l'électronique en faisant"
-  description="Fablab en Ardèche — Ateliers MicroPython et ESP32 pour débutants. Objets connectés, sons, écrans tactiles, robotique. 20€ / 3h, 6 personnes max."
+  description="Fablab en Ardèche — Ateliers MicroPython et ESP32 pour débutants. Objets connectés, sons, écrans tactiles, robotique. 20 € / 3h, 6 personnes max."
 >
-  <!-- ======== HERO ======== -->
-  <section class="relative overflow-hidden hero-pattern min-h-[88vh] flex items-center">
 
-    <div class="absolute inset-0 opacity-[0.03]" aria-hidden="true">
-      <svg width="100%" height="100%">
-        <defs>
-          <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="currentColor" stroke-width="1"/>
-          </pattern>
-        </defs>
-        <rect width="100%" height="100%" fill="url(#grid)" />
-      </svg>
-    </div>
+  <!-- ══════ HERO ══════ -->
+  <section class="relative min-h-[100dvh] flex items-center overflow-hidden">
+    <div class="absolute inset-0 dot-grid" aria-hidden="true"></div>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 relative z-10">
-      <div class="max-w-3xl">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-20 relative z-10 w-full">
+      <div class="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-12 lg:gap-20 items-center">
 
-        <div class="inline-flex items-center gap-2 bg-primary/10 text-primary border border-primary/20 rounded-full px-4 py-1.5 text-sm font-medium mb-8 animate-fade-in">
-          <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-          Fablab en Ardèche · Ateliers ouverts
-        </div>
+        <!-- Contenu -->
+        <div>
+          <div class="inline-flex items-center gap-2 bg-emerald-500/10 text-emerald-500 border border-emerald-500/15 rounded-full px-3.5 py-1 text-xs font-medium tracking-wide mb-10 animate-fade-in">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            Fablab en Ardèche
+          </div>
 
-        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight mb-6 animate-fade-in animate-delay-1">
-          Apprends l'électronique
-          <span class="gradient-text block">en faisant des choses</span>
-          qui s'allument, sonnent, réagissent —
-          <span class="block text-3xl sm:text-4xl lg:text-5xl mt-2 text-base-content/70 font-bold">et commandent, régulent, supervisent, contrôlent ton monde.</span>
-        </h1>
+          <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[0.95] animate-fade-in animate-delay-1">
+            Apprends l'électronique
+            <span class="text-emerald-500 block mt-1">en faisant</span>
+          </h1>
 
-        <p class="text-lg text-base-content/65 leading-relaxed mb-10 max-w-2xl animate-fade-in animate-delay-2">
-          Des ateliers pratiques en Ardèche pour créer des projets réels avec l'<strong class="text-base-content/90">ESP32</strong> et <strong class="text-base-content/90">MicroPython</strong>. Pas de prérequis, juste de la curiosité.
-        </p>
+          <p class="text-lg md:text-xl text-base-content/40 leading-relaxed mt-6 max-w-[48ch] animate-fade-in animate-delay-2">
+            Des choses qui s'allument, sonnent, réagissent — et commandent, régulent, contrôlent ton monde.
+          </p>
 
-        <div class="flex flex-wrap gap-4 animate-fade-in animate-delay-3">
-          <a href={siteUrl('/ateliers/')} class="btn btn-primary btn-lg gap-2 glow">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-            </svg>
-            Voir les ateliers
-          </a>
-          <a href={siteUrl('/cours/')} class="btn btn-ghost btn-lg gap-2 border border-base-200/60">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-            </svg>
-            Cours théoriques
-          </a>
-        </div>
+          <p class="text-base text-base-content/55 leading-relaxed mt-4 max-w-[52ch] animate-fade-in animate-delay-2">
+            Ateliers pratiques avec <strong class="text-base-content/80 font-semibold">ESP32</strong> et <strong class="text-base-content/80 font-semibold">MicroPython</strong>. Pas de prérequis, juste de la curiosité.
+          </p>
 
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-16 animate-fade-in animate-delay-4">
-          {stats.map(stat => (
-            <div class="rounded-xl bg-base-200/40 border border-base-200/60 px-4 py-3 text-center">
-              <div class="text-xl mb-0.5">{stat.icon}</div>
-              <div class="text-2xl font-black text-base-content">{stat.value}</div>
-              <div class="text-xs text-base-content/50">{stat.label}</div>
+          <div class="flex flex-wrap gap-3 mt-10 animate-fade-in animate-delay-3">
+            <a href={siteUrl('/ateliers/')} class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-300 ease-out hover:-translate-y-px active:translate-y-0 active:scale-[0.98] shadow-lg shadow-emerald-600/20">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+              Voir les ateliers
+            </a>
+            <a href={siteUrl('/cours/')} class="inline-flex items-center gap-2 border border-base-content/10 hover:border-base-content/20 hover:bg-base-content/5 px-6 py-3 rounded-xl text-sm font-medium transition-all duration-300 ease-out hover:-translate-y-px">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+              Cours théoriques
+            </a>
+          </div>
+
+          <!-- Stats -->
+          <div class="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-3 sm:gap-x-6 sm:gap-y-2 mt-14 text-sm animate-fade-in animate-delay-4">
+            <div class="flex items-center gap-2">
+              <svg class="w-3.5 h-3.5 text-emerald-500/60" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 3v2m6-2v2M9 19v2m6-2v2M3 9h2m-2 6h2m14-6h2m-2 6h2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"/></svg>
+              <span><strong class="text-base-content font-semibold">40+</strong> <span class="text-base-content/35">cartes ESP32</span></span>
             </div>
-          ))}
+            <div class="hidden sm:block w-px h-3.5 bg-base-content/10"></div>
+            <div class="flex items-center gap-2">
+              <svg class="w-3.5 h-3.5 text-emerald-500/60" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
+              <span><strong class="text-base-content font-semibold">6</strong> <span class="text-base-content/35">participants max</span></span>
+            </div>
+            <div class="hidden sm:block w-px h-3.5 bg-base-content/10"></div>
+            <div class="flex items-center gap-2">
+              <svg class="w-3.5 h-3.5 text-emerald-500/60" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z"/><path stroke-linecap="round" stroke-linejoin="round" d="M6 6h.008v.008H6V6z"/></svg>
+              <span><strong class="text-base-content font-semibold">20&nbsp;&euro;</strong> <span class="text-base-content/35">par atelier</span></span>
+            </div>
+            <div class="hidden sm:block w-px h-3.5 bg-base-content/10"></div>
+            <div class="flex items-center gap-2">
+              <svg class="w-3.5 h-3.5 text-emerald-500/60" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              <span><strong class="text-base-content font-semibold">100&nbsp;%</strong> <span class="text-base-content/35">pratique</span></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Terminal -->
+        <div class="hidden lg:block animate-fade-in animate-delay-3">
+          <div class="rounded-2xl bg-zinc-950 border border-zinc-800/60 overflow-hidden shadow-[0_25px_60px_-15px_rgba(0,0,0,0.35)]">
+            <div class="flex items-center gap-2 px-4 py-3 border-b border-zinc-800/60">
+              <div class="flex gap-1.5">
+                <div class="w-2.5 h-2.5 rounded-full bg-zinc-700/80"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-zinc-700/80"></div>
+                <div class="w-2.5 h-2.5 rounded-full bg-zinc-700/80"></div>
+              </div>
+              <span class="ml-2 text-[11px] text-zinc-500 font-mono">main.py</span>
+            </div>
+            <pre class="p-5 text-[13px] font-mono leading-[1.7]"><code><span class="text-emerald-400">from</span> <span class="text-zinc-300">machine</span> <span class="text-emerald-400">import</span> <span class="text-zinc-300">Pin</span>
+<span class="text-emerald-400">import</span> <span class="text-zinc-300">network</span><span class="text-zinc-500">,</span> <span class="text-zinc-300">socket</span>
+
+<span class="text-zinc-600"># Crée un point d'accès WiFi</span>
+<span class="text-zinc-100">ap</span> <span class="text-zinc-500">=</span> <span class="text-zinc-300">network</span><span class="text-zinc-500">.</span><span class="text-zinc-200">WLAN</span><span class="text-zinc-500">(</span><span class="text-zinc-300">network</span><span class="text-zinc-500">.</span><span class="text-zinc-300">AP_IF</span><span class="text-zinc-500">)</span>
+<span class="text-zinc-100">ap</span><span class="text-zinc-500">.</span><span class="text-zinc-200">active</span><span class="text-zinc-500">(</span><span class="text-amber-300">True</span><span class="text-zinc-500">)</span>
+<span class="text-zinc-100">ap</span><span class="text-zinc-500">.</span><span class="text-zinc-200">config</span><span class="text-zinc-500">(</span>
+  <span class="text-zinc-400">essid</span><span class="text-zinc-500">=</span><span class="text-amber-200/80">'ESP32-Fablab'</span><span class="text-zinc-500">,</span>
+  <span class="text-zinc-400">password</span><span class="text-zinc-500">=</span><span class="text-amber-200/80">'micropython'</span>
+<span class="text-zinc-500">)</span>
+
+<span class="text-zinc-100">led</span> <span class="text-zinc-500">=</span> <span class="text-zinc-200">Pin</span><span class="text-zinc-500">(</span><span class="text-amber-300">2</span><span class="text-zinc-500">,</span> <span class="text-zinc-300">Pin</span><span class="text-zinc-500">.</span><span class="text-zinc-300">OUT</span><span class="text-zinc-500">)</span>
+<span class="text-emerald-400">print</span><span class="text-zinc-500">(</span><span class="text-amber-200/80">'Serveur prêt !'</span><span class="text-zinc-500">)</span></code></pre>
+          </div>
         </div>
 
       </div>
     </div>
 
-    <!-- Déco code droite -->
-    <div class="absolute right-0 top-1/2 -translate-y-1/2 hidden 2xl:block w-96 mr-8 opacity-80 animate-fade-in animate-delay-4">
-      <div class="rounded-2xl bg-[#1a1b26] border border-white/8 p-5 shadow-2xl">
-        <div class="flex gap-1.5 mb-4">
-          <div class="w-3 h-3 rounded-full bg-[#ff5f57]"></div>
-          <div class="w-3 h-3 rounded-full bg-[#ffbd2e]"></div>
-          <div class="w-3 h-3 rounded-full bg-[#28c840]"></div>
-        </div>
-        <pre class="text-xs font-mono leading-relaxed"><code><span class="text-purple-400">from</span> <span class="text-white">machine</span> <span class="text-purple-400">import</span> <span class="text-white">Pin</span>
-<span class="text-purple-400">import</span> <span class="text-white">network</span><span class="text-white">,</span> <span class="text-white">socket</span>
-
-<span class="text-green-400"># Crée un point d'accès WiFi</span>
-<span class="text-blue-400">ap</span> <span class="text-white">=</span> <span class="text-white">network</span><span class="text-white">.</span><span class="text-yellow-400">WLAN</span><span class="text-white">(</span><span class="text-white">network</span><span class="text-white">.</span><span class="text-white">AP_IF</span><span class="text-white">)</span>
-<span class="text-blue-400">ap</span><span class="text-white">.</span><span class="text-yellow-400">active</span><span class="text-white">(</span><span class="text-orange-400">True</span><span class="text-white">)</span>
-<span class="text-blue-400">ap</span><span class="text-white">.</span><span class="text-yellow-400">config</span><span class="text-white">(</span>
-  <span class="text-white">essid</span><span class="text-white">=</span><span class="text-green-300">'ESP32-Fablab'</span><span class="text-white">,</span>
-  <span class="text-white">password</span><span class="text-white">=</span><span class="text-green-300">'micropython'</span>
-<span class="text-white">)</span>
-
-<span class="text-blue-400">led</span> <span class="text-white">=</span> <span class="text-yellow-400">Pin</span><span class="text-white">(</span><span class="text-orange-400">2</span><span class="text-white">,</span> <span class="text-white">Pin</span><span class="text-white">.</span><span class="text-white">OUT</span><span class="text-white">)</span>
-<span class="text-purple-400">print</span><span class="text-white">(</span><span class="text-green-300">'Serveur prêt ! 🚀'</span><span class="text-white">)</span></code></pre>
-      </div>
-    </div>
-
+    <div class="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-base-100 to-transparent pointer-events-none"></div>
   </section>
 
-  <!-- ======== 3 PILIERS ======== -->
-  <section class="py-24 bg-base-200/30">
+
+  <!-- ══════ 3 PILIERS ══════ -->
+  <section class="py-28 border-t border-base-content/5">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-      <div class="text-center mb-16">
-        <h2 class="text-3xl sm:text-4xl font-black mb-4">Tout ce qu'il te faut pour démarrer</h2>
-        <p class="text-base-content/60 max-w-xl mx-auto">Du code au composant, du débutant au maker — une plateforme complète.</p>
+      <div class="mb-14">
+        <p class="text-emerald-500 text-xs font-mono font-medium tracking-widest uppercase mb-3">Plateforme</p>
+        <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight">Tout ce qu'il te faut pour démarrer</h2>
+        <p class="text-base-content/45 mt-3 max-w-[55ch]">Du code au composant, du débutant au maker — un parcours structuré.</p>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
 
-        <a href={siteUrl('/ateliers/')} class="group rounded-2xl border border-base-200/80 bg-base-100/50 p-8 card-hover hover:border-blue-500/30">
-          <div class="w-12 h-12 rounded-xl bg-blue-500/15 flex items-center justify-center mb-6 group-hover:bg-blue-500/25 transition-colors">
-            <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
-            </svg>
+        <!-- Ateliers pratiques — large, spans 2 cols -->
+        <a href={siteUrl('/ateliers/')} class="md:col-span-2 group rounded-2xl border border-base-content/5 bg-base-content/[0.02] p-8 md:p-10 flex flex-col md:flex-row items-start md:items-center gap-6 md:gap-12 transition-all duration-300 ease-out hover:border-emerald-500/20 hover:bg-emerald-500/[0.03] hover:-translate-y-px">
+          <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/10 flex items-center justify-center flex-shrink-0">
+            <svg class="w-6 h-6 text-emerald-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>
           </div>
-          <h3 class="text-xl font-bold mb-3 group-hover:text-blue-400 transition-colors">Ateliers pratiques</h3>
-          <p class="text-base-content/60 leading-relaxed text-sm mb-4">
-            4 projets progressifs avec du vrai matériel. Code MicroPython téléchargeable, schémas de câblage, étape par étape.
-          </p>
-          <div class="flex items-center gap-1 text-sm text-blue-400 font-medium">
-            Découvrir les ateliers
-            <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-            </svg>
+          <div class="flex-1">
+            <h3 class="text-xl font-bold mb-2 group-hover:text-emerald-500 transition-colors duration-300">Ateliers pratiques</h3>
+            <p class="text-base-content/50 leading-relaxed text-sm max-w-[55ch]">
+              4 projets progressifs avec du vrai matériel. Code MicroPython téléchargeable, schémas de câblage, étape par étape.
+            </p>
+          </div>
+          <div class="flex items-center gap-1.5 text-sm text-emerald-500 font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            Découvrir
+            <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
           </div>
         </a>
 
-        <a href={siteUrl('/cours/')} class="group rounded-2xl border border-base-200/80 bg-base-100/50 p-8 card-hover hover:border-purple-500/30">
-          <div class="w-12 h-12 rounded-xl bg-purple-500/15 flex items-center justify-center mb-6 group-hover:bg-purple-500/25 transition-colors">
-            <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-            </svg>
+        <!-- Cours théoriques -->
+        <a href={siteUrl('/cours/')} class="group rounded-2xl border border-base-content/5 bg-base-content/[0.02] p-8 transition-all duration-300 ease-out hover:border-emerald-500/20 hover:bg-emerald-500/[0.03] hover:-translate-y-px">
+          <div class="w-10 h-10 rounded-lg bg-base-content/5 flex items-center justify-center mb-5">
+            <svg class="w-5 h-5 text-base-content/50" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
           </div>
-          <h3 class="text-xl font-bold mb-3 group-hover:text-purple-400 transition-colors">Cours théoriques</h3>
-          <p class="text-base-content/60 leading-relaxed text-sm mb-4">
+          <h3 class="text-lg font-bold mb-2 group-hover:text-emerald-500 transition-colors duration-300">Cours théoriques</h3>
+          <p class="text-base-content/50 leading-relaxed text-sm">
             Protocoles I2C/SPI/I2S, MicroPython vs Arduino, capteurs et actionneurs, IoT et réseau.
           </p>
-          <div class="flex items-center gap-1 text-sm text-purple-400 font-medium">
-            Explorer les cours
-            <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-            </svg>
-          </div>
         </a>
 
-        <a href={siteUrl('/doc/')} class="group rounded-2xl border border-base-200/80 bg-base-100/50 p-8 card-hover hover:border-emerald-500/30">
-          <div class="w-12 h-12 rounded-xl bg-emerald-500/15 flex items-center justify-center mb-6 group-hover:bg-emerald-500/25 transition-colors">
-            <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-            </svg>
+        <!-- Documentation -->
+        <a href={siteUrl('/doc/')} class="group rounded-2xl border border-base-content/5 bg-base-content/[0.02] p-8 transition-all duration-300 ease-out hover:border-emerald-500/20 hover:bg-emerald-500/[0.03] hover:-translate-y-px">
+          <div class="w-10 h-10 rounded-lg bg-base-content/5 flex items-center justify-center mb-5">
+            <svg class="w-5 h-5 text-base-content/50" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
           </div>
-          <h3 class="text-xl font-bold mb-3 group-hover:text-emerald-400 transition-colors">Documentation</h3>
-          <p class="text-base-content/60 leading-relaxed text-sm mb-4">
+          <h3 class="text-lg font-bold mb-2 group-hover:text-emerald-500 transition-colors duration-300">Documentation</h3>
+          <p class="text-base-content/50 leading-relaxed text-sm">
             Fiches de référence : ESP32, ESP32-S3, Pico 2W, M5Stack. Composants, brochages, librairies MicroPython.
           </p>
-          <div class="flex items-center gap-1 text-sm text-emerald-400 font-medium">
-            Accéder à la doc
-            <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-            </svg>
-          </div>
         </a>
 
       </div>
     </div>
   </section>
 
-  <!-- ======== ATELIERS ======== -->
-  <section class="py-24">
+
+  <!-- ══════ ATELIERS ══════ -->
+  <section class="py-28">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
       <div class="flex items-end justify-between mb-12">
         <div>
-          <p class="text-primary text-sm font-mono font-medium mb-2">// ateliers</p>
-          <h2 class="text-3xl sm:text-4xl font-black">Projets à réaliser</h2>
+          <p class="text-emerald-500 text-xs font-mono font-medium tracking-widest uppercase mb-3">Ateliers</p>
+          <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight">Projets à réaliser</h2>
         </div>
-        <a href={siteUrl('/ateliers/')} class="hidden sm:flex items-center gap-2 text-sm text-base-content/50 hover:text-primary transition-colors">
+        <a href={siteUrl('/ateliers/')} class="hidden sm:flex items-center gap-1.5 text-sm text-base-content/40 hover:text-emerald-500 transition-colors duration-300">
           Tous les ateliers
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-          </svg>
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
         </a>
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
         {ateliers.map(atelier => (
           <AtelierCard {...atelier} />
         ))}
@@ -242,63 +230,64 @@ const stats = [
     </div>
   </section>
 
-  <!-- ======== PROCHAINS ATELIERS ======== -->
-  <section class="py-24 bg-base-200/30">
+
+  <!-- ══════ PROCHAINS ATELIERS ══════ -->
+  <section class="py-28 border-t border-base-content/5">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
 
         <div>
-          <p class="text-primary text-sm font-mono font-medium mb-2">// agenda</p>
-          <h2 class="text-3xl sm:text-4xl font-black mb-6">Prochains ateliers</h2>
-          <p class="text-base-content/60 leading-relaxed mb-8">
-            Les ateliers se déroulent en présentiel en Ardèche. Petits groupes (6 max), matériel fourni, ambiance détendue.
+          <p class="text-emerald-500 text-xs font-mono font-medium tracking-widest uppercase mb-3">Agenda</p>
+          <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight mb-5">Prochains ateliers</h2>
+          <p class="text-base-content/45 leading-relaxed mb-10 max-w-[50ch]">
+            En présentiel en Ardèche. Petits groupes, matériel fourni, ambiance détendue.
           </p>
 
           <div class="space-y-3">
             {prochainsDates.map(session => (
-              <div class="flex items-center justify-between rounded-xl border border-base-200/80 bg-base-100/50 px-5 py-4">
+              <div class="flex items-center justify-between rounded-xl border border-base-content/5 bg-base-content/[0.02] px-5 py-4 transition-all duration-300 hover:border-base-content/10">
                 <div>
                   <div class="font-semibold text-sm">{session.atelier}</div>
-                  <div class="text-xs text-base-content/50 mt-0.5">{session.date}</div>
+                  <div class="text-xs text-base-content/35 mt-0.5">{session.date}</div>
                 </div>
                 <div class="flex items-center gap-3">
-                  <div class={`text-xs font-medium px-2.5 py-1 rounded-full ${session.places <= 2 ? 'bg-warning/15 text-warning' : 'bg-success/15 text-success'}`}>
-                    {session.places} place{session.places > 1 ? 's' : ''} libre{session.places > 1 ? 's' : ''}
-                  </div>
-                  <a href={siteUrl('/a-propos/#inscription')} class="btn btn-primary btn-xs">Réserver</a>
+                  <span class={`text-xs font-medium px-2.5 py-1 rounded-full ${session.places <= 2 ? 'bg-amber-500/10 text-amber-500 border border-amber-500/10' : 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/10'}`}>
+                    {session.places} place{session.places > 1 ? 's' : ''}
+                  </span>
+                  <a href={siteUrl('/a-propos/#inscription')} class="text-xs font-semibold text-emerald-500 hover:text-emerald-400 transition-colors">Réserver</a>
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-        <div class="rounded-2xl border border-primary/20 bg-primary/5 p-8">
-          <h3 class="text-xl font-bold mb-6">Comment ça se passe ?</h3>
-          <div class="space-y-5">
+        <div class="rounded-2xl border border-base-content/5 bg-base-content/[0.02] p-8">
+          <h3 class="text-lg font-bold mb-8">Comment ça se passe</h3>
+          <div class="space-y-6">
             {[
               { step: '01', title: 'Réserve ta place', desc: 'Envoie un message pour réserver. Paiement sur place le jour J.' },
-              { step: '02', title: 'Viens avec ta curiosité', desc: 'Tout le matériel est fourni. Pas besoin d\'expérience préalable.' },
+              { step: '02', title: 'Viens avec ta curiosité', desc: 'Tout le matériel est fourni. Pas besoin d\'expérience.' },
               { step: '03', title: 'On construit ensemble', desc: 'Câblage, code, tests — 3h pour créer un projet fonctionnel.' },
               { step: '04', title: 'Tu repars avec tout', desc: 'Le code sur GitHub, les schémas, et un projet qui marche chez toi.' },
             ].map(item => (
               <div class="flex gap-4">
-                <div class="font-mono text-primary/50 text-sm font-bold flex-shrink-0 mt-0.5">{item.step}</div>
+                <span class="font-mono text-emerald-500/40 text-xs font-bold mt-0.5 flex-shrink-0 w-6">{item.step}</span>
                 <div>
-                  <div class="font-semibold text-sm mb-1">{item.title}</div>
-                  <div class="text-sm text-base-content/60">{item.desc}</div>
+                  <div class="font-semibold text-sm">{item.title}</div>
+                  <div class="text-sm text-base-content/45 mt-0.5">{item.desc}</div>
                 </div>
               </div>
             ))}
           </div>
-          <div class="mt-8 pt-6 border-t border-primary/20">
-            <div class="flex items-center justify-between">
-              <div>
-                <div class="text-2xl font-black">20 €</div>
-                <div class="text-xs text-base-content/50">par personne · 3h · matériel fourni</div>
-              </div>
-              <a href={siteUrl('/a-propos/')} class="btn btn-primary">En savoir plus</a>
+          <div class="mt-8 pt-6 border-t border-base-content/5 flex items-center justify-between">
+            <div>
+              <div class="text-2xl font-extrabold tracking-tight">20&nbsp;&euro;</div>
+              <div class="text-xs text-base-content/35 mt-0.5">par personne &middot; 3h &middot; matériel fourni</div>
             </div>
+            <a href={siteUrl('/a-propos/')} class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 ease-out hover:-translate-y-px active:scale-[0.98]">
+              En savoir plus
+            </a>
           </div>
         </div>
 
@@ -306,153 +295,200 @@ const stats = [
     </div>
   </section>
 
-  <!-- ======== LE FABLAB ======== -->
-  <section class="py-24">
+
+  <!-- ══════ LE FABLAB ══════ -->
+  <section class="py-28">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <div class="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-16 items-start">
 
         <div>
-          <p class="text-emerald-400 text-sm font-mono font-medium mb-2">// le fablab</p>
-          <h2 class="text-3xl sm:text-4xl font-black mb-6">Un espace, un ingénieur, une pédagogie</h2>
-          <div class="space-y-4 text-base-content/70 leading-relaxed">
+          <p class="text-emerald-500 text-xs font-mono font-medium tracking-widest uppercase mb-3">Le fablab</p>
+          <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight mb-6">Un espace, un ingénieur, une pédagogie</h2>
+          <div class="space-y-4 text-base-content/50 leading-relaxed">
             <p>
-              Ingénieur diplômé de l'ENIM et ancien professeur à l'Université de Lorraine (25 ans d'enseignement en électronique et génie électrique), Vincent anime ce fablab en Ardèche avec une conviction simple : <strong class="text-base-content">on apprend l'électronique en la faisant</strong>.
+              Ingénieur diplômé de l'ENIM et ancien professeur à l'Université de Lorraine (25 ans d'enseignement en électronique et génie électrique), Vincent anime ce fablab en Ardèche avec une conviction : <strong class="text-base-content/80 font-semibold">on apprend l'électronique en la faisant</strong>.
             </p>
             <p>
               Pas de cours magistraux. Des projets réels, du vrai matériel, et quelqu'un à côté pour expliquer quand ça ne marche pas.
             </p>
           </div>
-          <a href={siteUrl('/a-propos/')} class="inline-flex items-center gap-2 mt-6 text-sm text-emerald-400 font-medium hover:underline">
+          <a href={siteUrl('/a-propos/')} class="inline-flex items-center gap-1.5 mt-6 text-sm text-emerald-500 font-medium hover:text-emerald-400 transition-colors duration-300">
             En savoir plus sur le fablab
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-            </svg>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
           </a>
         </div>
 
         <div class="grid grid-cols-2 gap-4">
-          {[
-            { icon: '👨‍🏫', label: 'Supervision', desc: 'Vincent est présent à chaque atelier pour guider, débloquer, expliquer.' },
-            { icon: '👥', label: '6 personnes max', desc: 'Petits groupes pour un suivi personnalisé et une vraie progression.' },
-            { icon: '🔧', label: 'Matériel fourni', desc: 'ESP32, breadboards, capteurs, câbles — tout est prêt à brancher.' },
-            { icon: '📍', label: 'En Ardèche', desc: 'Payzac, 07230. En présentiel, dans le fablab.' },
-          ].map(item => (
-            <div class="rounded-xl border border-base-200/80 bg-base-200/20 p-5">
-              <div class="text-2xl mb-3">{item.icon}</div>
-              <div class="font-bold text-sm mb-1">{item.label}</div>
-              <div class="text-xs text-base-content/55 leading-relaxed">{item.desc}</div>
-            </div>
-          ))}
+          <div class="rounded-xl border border-base-content/5 bg-base-content/[0.02] p-5">
+            <svg class="w-5 h-5 text-base-content/40 mb-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15v-3.375c0-.621.504-1.125 1.125-1.125h8.25c.621 0 1.125.504 1.125 1.125V15"/></svg>
+            <div class="font-bold text-sm mb-1">Supervision</div>
+            <div class="text-xs text-base-content/40 leading-relaxed">Vincent est présent à chaque atelier pour guider, débloquer, expliquer.</div>
+          </div>
+          <div class="rounded-xl border border-base-content/5 bg-base-content/[0.02] p-5">
+            <svg class="w-5 h-5 text-base-content/40 mb-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>
+            <div class="font-bold text-sm mb-1">6 personnes max</div>
+            <div class="text-xs text-base-content/40 leading-relaxed">Petits groupes pour un suivi personnalisé et une vraie progression.</div>
+          </div>
+          <div class="rounded-xl border border-base-content/5 bg-base-content/[0.02] p-5">
+            <svg class="w-5 h-5 text-base-content/40 mb-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.276a3.004 3.004 0 01-2.25-2.25l3.276-3.276a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085"/></svg>
+            <div class="font-bold text-sm mb-1">Matériel fourni</div>
+            <div class="text-xs text-base-content/40 leading-relaxed">ESP32, breadboards, capteurs, câbles — tout est prêt à brancher.</div>
+          </div>
+          <div class="rounded-xl border border-base-content/5 bg-base-content/[0.02] p-5">
+            <svg class="w-5 h-5 text-base-content/40 mb-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg>
+            <div class="font-bold text-sm mb-1">En Ardèche</div>
+            <div class="text-xs text-base-content/40 leading-relaxed">Payzac, 07230. En présentiel, dans le fablab.</div>
+          </div>
         </div>
 
       </div>
     </div>
   </section>
 
-  <!-- ======== APERÇU MicroPython ======== -->
-  <section class="py-24">
+
+  <!-- ══════ MICROPYTHON ══════ -->
+  <section class="py-28 border-t border-base-content/5">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-12">
-        <p class="text-primary text-sm font-mono font-medium mb-2">// micropython</p>
-        <h2 class="text-3xl sm:text-4xl font-black mb-4">Python sur microcontrôleur</h2>
-        <p class="text-base-content/60 max-w-xl mx-auto">
+      <div class="mb-14">
+        <p class="text-emerald-500 text-xs font-mono font-medium tracking-widest uppercase mb-3">MicroPython</p>
+        <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight mb-3">Python sur microcontrôleur</h2>
+        <p class="text-base-content/45 max-w-[55ch]">
           MicroPython, c'est Python — qui tourne directement sur l'ESP32. Simple, lisible, puissant.
         </p>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {[
-          { title: 'Allumer une LED', code: `from machine import Pin\nfrom time import sleep\n\nled = Pin(2, Pin.OUT)\n\nwhile True:\n    led.on()\n    sleep(0.5)\n    led.off()\n    sleep(0.5)`, badge: 'GPIO', color: 'text-blue-400' },
-          { title: 'Lire un capteur', code: `import dht\nfrom machine import Pin\n\nsensor = dht.DHT22(Pin(4))\nsensor.measure()\n\ntemp = sensor.temperature()\nhum = sensor.humidity()\nprint(f'{temp}°C — {hum}%')`, badge: 'DHT22', color: 'text-purple-400' },
-          { title: 'Publier en MQTT', code: `from umqtt.simple import MQTTClient\n\nclient = MQTTClient(\n    'esp32', 'broker.local'\n)\nclient.connect()\nclient.publish(\n    b'fablab/temp',\n    b'22.5'\n)\nprint('Envoyé !')`, badge: 'MQTT', color: 'text-emerald-400' },
-        ].map(example => (
-          <div class="rounded-2xl bg-[#1a1b26] border border-white/8 overflow-hidden">
-            <div class="flex items-center justify-between px-4 py-3 border-b border-white/8">
-              <span class="text-white/70 text-sm font-medium">{example.title}</span>
-              <span class={`text-xs font-mono font-bold ${example.color}`}>{example.badge}</span>
-            </div>
-            <pre class="p-4 text-xs font-mono text-white/70 leading-relaxed overflow-x-auto"><code>{example.code}</code></pre>
+      <div class="grid grid-cols-1 md:grid-cols-[1.2fr_1fr] gap-5">
+        <!-- Exemple principal -->
+        <div class="rounded-2xl bg-zinc-950 border border-zinc-800/60 overflow-hidden md:row-span-2">
+          <div class="flex items-center justify-between px-4 py-3 border-b border-zinc-800/60">
+            <span class="text-zinc-400 text-sm font-medium">Allumer une LED</span>
+            <span class="text-xs font-mono font-bold text-emerald-400">GPIO</span>
           </div>
-        ))}
+          <pre class="p-5 text-[13px] font-mono text-zinc-400 leading-[1.8]"><code>from machine import Pin
+from time import sleep
+
+led = Pin(2, Pin.OUT)
+
+while True:
+    led.on()
+    sleep(0.5)
+    led.off()
+    sleep(0.5)</code></pre>
+        </div>
+
+        <div class="rounded-2xl bg-zinc-950 border border-zinc-800/60 overflow-hidden">
+          <div class="flex items-center justify-between px-4 py-3 border-b border-zinc-800/60">
+            <span class="text-zinc-400 text-sm font-medium">Lire un capteur</span>
+            <span class="text-xs font-mono font-bold text-amber-400">DHT22</span>
+          </div>
+          <pre class="p-5 text-[13px] font-mono text-zinc-400 leading-[1.8]"><code>import dht
+from machine import Pin
+
+sensor = dht.DHT22(Pin(4))
+sensor.measure()
+
+temp = sensor.temperature()
+hum = sensor.humidity()
+print(temp, '°C —', hum, '%')</code></pre>
+        </div>
+
+        <div class="rounded-2xl bg-zinc-950 border border-zinc-800/60 overflow-hidden">
+          <div class="flex items-center justify-between px-4 py-3 border-b border-zinc-800/60">
+            <span class="text-zinc-400 text-sm font-medium">Publier en MQTT</span>
+            <span class="text-xs font-mono font-bold text-sky-400">MQTT</span>
+          </div>
+          <pre class="p-5 text-[13px] font-mono text-zinc-400 leading-[1.8]"><code>from umqtt.simple import MQTTClient
+
+client = MQTTClient(
+    'esp32', 'broker.local'
+)
+client.connect()
+client.publish(
+    b'fablab/temp',
+    b'22.5'
+)
+print('Envoyé !')</code></pre>
+        </div>
       </div>
 
-      <div class="text-center mt-10">
-        <a href={siteUrl('/cours/introduction-micropython/')} class="btn btn-outline gap-2">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-          </svg>
+      <div class="mt-10">
+        <a href={siteUrl('/cours/introduction-micropython/')} class="inline-flex items-center gap-2 border border-base-content/10 hover:border-emerald-500/20 hover:bg-emerald-500/[0.03] px-5 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 ease-out hover:-translate-y-px">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
           Cours Introduction à MicroPython
         </a>
       </div>
     </div>
   </section>
 
-  <!-- ======== PRESTATIONS B2B ======== -->
-  <section class="py-24 bg-base-200/30">
+
+  <!-- ══════ PRESTATIONS B2B ══════ -->
+  <section class="py-28 border-t border-base-content/5">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-      <div class="flex flex-col sm:flex-row items-start sm:items-end justify-between mb-10 gap-4">
+      <div class="flex flex-col sm:flex-row items-start sm:items-end justify-between mb-12 gap-4">
         <div>
-          <p class="text-amber-400 text-sm font-mono font-medium mb-2">// entreprises</p>
-          <h2 class="text-3xl sm:text-4xl font-black">Prestations sur mesure</h2>
-          <p class="text-base-content/60 mt-3 max-w-xl">
-            Installations ESP32 pour événements, loisirs et animations interactives — conçues et déployées par un ingénieur en électronique.
+          <p class="text-emerald-500 text-xs font-mono font-medium tracking-widest uppercase mb-3">Entreprises</p>
+          <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight">Prestations sur mesure</h2>
+          <p class="text-base-content/45 mt-3 max-w-[50ch]">
+            Installations ESP32 pour événements et loisirs interactifs — conçues par un ingénieur en électronique.
           </p>
         </div>
-        <a href={siteUrl('/a-propos/#b2b')} class="btn btn-outline btn-sm whitespace-nowrap">
-          Prendre contact →
+        <a href={siteUrl('/a-propos/#b2b')} class="text-sm font-medium text-emerald-500 hover:text-emerald-400 transition-colors duration-300 whitespace-nowrap flex items-center gap-1">
+          Prendre contact
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3"/></svg>
         </a>
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
-        {[
-          {
-            icon: '🔐',
-            title: 'Escape games',
-            desc: 'Serrures électroniques, RFID, effets sonores, synchronisation multi-salles — tout piloté par ESP32.',
-          },
-          {
-            icon: '🎭',
-            title: 'Murder parties',
-            desc: 'Déclencheurs d\'ambiance, indices numériques, révélations automatiques — des effets qui immergent.',
-          },
-          {
-            icon: '🎪',
-            title: 'Événementiel',
-            desc: 'Installations interactives, jeux connectés, animations technologiques pour vos événements.',
-          },
-        ].map(service => (
-          <div class="rounded-2xl border border-amber-500/15 bg-base-100/50 p-7 hover:border-amber-500/35 transition-colors">
-            <div class="text-3xl mb-4">{service.icon}</div>
-            <h3 class="font-bold text-lg mb-2">{service.title}</h3>
-            <p class="text-sm text-base-content/60 leading-relaxed">{service.desc}</p>
+      <div class="grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-5">
+        <div class="rounded-2xl border border-base-content/5 bg-base-content/[0.02] p-8 transition-all duration-300 hover:border-emerald-500/15 hover:-translate-y-px">
+          <div class="w-10 h-10 rounded-lg bg-base-content/5 flex items-center justify-center mb-5">
+            <svg class="w-5 h-5 text-base-content/40" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/></svg>
           </div>
-        ))}
+          <h3 class="font-bold text-lg mb-2">Escape games</h3>
+          <p class="text-sm text-base-content/45 leading-relaxed max-w-[45ch]">Serrures électroniques, RFID, effets sonores, synchronisation multi-salles — tout piloté par ESP32.</p>
+        </div>
+
+        <div class="rounded-2xl border border-base-content/5 bg-base-content/[0.02] p-8 transition-all duration-300 hover:border-emerald-500/15 hover:-translate-y-px">
+          <div class="w-10 h-10 rounded-lg bg-base-content/5 flex items-center justify-center mb-5">
+            <svg class="w-5 h-5 text-base-content/40" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z"/></svg>
+          </div>
+          <h3 class="font-bold text-lg mb-2">Murder parties</h3>
+          <p class="text-sm text-base-content/45 leading-relaxed">Déclencheurs d'ambiance, indices numériques, révélations automatiques.</p>
+        </div>
+
+        <div class="md:col-span-2 rounded-2xl border border-base-content/5 bg-base-content/[0.02] p-8 flex flex-col md:flex-row md:items-center gap-5 transition-all duration-300 hover:border-emerald-500/15 hover:-translate-y-px">
+          <div class="w-10 h-10 rounded-lg bg-base-content/5 flex items-center justify-center flex-shrink-0">
+            <svg class="w-5 h-5 text-base-content/40" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/></svg>
+          </div>
+          <div>
+            <h3 class="font-bold text-lg mb-1">Événementiel</h3>
+            <p class="text-sm text-base-content/45 leading-relaxed max-w-[50ch]">Installations interactives, jeux connectés, animations technologiques pour vos événements.</p>
+          </div>
+        </div>
       </div>
 
     </div>
   </section>
 
-  <!-- ======== CTA FINAL ======== -->
-  <section class="py-24 bg-gradient-to-br from-primary/10 via-base-200/20 to-purple-500/10">
-    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <h2 class="text-3xl sm:text-4xl font-black mb-6">Prêt à faire s'allumer ta première LED ?</h2>
-      <p class="text-base-content/60 mb-10 leading-relaxed">
-        Rejoins un atelier en Ardèche ou parcours la documentation pour démarrer chez toi. Tout le code est open source sur GitHub.
-      </p>
-      <div class="flex flex-col sm:flex-row gap-4 justify-center">
-        <a href={siteUrl('/ateliers/')} class="btn btn-primary btn-lg gap-2 glow">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-          </svg>
-          Voir les ateliers
-        </a>
-        <a href="https://github.com/vincent-herm/fablab-esp32-ateliers" target="_blank" rel="noopener" class="btn btn-ghost btn-lg gap-2 border border-base-200/60">
-          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-          </svg>
-          Code sur GitHub
-        </a>
+
+  <!-- ══════ CTA FINAL ══════ -->
+  <section class="py-28 border-t border-base-content/5">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-2xl">
+        <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight mb-5">Prêt à faire s'allumer ta première LED ?</h2>
+        <p class="text-base-content/45 leading-relaxed mb-10 max-w-[50ch]">
+          Rejoins un atelier en Ardèche ou parcours la documentation pour démarrer chez toi. Tout le code est open source.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-3">
+          <a href={siteUrl('/ateliers/')} class="inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-300 ease-out hover:-translate-y-px active:translate-y-0 active:scale-[0.98] shadow-lg shadow-emerald-600/20">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            Voir les ateliers
+          </a>
+          <a href="https://github.com/vincent-herm/fablab-esp32-ateliers" target="_blank" rel="noopener" class="inline-flex items-center justify-center gap-2 border border-base-content/10 hover:border-base-content/20 hover:bg-base-content/5 px-6 py-3 rounded-xl text-sm font-medium transition-all duration-300 ease-out hover:-translate-y-px">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+            Code sur GitHub
+          </a>
+        </div>
       </div>
     </div>
   </section>
