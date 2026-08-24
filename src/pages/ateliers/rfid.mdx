@@ -1,6 +1,6 @@
 ---
 title: 'Badge RFID'
-description: "Un lecteur RC522 identifie les badges. Accès accordé = LED verte. Badge inconnu = alarme sonore."
+description: "Un badge accepté allume la LED verte, un badge inconnu déclenche l'alarme. Puis un contrôle d'accès à 3 niveaux, mémorisé sur la carte."
 level: 'intermediaire'
 duration: '3h'
 tags: ['ESP32', 'RFID', 'RC522', 'SPI', 'Sécurité']
@@ -9,9 +9,11 @@ tags: ['ESP32', 'RFID', 'RC522', 'SPI', 'Sécurité']
 import Layout from '../../layouts/Layout.astro';
 import GitHubCodeBlock from '../../components/GitHubCodeBlock.astro';
 import DifficultyBadge from '../../components/DifficultyBadge.astro';
+import ToiDeJouer from '../../components/ToiDeJouer.astro';
+import Prediction from '../../components/Prediction.astro';
 import { siteUrl } from '../../utils/url';
 
-<Layout title="Atelier 07 — Badge RFID" description="Contrôle d'accès RFID 3 niveaux : Visiteur, Membre, Admin. Programmation et production.">
+<Layout title="Atelier 07 — Badge RFID" description="Lecteur RC522 en SPI : signalisation LED et buzzer, puis contrôle d'accès à 3 niveaux mémorisé en JSON sur l'ESP32.">
 
 <div class="border-b border-base-200/60 bg-base-200/20">
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
@@ -33,8 +35,9 @@ import { siteUrl } from '../../utils/url';
     </div>
     <h1 class="text-3xl sm:text-4xl font-black mb-4">Badge RFID</h1>
     <p class="text-base-content/65 text-lg leading-relaxed max-w-2xl mb-8">
-      Un système de contrôle d'accès complet avec 3 niveaux (Visiteur, Membre, Admin).
-      Phase de programmation pour enregistrer les badges, puis phase de production pour autoriser ou refuser l'accès.
+      Un lecteur RC522 identifie les badges par leur numéro unique. D'abord la réaction immédiate —
+      LED verte, LED rouge, buzzer — puis le vrai système : trois niveaux d'accès et une mémoire
+      qui survit au redémarrage. Un seul câblage pour les deux.
     </p>
     <div class="flex flex-wrap gap-4">
       <div class="flex items-center gap-2 text-sm text-base-content/60">
@@ -54,11 +57,22 @@ import { siteUrl } from '../../utils/url';
 
 ## Ce que tu vas créer
 
-Un système de contrôle d'accès RFID complet avec :
-- **3 niveaux** : Visiteur (1), Membre (2), Admin (3)
-- **Phase de programmation** : scanner un badge, saisir nom + prénom, choisir le niveau
-- **Phase de production** : scanner → LED bleue si accès accordé, rien si refusé
-- **Sauvegarde persistante** : les badges sont stockés en JSON sur l'ESP32
+Un système de contrôle d'accès par badge, en **deux temps**.
+
+**Partie 1 — le lecteur réagit.** Tu passes un badge : LED verte et double bip aigu si l'accès est accordé, LED rouge et triple bip grave s'il est refusé. Tout est immédiat et physique, sans toucher au clavier.
+
+**Partie 2 — le vrai système.** Le même montage devient un contrôle d'accès complet : enregistrement des badges avec nom et niveau (Visiteur, Membre, Admin), et **mémorisation permanente** — les badges survivent à un redémarrage.
+
+<div class="rounded-xl border border-success/30 bg-success/5 p-5 my-6 flex gap-4 items-start">
+  <span class="text-2xl">🔌</span>
+  <div>
+    <p class="font-semibold text-success mb-1">Un seul câblage pour les deux parties</p>
+    <p class="text-sm text-base-content/60">
+      La partie 2 utilise exactement le même montage que la partie 1, en se servant simplement
+      de moins de composants. <strong>Aucun fil à déplacer</strong> entre les deux.
+    </p>
+  </div>
+</div>
 
 ---
 
@@ -71,45 +85,162 @@ Un système de contrôle d'accès RFID complet avec :
     </thead>
     <tbody>
       <tr><td class="font-medium">ESP32</td><td>1</td><td class="text-base-content/60">Fourni en atelier</td></tr>
-      <tr><td class="font-medium">Module RC522</td><td>1</td><td class="text-base-content/60">Alimentation 3.3V UNIQUEMENT</td></tr>
-      <tr><td class="font-medium">Badges / cartes RFID</td><td>3 à 5</td><td class="text-base-content/60">Fréquence 13.56 MHz (Mifare)</td></tr>
+      <tr><td class="font-medium">Module RC522</td><td>1</td><td class="text-base-content/60">Alimentation 3,3 V uniquement</td></tr>
+      <tr><td class="font-medium">Badges / cartes RFID</td><td>3 à 5</td><td class="text-base-content/60">13,56 MHz (Mifare)</td></tr>
+      <tr><td class="font-medium">LED verte + LED rouge</td><td>2</td><td class="text-base-content/60">Avec une résistance 220 Ω chacune</td></tr>
+      <tr><td class="font-medium">Buzzer passif</td><td>1</td><td class="text-base-content/60">Piloté en PWM</td></tr>
       <tr><td class="font-medium">Câble micro-USB</td><td>1</td><td class="text-base-content/60">Fourni en atelier</td></tr>
     </tbody>
   </table>
 </div>
 
-Pour le câblage et l'installation de la bibliothèque `mfrc522.py`, voir la <a href={siteUrl('/doc/composants/rc522/')} class="text-primary hover:underline">fiche composant RC522</a>.
+---
+
+## Connexions
+
+<div class="rounded-xl border border-error/40 bg-error/5 p-5 my-6 flex gap-4 items-start">
+  <span class="text-2xl">⚠️</span>
+  <div>
+    <p class="font-semibold text-error mb-1">Le RC522 s'alimente en 3,3 V — jamais en 5 V</p>
+    <p class="text-sm text-base-content/60">
+      Le brancher sur la broche 5 V le détruit immédiatement et sans avertissement.
+      C'est l'erreur la plus fréquente sur ce module : vérifie ce fil <strong>avant</strong> de brancher l'USB.
+    </p>
+  </div>
+</div>
+
+<div class="rounded-xl overflow-hidden border border-base-200/60 bg-[#1a1b26] my-4">
+  <div class="px-4 py-2 border-b border-white/8 text-white/50 text-xs font-mono">câblage</div>
+  <pre class="p-4 text-xs font-mono text-white/70 leading-relaxed"><code>{`Module RC522 (bus SPI) :
+  SCK   ──── GPIO 18      horloge
+  MOSI  ──── GPIO 23      ESP32  →  RC522
+  MISO  ──── GPIO 19      RC522  →  ESP32
+  SDA   ──── GPIO 5       selection du composant (CS)
+  RST   ──── GPIO 22      reset
+  3.3V  ──── 3V3          JAMAIS sur 5V !
+  GND   ──── GND
+
+Signalisation :
+  GPIO 2  ──── resistance 220 O ──── LED verte  ──── GND
+  GPIO 4  ──── resistance 220 O ──── LED rouge  ──── GND
+  GPIO 15 ──── buzzer ──── GND`}</code></pre>
+</div>
+
+<p class="text-sm text-base-content/60">
+  Le module a sept broches et c'est le montage le plus dense de la série : prends ton temps,
+  et relis chaque fil une fois le montage terminé. Pour le détail du composant, voir la
+  <a href={siteUrl('/doc/composants/rc522/')} class="link link-primary">fiche RC522</a>.
+</p>
 
 ---
 
-## Le code
+## Partie 1 — Le lecteur réagit
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="atelier8-rfid/main.py"
+  language="python"
+  title="atelier8-rfid/main.py — Badge, LED et buzzer"
+/>
+
+<Prediction question="Deux badges Mifare sortis du même paquet : comment le programme les distingue-t-il ?">
+
+Par leur **UID** — un numéro de série unique, gravé dans la puce à la fabrication et impossible à modifier.
+
+C'est une suite d'octets (4 le plus souvent, parfois 7). La fonction `uid_vers_str()` la transforme en texte lisible du type `A3:1F:9C:04`, ce qui permet de l'utiliser comme clé dans le dictionnaire `BADGES_AUTORISES`.
+
+Le badge ne contient donc **aucune notion d'autorisation** : il dit seulement « je suis le numéro A3:1F:9C:04 ». Toute la décision est prise par l'ESP32, en comparant ce numéro à sa liste.
+
+</Prediction>
+
+### Le bus SPI
+
+Le RC522 dialogue en **SPI**, un protocole à quatre fils que l'on retrouve sur beaucoup de composants rapides :
+
+| Fil | Rôle |
+|---|---|
+| `SCK` | l'horloge — l'ESP32 donne le rythme |
+| `MOSI` | *Master Out, Slave In* — l'ESP32 parle |
+| `MISO` | *Master In, Slave Out* — le module répond |
+| `CS` | sélection — met ce composant à l'écoute |
+
+La broche `CS` (marquée `SDA` sur le module, ce qui prête à confusion) permet de brancher **plusieurs composants SPI sur les mêmes trois fils** : seul celui dont le `CS` est activé écoute. C'est ce qui distingue le SPI de l'I2C, où chaque composant possède une adresse.
+
+### Enregistrer tes propres badges
+
+Le dictionnaire `BADGES_AUTORISES` est vide au départ — il faut y mettre tes badges. La fonction `enrolement()` est là pour ça : elle affiche l'UID de chaque badge présenté, que tu recopies ensuite dans le dictionnaire.
+
+```python
+BADGES_AUTORISES = {
+    'A3:1F:9C:04': 'Vincent',
+    '7B:22:E0:91': 'Atelier',
+}
+```
+
+<ToiDeJouer>
+
+- Lance `enrolement()` et enregistre tes propres badges
+- Passe un badge **inconnu** : trois bips graves et LED rouge — c'est la voie du refus
+- Change les sons dans `bip()` : `acces_accorde` monte à 1800 Hz, `acces_refuse` descend à 400 Hz. Inverse-les pour entendre la différence
+- Allonge le temps d'accès : `time.sleep_ms(1500)` → `3000`
+- Teste la portée : jusqu'à quelle distance le badge est-il encore lu ? À travers une feuille de papier ? une main ?
+- Plus dur : fais clignoter la LED verte pendant le délai d'accès, au lieu de la laisser fixe
+
+</ToiDeJouer>
+
+---
+
+## Partie 2 — Le vrai système
+
+Le même montage, mais le programme gère maintenant **des niveaux d'accès et une mémoire permanente**.
 
 <GitHubCodeBlock
   repo="vincent-herm/fablab-esp32-ateliers"
   file="composants/rc522-rfid/controle_acces_3niveaux.py"
   language="python"
-  title="controle_acces_3niveaux.py — Contrôle d'accès 3 niveaux"
+  title="controle_acces_3niveaux.py — Contrôle d'accès à 3 niveaux"
 />
 
----
+### Le menu
 
-## Comment ça marche
+Au lancement, le Shell propose : **1** programmer un badge · **2 à 4** lancer le contrôle avec un niveau minimum requis · **5** lister · **6** supprimer.
 
-### Le menu principal
+### Les trois niveaux
 
-Au lancement, le Shell affiche un menu :
-- **1. Programmation** : enregistrer des badges (nom + niveau)
-- **2-4. Production** : contrôle d'accès avec niveau minimum requis
-- **5. Lister** : voir tous les badges enregistrés
-- **6. Supprimer** : retirer un badge
+Chaque badge reçoit un niveau : Visiteur (1), Membre (2) ou Admin (3). En production, on choisit le niveau **minimum requis**. Un Admin passe partout ; un Visiteur ne passe que si le niveau exigé est 1.
 
-### Les 3 niveaux
+C'est le principe de toute la gestion de droits informatique — celui de ton propre ordinateur y compris.
 
-En mode production, on choisit le niveau minimum requis. Un badge de niveau 3 (Admin) passe partout, un badge de niveau 1 (Visiteur) ne passe que si le niveau requis est 1.
+### La mémoire qui survit au redémarrage
 
-### Sauvegarde en JSON
+Les badges sont écrits dans un fichier `badges.json`, **sur l'ESP32 lui-même**.
 
-Les badges sont stockés dans `badges.json` sur l'ESP32. Le fichier persiste après un redémarrage — pas besoin de reprogrammer les badges à chaque fois.
+C'est la différence essentielle avec la partie 1, où la liste était écrite en dur dans le code : ici, débrancher la carte ne perd rien. Le format JSON est simplement du texte structuré, lisible tel quel :
+
+```json
+{"A3:1F:9C:04": {"nom": "Vincent", "niveau": 3}}
+```
+
+<Prediction question="Les badges sont dans `badges.json`, sur la carte. Que se passe-t-il si tu réenvoies le programme depuis Thonny ?">
+
+**Rien** — les badges sont conservés.
+
+`badges.json` et le programme sont deux fichiers distincts dans la mémoire flash de l'ESP32. Remplacer l'un ne touche pas l'autre.
+
+C'est exactement ce qu'on attend d'un vrai système : mettre à jour le logiciel ne doit pas effacer les données. Pour repartir de zéro, il faut supprimer explicitement `badges.json` — depuis le gestionnaire de fichiers de Thonny, ou avec `import os` puis `os.remove('badges.json')`.
+
+</Prediction>
+
+<ToiDeJouer>
+
+- Enregistre trois badges à trois niveaux différents, puis teste chaque niveau requis
+- Débranche la carte, rebranche-la, relance : tes badges sont toujours là
+- Regarde `badges.json` dans le gestionnaire de fichiers de Thonny (menu Affichage → Fichiers)
+- Les LED verte et rouge sont déjà câblées : fais-les servir ici aussi, comme en partie 1
+- Ajoute un 4ᵉ niveau, « Invité temporaire »
+- Plus dur : enregistre chaque passage avec l'heure dans un second fichier `journal.json`
+
+</ToiDeJouer>
 
 ---
 
