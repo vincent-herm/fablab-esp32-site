@@ -8,6 +8,8 @@ tags: ['ESP32', 'NeoPixel', 'WS2812', 'RGB', 'Animations']
 
 import Layout from '../../layouts/Layout.astro';
 import GitHubCodeBlock from '../../components/GitHubCodeBlock.astro';
+import ToiDeJouer from '../../components/ToiDeJouer.astro';
+import Prediction from '../../components/Prediction.astro';
 import DifficultyBadge from '../../components/DifficultyBadge.astro';
 import { siteUrl } from '../../utils/url';
 
@@ -98,6 +100,28 @@ ESP32 G26  ──── résistance 300Ω ──── NeoPixel DIN`}</code></pr
   title="NeoPixel MicroPython — main.py"
 />
 
+<Prediction question="Tu modifies `np[3] = (255, 0, 0)` mais tu oublies `np.write()`. Que se passe-t-il ?">
+
+**Rien du tout.** La LED 3 reste dans son état précédent.
+
+`np[3] = (255, 0, 0)` ne fait que noter la couleur **en mémoire**, dans l'ESP32. C'est `np.write()` qui envoie réellement toutes les couleurs vers le bandeau, sur le fil de données.
+
+C'est d'ailleurs pratique : on prépare les 8 LEDs tranquillement, puis un seul `write()` les met toutes à jour d'un coup — donc sans scintillement.
+
+</Prediction>
+
+<ToiDeJouer>
+
+- Change la couleur du défilement : `couleur=(255, 0, 0)` pour du rouge
+- Change la vitesse : `delai=20` au lieu de `80`
+- Baisse l'intensité : `(0, 20, 60)` au lieu de `(0, 80, 255)` — bien moins éblouissant, et ça consomme trois fois moins
+- Si ton bandeau a plus de 8 LEDs, ajuste `N = 8`
+- Dans l'arc-en-ciel, remplace `i * 32` par `i * 8` → les couleurs se resserrent
+- Plus dur : fais un chenillard qui **rebondit** (aller-retour) au lieu de repartir à gauche
+
+</ToiDeJouer>
+
+
 ---
 
 ## Comment ça marche
@@ -115,9 +139,36 @@ np[4] = (128, 0, 128)  # violet
 np.write()             # envoyer vers les LEDs
 ```
 
+### Un seul fil pour 8 LEDs
+
+C'est la particularité des WS2812 : **un seul fil de données** commande tout le bandeau, quelle que soit sa longueur.
+
+Chaque LED contient un minuscule circuit qui lit les 24 premiers bits qui lui parviennent (8 pour le rouge, 8 pour le vert, 8 pour le bleu), les garde pour elle, et **retransmet tout le reste** à sa voisine. De proche en proche, chacune se sert au passage.
+
+D'où deux conséquences pratiques :
+
+- **L'ordre compte.** `np[0]` est toujours la LED la plus proche de l'ESP32.
+- **Rien ne change tant qu'on n'a pas appelé `np.write()`.** Modifier `np[3]` ne fait que préparer la couleur en mémoire ; c'est `write()` qui envoie la trame complète sur le fil.
+
 ### La fonction arc-en-ciel
 
-La fonction `roue(pos)` convertit un nombre de 0 à 255 en couleur arc-en-ciel, permettant de faire défiler toutes les teintes en boucle.
+`roue(pos)` transforme un nombre de 0 à 255 en une couleur, en parcourant le cercle des teintes. Elle travaille par tiers :
+
+| `pos` | Transition |
+|---|---|
+| 0 → 84 | rouge qui s'efface, vert qui monte |
+| 85 → 169 | vert qui s'efface, bleu qui monte |
+| 170 → 255 | bleu qui s'efface, rouge qui remonte |
+
+À chaque instant, la somme des trois composantes reste constante — la luminosité ne varie pas, seule la teinte tourne. Et comme `pos = pos % 256` ramène toujours dans l'intervalle, on peut incrémenter indéfiniment : l'arc-en-ciel boucle tout seul.
+
+Le décalage `i * 32` dans l'animation donne à chaque LED une teinte légèrement différente de sa voisine : c'est ce qui étale l'arc-en-ciel sur le bandeau au lieu de le faire clignoter d'un bloc.
+
+### Attention à la consommation
+
+Une LED WS2812 à fond en blanc (`255, 255, 255`) tire environ **60 mA**. Pour 8 LEDs, cela fait presque 500 mA — davantage que ce qu'un port USB fournit confortablement.
+
+En atelier, on reste donc sur des couleurs modérées. Pour un bandeau plus long ou à pleine puissance, il faut une **alimentation 5 V séparée**, avec la masse reliée à celle de l'ESP32.
 
 ---
 

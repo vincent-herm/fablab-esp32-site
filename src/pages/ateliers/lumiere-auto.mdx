@@ -8,6 +8,8 @@ tags: ['ESP32', 'ADC', 'PWM', 'LDR', 'Automatisme']
 
 import Layout from '../../layouts/Layout.astro';
 import GitHubCodeBlock from '../../components/GitHubCodeBlock.astro';
+import ToiDeJouer from '../../components/ToiDeJouer.astro';
+import Prediction from '../../components/Prediction.astro';
 import DifficultyBadge from '../../components/DifficultyBadge.astro';
 import { siteUrl } from '../../utils/url';
 
@@ -103,6 +105,29 @@ Bouton mode :
   language="python"
   title="Lumière automatique MicroPython — main.py"
 />
+
+<Prediction question="Pourquoi deux seuils — `SEUIL_NUIT = 1500` et `SEUIL_JOUR = 2500` — au lieu d'un seul ?">
+
+C'est une **hystérésis**, et elle évite que la lampe se mette à battre.
+
+Avec un seuil unique à 2000, une luminosité qui oscille juste autour de cette valeur ferait allumer et éteindre la LED plusieurs fois par seconde. Un nuage qui passe, et l'éclairage clignote.
+
+Avec deux seuils, il faut **descendre sous 1500** pour allumer, mais **remonter au-dessus de 2500** pour éteindre. L'écart entre les deux agit comme une zone morte qui stabilise le système.
+
+C'est le même principe que le thermostat d'un radiateur.
+
+</Prediction>
+
+<ToiDeJouer>
+
+- Couvre la LDR avec ta main → la LED monte progressivement, elle ne bascule pas d'un coup
+- **Rapproche les deux seuils** (`1800` et `2000`) → observe la LED se mettre à battre quand la lumière hésite. Puis remets les valeurs d'origine
+- Dans `correction_gamma`, remplace `** 2` par `** 1` (aucune correction), puis par `** 3` → compare ce que perçoit ton œil
+- Affiche `tension` dans le Shell pour **calibrer tes propres seuils** selon ta pièce
+- Ajoute un 4ᵉ mode « nuit douce », plafonné à 30 % de luminosité
+
+</ToiDeJouer>
+
 
 ---
 

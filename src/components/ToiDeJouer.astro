@@ -1,0 +1,35 @@
+---
+// ToiDeJouer — Encadré d'expériences à tester après un bloc de code
+// Usage: <ToiDeJouer>{contenu markdown : liste d'expériences}</ToiDeJouer>
+
+export interface Props {
+  title?: string;
+}
+
+const { title = 'À toi de jouer' } = Astro.props;
+---
+
+<div class="not-prose rounded-xl border border-primary/25 bg-primary/[0.04] my-8 overflow-hidden">
+  <div class="flex items-center gap-2.5 px-5 py-3 border-b border-primary/15 bg-primary/[0.06]">
+    <span class="text-lg leading-none">🔧</span>
+    <span class="font-semibold text-sm text-primary">{title}</span>
+  </div>
+  <div class="px-5 py-4 text-sm text-base-content/75 leading-relaxed toi-de-jouer">
+    <slot />
+  </div>
+</div>
+
+<style is:global>
+  .toi-de-jouer ul { margin: 0; padding-left: 1.15rem; list-style: disc; }
+  .toi-de-jouer li { margin: 0.4rem 0; }
+  .toi-de-jouer li::marker { color: hsl(var(--p) / 0.5); }
+  .toi-de-jouer code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.85em;
+    padding: 0.1rem 0.35rem;
+    border-radius: 0.3rem;
+    background: hsl(var(--bc) / 0.08);
+  }
+  .toi-de-jouer p:first-child { margin-top: 0; }
+  .toi-de-jouer p:last-child { margin-bottom: 0; }
+</style>

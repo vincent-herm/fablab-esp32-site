@@ -8,6 +8,8 @@ tags: ['ESP32', 'HC-SR04', 'Ultrason', 'OLED', 'Timing']
 
 import Layout from '../../layouts/Layout.astro';
 import GitHubCodeBlock from '../../components/GitHubCodeBlock.astro';
+import ToiDeJouer from '../../components/ToiDeJouer.astro';
+import Prediction from '../../components/Prediction.astro';
 import DifficultyBadge from '../../components/DifficultyBadge.astro';
 import { siteUrl } from '../../utils/url';
 
@@ -106,6 +108,27 @@ OLED SSD1306 :
   language="python"
   title="Mesure de distance MicroPython — main.py"
 />
+
+<Prediction question="Dans `duree * 0.0343 / 2`, pourquoi diviser par 2 ?">
+
+Parce que l'ultrason fait l'**aller-retour**.
+
+Le capteur mesure le temps entre l'émission et le retour de l'écho. Pendant ce temps, le son a parcouru deux fois la distance à l'obstacle : une fois à l'aller, une fois au retour.
+
+Le `0.0343` est la vitesse du son ramenée en cm par microseconde (343 m/s). On multiplie donc par le temps pour obtenir la distance parcourue, puis on divise par 2 pour n'en garder que l'aller.
+
+</Prediction>
+
+<ToiDeJouer>
+
+- Change `DIST_ALERTE` de 20 à 50 cm
+- Mesure **dix fois la même distance** : les valeurs varient-elles ? Calcule-en la moyenne pour stabiliser l'affichage
+- Vise un mur, puis un pull ou un coussin → l'écho revient-il aussi bien ? Le son est absorbé par les surfaces molles
+- Passe le timeout de `30000` à `10000` µs. Quelle distance maximale cela impose-t-il ? *(indice : 10 000 µs d'aller-retour)*
+- Transforme-le en **radar de recul** : des bips de plus en plus rapprochés à mesure qu'on s'approche
+
+</ToiDeJouer>
+
 
 ---
 

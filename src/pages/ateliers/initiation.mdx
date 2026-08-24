@@ -9,6 +9,8 @@ tags: ['ESP32', 'MicroPython', 'WiFi', 'LED', 'REPL', 'Débutant']
 import Layout from '../../layouts/Layout.astro';
 import GitHubCodeBlock from '../../components/GitHubCodeBlock.astro';
 import DifficultyBadge from '../../components/DifficultyBadge.astro';
+import ToiDeJouer from '../../components/ToiDeJouer.astro';
+import Prediction from '../../components/Prediction.astro';
 import { siteUrl } from '../../utils/url';
 
 <Layout
@@ -57,6 +59,18 @@ import { siteUrl } from '../../utils/url';
 
 {/* Contenu */}
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mdx-content">
+
+## Ce que tu vas créer
+
+À la fin de cet atelier, ton ESP32 sera un **objet connecté autonome**, piloté depuis ton téléphone :
+
+- Une LED que tu allumes, éteins et dont tu **règles l'intensité** à distance
+- La **température du processeur** affichée en direct, rafraîchie toutes les 3 secondes
+- Le tout servi par un **réseau WiFi créé par la carte elle-même** — sans box, sans internet
+
+Et pour y arriver : 9 manipulations qui partent vraiment de zéro, sans rien brancher.
+
+---
 
 ## Matériel nécessaire
 
@@ -165,6 +179,25 @@ La LED bleue sur la carte est connectée au **GPIO 2**. On la commande depuis le
   </p>
 </div>
 
+<Prediction question="Que renvoie `type(15 / 3)` — un `int` ou un `float` ?">
+
+Un **`float`**. En Python, la division `/` renvoie toujours un nombre à virgule, même quand le résultat tombe juste : `15 / 3` donne `5.0`, pas `5`.
+
+Pour obtenir un entier, il faut la division entière : `15 // 3` renvoie bien `5`.
+
+</Prediction>
+
+<ToiDeJouer>
+
+- Combien de secondes dans une année ? Tape `365 * 24 * 3600`
+- Compare les trois divisions : `10 / 3`, puis `10 // 3`, puis `10 % 3`
+- Crée une variable : `prenom = "Vincent"` puis `print("Bonjour", prenom)`
+- Fais clignoter la LED **à la main** : alterne `led.on()` et `led.off()` en rappelant les commandes avec la **flèche Haut**
+- Quel type renvoie `type(3.14)` ?
+
+</ToiDeJouer>
+
+
 ---
 
 ## Manip 02 — Faire clignoter la LED
@@ -178,6 +211,26 @@ Le "Hello World" de l'électronique embarquée : une boucle infinie avec des pau
   language="python"
   title="manip02_led_blink.py"
 />
+
+<Prediction question="Si tu remplaces les deux `time.sleep(0.5)` par `time.sleep(0.01)`, que verras-tu ?">
+
+La LED **semblera allumée en permanence**, mais moins lumineuse qu'à pleine puissance.
+
+À 50 clignotements par seconde, l'œil ne distingue plus les alternances : au-delà d'environ 25 Hz, la persistance rétinienne les fusionne. Comme la LED n'est allumée que la moitié du temps, on perçoit une luminosité moyenne.
+
+C'est exactement le principe du **PWM** — la manipulation suivante.
+
+</Prediction>
+
+<ToiDeJouer>
+
+- Remplace `0.5` par `0.1` → clignotement rapide
+- Remplace `0.5` par `2.0` → clignotement lent
+- Mets des durées différentes : `0.1` allumé, `0.9` éteint — comme un phare
+- Essaie la version compacte : `led.value(not led.value())` inverse l'état à chaque tour
+
+</ToiDeJouer>
+
 
 ---
 
@@ -193,6 +246,20 @@ L'œil perçoit une luminosité intermédiaire. `duty` va de **0** (éteint) à 
   title="manip03_led_pwm.py"
 />
 
+<ToiDeJouer>
+
+Après un `Ctrl+C`, règle la luminosité à la main dans le Shell :
+
+- `led.duty(0)` éteinte · `led.duty(100)` très faible · `led.duty(512)` moitié · `led.duty(1023)` maximum
+- Change `freq=1000` en `freq=1` → tu **vois** le clignotement qui se cachait derrière le PWM
+- Change le pas : `range(0, 1023, 50)` au lieu de `5` → la montée devient saccadée
+- Passe `sleep_ms(5)` à `sleep_ms(20)` → respiration plus lente
+
+**À retenir :** le PWM ne sert pas qu'aux LED. C'est aussi lui qui règle la vitesse d'un moteur et la position d'un servomoteur.
+
+</ToiDeJouer>
+
+
 ---
 
 ## Manip 04 — Lire le bouton BOOT
@@ -207,6 +274,25 @@ Attention à la **logique inversée** : relâché = 1, appuyé = 0.
   title="manip04_bouton_boot.py"
 />
 
+<Prediction question="Pourquoi le bouton vaut-il `1` au repos et `0` quand on appuie ?">
+
+À cause du **pull-up interne**, activé par `Pin.PULL_UP`.
+
+Au repos, une petite résistance interne tire la broche vers 3,3 V → elle lit `1`. Appuyer sur le bouton relie la broche directement à la masse (GND) → elle lit `0`.
+
+Sans ce pull-up, la broche serait « flottante » : elle capterait le bruit ambiant et renverrait des valeurs au hasard. On appelle ça une logique **active bas**, et elle est très courante en électronique.
+
+</Prediction>
+
+<ToiDeJouer>
+
+- Enlève `Pin.PULL_UP` (garde `Pin(0, Pin.IN)`) → observe les valeurs devenir erratiques, puis remets-le
+- Passe `sleep(0.2)` à `sleep(0.01)` → la console est inondée. Pourquoi 200 ms est-il un bon compromis ?
+- Ajoute un compteur qui affiche le nombre total d'appuis
+
+</ToiDeJouer>
+
+
 ---
 
 ## Manip 05 — La LED obéit au bouton
@@ -219,6 +305,15 @@ Premier automatisme : une **entrée** (bouton) commande une **sortie** (LED) en 
   language="python"
   title="manip05_led_bouton.py"
 />
+
+<ToiDeJouer>
+
+- **Inverse la logique** : LED allumée au repos, éteinte quand on appuie
+- Supprime le `sleep(0.02)` → tu vois apparaître les **rebonds** du contact mécanique
+- Plus dur : passe en **mode bascule** — chaque appui inverse l'état, au lieu de maintenir
+
+</ToiDeJouer>
+
 
 ---
 
@@ -235,6 +330,15 @@ Le principe : un **compteur** démarre à 20 à chaque appui. À chaque tour de 
   title="manip06_temporisateur.py"
 />
 
+<ToiDeJouer>
+
+- `compt = 50` → 5 secondes d'éclairage · `compt = 100` → 10 secondes
+- Passe `sleep(0.1)` à `sleep(0.05)` : la minuterie devient plus précise. Que faut-il changer à `compt` pour garder 2 secondes ?
+- Fais clignoter la LED pendant la dernière seconde, pour prévenir de l'extinction
+
+</ToiDeJouer>
+
+
 ---
 
 ## Manip 07 — Température interne du processeur
@@ -250,6 +354,16 @@ Approcher le doigt près de la puce fait monter la valeur.
   title="manip07_temperature_interne.py"
 />
 
+<ToiDeJouer>
+
+- Pose le doigt sur la puce métallique : la valeur monte en quelques secondes
+- Fais travailler le processeur pour le chauffer : `for i in range(1000000): x = i ** 2`
+- Change `{temp_celsius:.1f}` en `:.3f` → trois décimales. La mesure est-elle vraiment si précise ?
+- Affiche l'écart avec la température de la pièce
+
+</ToiDeJouer>
+
+
 ---
 
 ## Manip 08 — Scanner les réseaux WiFi
@@ -263,6 +377,16 @@ Dans une salle remplie d'ESP32, l'effet est garanti.
   language="python"
   title="manip08_scan_wifi.py"
 />
+
+<ToiDeJouer>
+
+- Relance le scan en te déplaçant dans la pièce : les barres de signal changent
+- Affiche seulement les réseaux dont le signal dépasse −70 dBm
+- Trie la liste du signal le plus fort au plus faible
+- Compte combien de réseaux occupent le même canal — c'est la cause n°1 d'un WiFi lent
+
+</ToiDeJouer>
+
 
 ---
 
@@ -284,6 +408,17 @@ Le grand final. L'ESP32 crée son réseau WiFi et sert un **vrai tableau de bord
   language="python"
   title="manip09_serveur_web.py"
 />
+
+<ToiDeJouer>
+
+- Personnalise le réseau : `SSID = "ESP32-TonPrenom"`
+- Change le titre affiché sur la page dans `page_html()`
+- Passe le rafraîchissement de la température de 3 s à 1 s
+- Ajoute un bouton « clignoter » qui fait clignoter la LED 5 fois
+- Branche une **LED externe** sur le GPIO 2 (`GPIO 2 → 220 Ω → LED → GND`) : bien plus visible, et aucune ligne de code à changer
+
+</ToiDeJouer>
+
 
 ---
 

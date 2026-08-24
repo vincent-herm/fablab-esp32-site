@@ -8,6 +8,8 @@ tags: ['ESP32', 'Machine à états', 'LED', 'Temps réel', 'Boutons']
 
 import Layout from '../../layouts/Layout.astro';
 import GitHubCodeBlock from '../../components/GitHubCodeBlock.astro';
+import ToiDeJouer from '../../components/ToiDeJouer.astro';
+import Prediction from '../../components/Prediction.astro';
 import DifficultyBadge from '../../components/DifficultyBadge.astro';
 import { siteUrl } from '../../utils/url';
 
@@ -108,6 +110,27 @@ Buzzer :
   language="python"
   title="Minuterie et séquenceur MicroPython — main.py"
 />
+
+<Prediction question="Pourquoi écrire `time.ticks_diff(now, t_btn)` plutôt que simplement `now - t_btn` ?">
+
+Parce que `ticks_ms()` ne compte pas indéfiniment : il **repart à zéro** au bout d'un certain temps (débordement du compteur).
+
+Quand ça arrive, une soustraction directe donne un résultat négatif énorme, et le programme se comporte n'importe comment — un bug qui n'apparaît qu'après plusieurs jours de fonctionnement, donc très difficile à trouver.
+
+`ticks_diff()` gère ce débordement correctement. En MicroPython, c'est la seule manière fiable de comparer deux instants.
+
+</Prediction>
+
+<ToiDeJouer>
+
+- Passe le pas de réglage de `+ 5` à `+ 1` pour un réglage fin
+- Change la durée maximale : `min(duree_s + 5, 300)` → `600` secondes
+- Feux de circulation : allonge l'orange, raccourcis le vert, et compare au rythme réel d'un carrefour près de chez toi
+- Ajoute un **bip de compte à rebours** sur les 3 dernières secondes
+- Plus dur : ajoute un 4ᵉ mode « chenillard » qui fait défiler les 3 LEDs en boucle
+
+</ToiDeJouer>
+
 
 ---
 

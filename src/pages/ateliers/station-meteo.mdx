@@ -8,6 +8,8 @@ tags: ['ESP32', 'DS18B20', 'OLED', 'I2C', '1-Wire']
 
 import Layout from '../../layouts/Layout.astro';
 import GitHubCodeBlock from '../../components/GitHubCodeBlock.astro';
+import ToiDeJouer from '../../components/ToiDeJouer.astro';
+import Prediction from '../../components/Prediction.astro';
 import DifficultyBadge from '../../components/DifficultyBadge.astro';
 import { siteUrl } from '../../utils/url';
 
@@ -100,6 +102,27 @@ OLED SCL  ──── ESP32 GPIO22`}</code></pre>
   language="python"
   title="Station météo MicroPython — main.py"
 />
+
+<Prediction question="Pourquoi ce `time.sleep_ms(750)` juste après `ds.convert_temp()` ?">
+
+Parce que le DS18B20 a besoin de **temps pour mesurer**.
+
+`convert_temp()` ne renvoie rien : il donne l'ordre au capteur de lancer une conversion. En résolution 12 bits, celle-ci prend jusqu'à 750 ms — c'est une caractéristique physique du composant, pas un choix du programme.
+
+Si on lit trop tôt, on récupère la valeur de la mesure **précédente**. D'où l'attente avant `read_temp()`.
+
+</Prediction>
+
+<ToiDeJouer>
+
+- Prends le capteur dans ta main → observe la courbe monter en direct sur l'écran
+- Passe `HIST_MAX` de 64 à 128 pour un historique deux fois plus long
+- Affiche aussi la température en Fahrenheit : `temp * 1.8 + 32`
+- Ajoute une alerte : la LED du GPIO 2 s'allume si la température dépasse 25 °C
+- Le 1-Wire gère **plusieurs capteurs sur le même fil** : branches-en un deuxième et affiche les deux (`capteurs[0]` et `capteurs[1]`)
+
+</ToiDeJouer>
+
 
 ---
 

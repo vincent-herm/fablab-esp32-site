@@ -1,0 +1,38 @@
+---
+// Prediction — Question de prédiction avant d'exécuter le code.
+// L'élève formule une hypothèse, puis déplie la réponse.
+// Usage: <Prediction question="Que se passe-t-il si… ?">{la réponse}</Prediction>
+
+export interface Props {
+  question: string;
+}
+
+const { question } = Astro.props;
+---
+
+<details class="not-prose group rounded-xl border border-warning/30 bg-warning/[0.05] my-6 overflow-hidden">
+  <summary class="flex items-start gap-3 px-5 py-3.5 cursor-pointer list-none select-none hover:bg-warning/[0.06] transition-colors">
+    <span class="text-lg leading-none mt-px">🤔</span>
+    <span class="flex-1">
+      <span class="block text-[0.7rem] font-mono uppercase tracking-widest text-warning/80 mb-1">Avant de lancer</span>
+      <span class="block font-medium text-sm text-base-content/85">{question}</span>
+    </span>
+    <span class="text-xs text-base-content/40 whitespace-nowrap mt-1 group-open:hidden">voir la réponse</span>
+  </summary>
+  <div class="px-5 pb-4 pt-1 ml-[2.1rem] text-sm text-base-content/70 leading-relaxed prediction-body">
+    <slot />
+  </div>
+</details>
+
+<style is:global>
+  details > summary::-webkit-details-marker { display: none; }
+  .prediction-body p:first-child { margin-top: 0; }
+  .prediction-body p:last-child { margin-bottom: 0; }
+  .prediction-body code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.85em;
+    padding: 0.1rem 0.35rem;
+    border-radius: 0.3rem;
+    background: hsl(var(--bc) / 0.08);
+  }
+</style>

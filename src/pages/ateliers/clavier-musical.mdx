@@ -8,6 +8,8 @@ tags: ['ESP32', 'PWM', 'Buzzer', 'Musique', 'Boutons']
 
 import Layout from '../../layouts/Layout.astro';
 import GitHubCodeBlock from '../../components/GitHubCodeBlock.astro';
+import ToiDeJouer from '../../components/ToiDeJouer.astro';
+import Prediction from '../../components/Prediction.astro';
 import DifficultyBadge from '../../components/DifficultyBadge.astro';
 import { siteUrl } from '../../utils/url';
 
@@ -104,6 +106,28 @@ Bouton mode :
   language="python"
   title="Clavier musical MicroPython — main.py"
 />
+
+<Prediction question="Le La3 est à 440 Hz. À quelle fréquence se trouve le La4, une octave au-dessus ?">
+
+**880 Hz** — exactement le double.
+
+Monter d'une octave, c'est multiplier la fréquence par 2. C'est pour ça que le tableau `NOTES` contient `'La3': 440` et `'La4': 880`.
+
+Et entre les deux, les 12 demi-tons se répartissent en multipliant chaque fois par 2^(1/12) ≈ 1,0595 — ce qui, au bout de 12 multiplications, redonne bien ×2.
+
+</Prediction>
+
+<ToiDeJouer>
+
+- Ajoute des notes graves au dictionnaire : `'Do2': 131`, `'Sol2': 196`
+- **Transpose d'une octave** : multiplie par 2 chaque fréquence de `NOTES`
+- Double toutes les durées de `FRERE_JACQUES` → mélodie deux fois plus lente
+- Compose ta propre mélodie sur le modèle : une liste de `('Note', durée_ms)`
+- Fais varier `buzzer.duty()` pour jouer sur le volume (buzzer **passif** uniquement)
+- Plus dur : enregistre les notes jouées aux boutons, puis rejoue la séquence
+
+</ToiDeJouer>
+
 
 ---
 
