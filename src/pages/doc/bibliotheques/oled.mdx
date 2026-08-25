@@ -1,0 +1,259 @@
+---
+title: "ssd1306.py et sh1106.py — Afficheurs OLED"
+description: "Les deux drivers OLED 128 × 64 en I2C : comment savoir lequel utiliser, câblage, API commune et pièges connus."
+---
+
+import Layout from '../../../layouts/Layout.astro';
+import GitHubCodeBlock from '../../../components/GitHubCodeBlock.astro';
+import Piege from '../../../components/Piege.astro';
+import ToiDeJouer from '../../../components/ToiDeJouer.astro';
+import { siteUrl } from '../../../utils/url';
+
+<Layout
+  title="Afficheurs OLED — ssd1306.py et sh1106.py"
+  description="Les deux drivers OLED 128 × 64 : lequel choisir, câblage, API commune, pièges connus."
+>
+
+<div class="border-b border-base-200/60 bg-base-200/20">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+    <div class="flex items-center gap-2 text-sm text-base-content/50">
+      <a href={siteUrl('/')} class="hover:text-base-content transition-colors">Accueil</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <a href={siteUrl('/doc/')} class="hover:text-base-content transition-colors">Documentation</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <a href={siteUrl('/doc/bibliotheques/')} class="hover:text-base-content transition-colors">Bibliothèques</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <span class="text-base-content/80">OLED</span>
+    </div>
+  </div>
+</div>
+
+<section class="py-12 hero-pattern border-b border-base-200/60">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center gap-3 mb-6">
+      <span class="text-xs font-mono font-bold text-purple-400 bg-purple-500/10 px-3 py-1 rounded-lg">I2C</span>
+      <span class="text-xs font-mono font-bold text-primary bg-primary/10 px-3 py-1 rounded-lg">BIBLIOTHÈQUE</span>
+    </div>
+    <h1 class="text-3xl sm:text-4xl font-black mb-4 font-mono">ssd1306.py &amp; sh1106.py</h1>
+    <p class="text-base-content/65 text-lg leading-relaxed max-w-2xl">
+      Les afficheurs OLED 128 × 64 monochromes en I2C. Deux contrôleurs différents,
+      deux bibliothèques — et des modules qui se ressemblent tellement qu'on se trompe
+      une fois sur deux.
+    </p>
+  </div>
+</section>
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mdx-content">
+
+## La vraie question : lequel ai-je entre les mains ?
+
+C'est la question à laquelle cette fiche sert d'abord à répondre. Les deux modules ont la même taille de dalle, le même connecteur à 4 broches, la même adresse I2C. Rien ne les distingue au premier regard.
+
+<div class="overflow-x-auto rounded-xl border border-base-200/80 my-6">
+  <table class="table table-zebra w-full">
+    <thead><tr><th></th><th>SSD1306</th><th>SH1106</th></tr></thead>
+    <tbody>
+      <tr><td class="font-medium">Taille courante</td><td>0,96 pouce</td><td>1,3 pouce</td></tr>
+      <tr><td class="font-medium">Bibliothèque</td><td class="font-mono text-sm">ssd1306.py</td><td class="font-mono text-sm">sh1106.py</td></tr>
+      <tr><td class="font-medium">Décalage RAM</td><td>aucun</td><td><strong>2 colonnes</strong></td></tr>
+      <tr><td class="font-medium">Méthode <code>sleep()</code></td><td>absente</td><td>présente</td></tr>
+    </tbody>
+  </table>
+</div>
+
+La correspondance taille ↔ contrôleur est une **règle empirique**, pas une loi : on trouve des 1,3" en SSD1306 et l'inverse. La méthode fiable est expérimentale :
+
+> **Essaie `ssd1306.py` en premier.** Si l'image s'affiche correctement, c'est un SSD1306. Si elle apparaît **décalée de 2 pixels**, avec une bande parasite sur un bord, c'est un SH1106 — change de bibliothèque.
+
+L'écran qui ne s'allume pas du tout n'est pas un problème de contrôleur mais de câblage ou d'adresse.
+
+## Câblage
+
+Identique pour les deux. Sur la carte ENIM, l'écran est déjà relié.
+
+<div class="overflow-x-auto rounded-xl border border-base-200/80 my-6">
+  <table class="table table-zebra w-full">
+    <thead><tr><th>Module</th><th>ESP32</th><th>Rôle</th></tr></thead>
+    <tbody>
+      <tr><td class="font-mono font-medium">SCL</td><td class="font-mono">GPIO 22</td><td class="text-base-content/60">Horloge I2C</td></tr>
+      <tr><td class="font-mono font-medium">SDA</td><td class="font-mono">GPIO 21</td><td class="text-base-content/60">Données I2C, bidirectionnelles</td></tr>
+      <tr><td class="font-mono font-medium">VCC</td><td class="font-mono">3V3</td><td class="text-base-content/60">Certains modules acceptent 5 V — vérifier</td></tr>
+      <tr><td class="font-mono font-medium">GND</td><td class="font-mono">GND</td><td class="text-base-content/60"></td></tr>
+      <tr><td class="font-mono font-medium">RST</td><td class="font-mono">GPIO 16</td><td class="text-base-content/60">Optionnel, seulement si le module l'expose</td></tr>
+    </tbody>
+  </table>
+</div>
+
+Avant tout, vérifie que l'écran répond :
+
+```python
+from machine import I2C, Pin
+i2c = I2C(scl=Pin(22), sda=Pin(21), freq=400000)
+print([hex(a) for a in i2c.scan()])     # attendu : ['0x3c']
+```
+
+L'adresse est `0x3c` dans l'immense majorité des cas, parfois `0x3d` selon un pont à souder au dos du module. Une liste vide signifie un problème d'alimentation ou de fils SCL/SDA — pas de contrôleur.
+
+## L'API, commune aux deux
+
+Les deux classes héritent de `framebuf.FrameBuffer` : **toutes les méthodes de dessin sont identiques**. C'est la bonne nouvelle — une fois l'écran initialisé, le code ne dépend plus du contrôleur.
+
+<div class="overflow-x-auto rounded-xl border border-base-200/80 my-6">
+  <table class="table w-full">
+    <thead><tr><th>Appel</th><th>Effet</th></tr></thead>
+    <tbody>
+      <tr><td class="font-mono text-sm">fill(0 | 1)</td><td class="text-base-content/60">Efface en noir (0) ou remplit en blanc (1)</td></tr>
+      <tr><td class="font-mono text-sm">text(s, x, y, 1)</td><td class="text-base-content/60">Texte 8 × 8 pixels, ASCII uniquement</td></tr>
+      <tr><td class="font-mono text-sm">pixel / line / rect</td><td class="text-base-content/60">Primitives de dessin</td></tr>
+      <tr><td class="font-mono text-sm">hline / vline / fill_rect</td><td class="text-base-content/60">Traits et rectangles pleins</td></tr>
+      <tr><td class="font-mono text-sm">scroll(dx, dy)</td><td class="text-base-content/60">Décale le contenu du tampon</td></tr>
+      <tr><td class="font-mono text-sm">contrast(0-255)</td><td class="text-base-content/60">Luminosité de la dalle</td></tr>
+      <tr><td class="font-mono text-sm">invert(True | False)</td><td class="text-base-content/60">Vidéo inverse</td></tr>
+      <tr><td class="font-mono text-sm"><strong>show()</strong></td><td class="text-base-content/60"><strong>Envoie le tampon à l'écran</strong> — sans lui, rien n'apparaît</td></tr>
+    </tbody>
+  </table>
+</div>
+
+Le texte fait **8 pixels de haut sur 8 de large**. Un écran 128 × 64 affiche donc **16 caractères sur 8 lignes**, pas un de plus.
+
+## Pièges connus
+
+<Piege titre="Le 4ᵉ paramètre n'est pas le même dans les deux constructeurs">
+
+C'est le piège le plus coûteux, parce qu'il ne ressemble pas à une erreur de bibliothèque.
+
+```python
+SSD1306_I2C(width, height, i2c, addr=0x3c, external_vcc=False)
+SH1106_I2C (width, height, i2c, rst=None,  addr=0x3C)
+#                                ↑ ce n'est PAS la même chose
+```
+
+Conséquences concrètes :
+
+- `SH1106_I2C(128, 64, i2c, 0x3c)` passe `0x3c` comme **broche de reset**. Le driver appelle alors `rst.value(1)` sur un entier → `AttributeError: 'int' object has no attribute 'value'`.
+- `SSD1306_I2C(128, 64, i2c, Pin(16))` passe un objet `Pin` comme **adresse**. L'écriture I2C échoue.
+
+**La parade : toujours nommer les paramètres.**
+
+```python
+oled = SH1106_I2C(128, 64, i2c, rst=Pin(16), addr=0x3c)
+oled = SSD1306_I2C(128, 64, i2c, addr=0x3c)
+```
+
+</Piege>
+
+<Piege titre="Image décalée de 2 pixels — mauvaise bibliothèque">
+
+Le SH1106 possède une RAM de 132 colonnes pour une dalle de 128. L'image utile commence donc à la colonne 2, ce que `sh1106.py` compense à chaque `show()` :
+
+```python
+# Le SH1106 a un offset de 2 colonnes dans sa RAM interne
+self._write_cmd(0x02)               # col low  (offset 2)
+```
+
+Piloter un SH1106 avec `ssd1306.py` donne un écran qui **s'allume et affiche presque correctement** — décalé de 2 pixels, avec une bande parasite sur un bord. C'est ce « presque » qui fait chercher longtemps : on soupçonne le câblage, l'alimentation, tout sauf la bibliothèque.
+
+</Piege>
+
+<Piege titre="sleep() n'existe pas sur le SSD1306" niveau="attention">
+
+`sh1106.py` fournit `display.sleep(True | False)` ; **`ssd1306.py` ne l'a pas**. Le même code porté d'un écran à l'autre lève `AttributeError: 'SSD1306_I2C' object has no attribute 'sleep'`.
+
+L'équivalent commun aux deux est `poweroff()` / `poweron()`.
+
+À noter : dans notre `sh1106.py`, `init_display()` se termine déjà par la commande `0xAF` (allumage). Le `display.sleep(False)` qu'on voit souvent juste après la création de l'objet est donc **redondant** — inoffensif, mais inutile.
+
+</Piege>
+
+<Piege titre="Rien ne s'affiche : l'oubli de show()" niveau="attention">
+
+Comme sur l'e-paper, les méthodes de dessin ne travaillent qu'en mémoire. Tant que `show()` n'est pas appelé, l'écran ne change pas.
+
+```python
+oled.fill(0)
+oled.text("Bonjour", 0, 0, 1)
+oled.show()                  # ← sans cette ligne, écran noir
+```
+
+</Piege>
+
+<Piege titre="Les accents ne s'affichent pas" niveau="attention">
+
+Même limite que sur l'e-paper : la police de `framebuf` est en **ASCII pur**. Écris « Temperature », « degres », « Ardeche ».
+
+</Piege>
+
+## Code minimal
+
+```python
+from machine import I2C, Pin
+
+i2c = I2C(scl=Pin(22), sda=Pin(21), freq=400000)
+
+# --- Écran 0,96" (SSD1306) ---
+from ssd1306 import SSD1306_I2C
+oled = SSD1306_I2C(128, 64, i2c, addr=0x3c)
+
+# --- Écran 1,3" (SH1106) ---
+# from sh1106 import SH1106_I2C
+# oled = SH1106_I2C(128, 64, i2c, rst=Pin(16), addr=0x3c)
+
+oled.fill(0)
+oled.text("Fablab Payzac", 8, 10, 1)
+oled.hline(0, 22, 128, 1)
+oled.text("MicroPython", 16, 32, 1)
+oled.show()                 # indispensable
+```
+
+## Choisir automatiquement
+
+Plutôt que de commenter et décommenter, un commutateur en tête de programme — la méthode employée dans `oled-base-ENIM.py` :
+
+```python
+OLED = 0          # 0 : 0.96 pouce (SSD1306)   1 : 1.3 pouce (SH1106)
+
+if OLED == 1:
+    from sh1106 import SH1106_I2C
+    oled = SH1106_I2C(128, 64, i2c, rst=Pin(16), addr=0x3c)
+else:
+    from ssd1306 import SSD1306_I2C
+    oled = SSD1306_I2C(128, 64, i2c, addr=0x3c)
+```
+
+<ToiDeJouer>
+
+- Fais le scan I2C : quelle adresse répond, `0x3c` ou `0x3d` ?
+- Affiche 8 lignes de 16 caractères pour vérifier que l'écran est bien plein
+- Change le contraste : `oled.contrast(1)` puis `oled.contrast(255)`
+- Essaie `oled.invert(True)` → tout s'inverse, sans redessiner
+- Supprime volontairement le `show()` : rien ne se passe. Le réflexe s'acquiert là
+- Si tu as les deux écrans : lance le code SSD1306 sur le 1,3 pouce et observe le décalage de 2 pixels
+
+</ToiDeJouer>
+
+## Où sont utilisés ces écrans
+
+- **[Atelier Station météo](/ateliers/station-meteo/)** — température DS18B20 + courbe
+- **[Atelier Mesure de distance](/ateliers/distance/)** — barre de progression ultrason
+- **[Cours Capteurs et afficheurs](/cours/capteurs-afficheurs/)** — la partie théorique
+- **Carte ENIM** — écran 1,3 pouce, donc SH1106, avec reset sur GPIO 16
+
+## Les fichiers source
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="cours-exemples/oled/ssd1306.py"
+  language="python"
+  title="ssd1306.py — écrans 0,96 pouce"
+/>
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="cours-exemples/oled/sh1106.py"
+  language="python"
+  title="sh1106.py — écrans 1,3 pouce"
+/>
+
+</div>
+
+</Layout>

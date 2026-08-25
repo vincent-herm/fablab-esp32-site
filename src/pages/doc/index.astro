@@ -16,7 +16,7 @@ const composants = [
   { name: 'HC-SR04', desc: 'Mesure de distance ultrason', protocole: 'GPIO' },
   { name: 'MPU6050', desc: 'Accéléromètre + gyroscope', protocole: 'I2C' },
   { name: 'RC522', desc: 'Lecteur RFID', protocole: 'SPI', href: siteUrl('/doc/composants/rc522/') },
-  { name: 'SSD1306', desc: 'Écran OLED 128×64', protocole: 'I2C' },
+  { name: 'SSD1306', desc: 'Écran OLED 128×64', protocole: 'I2C', href: siteUrl('/doc/bibliotheques/oled/') },
   { name: 'ES8388', desc: 'Codec audio stéréo', protocole: 'I2C+I2S' },
   { name: 'MAX7219', desc: 'Matrice LED 8×32 (1088AS)', protocole: 'SPI', href: siteUrl('/doc/composants/max7219/') },
 ];
@@ -122,11 +122,11 @@ const protocoleColors: Record<string, string> = {
           <h3 class="font-bold text-sm mt-3 mb-1 font-mono group-hover:text-primary transition-colors">gdeh0213b73.py</h3>
           <p class="text-xs text-base-content/50">E-paper 2.13" LilyGo T5 — l'image tient sans courant</p>
         </a>
-        <div class="rounded-xl border border-base-200/80 bg-base-100/50 p-5">
+        <a href={siteUrl('/doc/bibliotheques/oled/')} class="group rounded-xl border border-base-200/80 bg-base-100/50 p-5 hover:border-primary/30 transition-all">
           <span class="text-xs font-mono font-bold px-2.5 py-1 rounded-lg bg-purple-500/15 text-purple-400">I2C</span>
-          <h3 class="font-bold text-sm mt-3 mb-1 font-mono">ssd1306.py</h3>
-          <p class="text-xs text-base-content/50">OLED 128 × 64 — <span class="italic text-base-content/30">fiche à venir</span></p>
-        </div>
+          <h3 class="font-bold text-sm mt-3 mb-1 font-mono group-hover:text-primary transition-colors">ssd1306.py + sh1106.py</h3>
+          <p class="text-xs text-base-content/50">OLED 128 × 64 — lequel des deux contrôleurs ?</p>
+        </a>
         <div class="rounded-xl border border-base-200/80 bg-base-100/50 p-5">
           <span class="text-xs font-mono font-bold px-2.5 py-1 rounded-lg bg-orange-500/15 text-orange-400">SPI</span>
           <h3 class="font-bold text-sm mt-3 mb-1 font-mono">mfrc522.py</h3>
