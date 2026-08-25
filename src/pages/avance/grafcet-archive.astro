@@ -167,7 +167,7 @@ def calculer_transitions():
       <h3 class="text-xl font-black mb-1 flex items-center gap-2">
         <span>🏗️</span> L'ascenseur simulé
       </h3>
-      <p class="text-sm text-base-content/50 mb-8">Exemple complet sur carte ENIM — 3 étapes, 3 transitions, LEDs de statut.</p>
+      <p class="text-sm text-base-content/50 mb-8">Exemple complet sur carte Vincent — 3 étapes, 3 transitions, LEDs de statut.</p>
 
       <div class="space-y-10">
 
@@ -182,10 +182,10 @@ def calculer_transitions():
 Étape 1 — Descente  │ T1 : bpC OR niveau ≤ -99
 Étape 2 — Montée    │ T2 : bpB OR niveau ≥ -1
                     └──────────────────► Étape 0</code></pre>
-            <p class="mt-2">Le niveau simulé (<code>0</code> = haut, <code>-100</code> = bas) remplace les fins de course physiques. Les LEDs de la carte ENIM indiquent l'étape active. Version minimaliste : seuls <code>grafcet.py</code> et <code>essential.py</code> sont nécessaires.</p>
+            <p class="mt-2">Le niveau simulé (<code>0</code> = haut, <code>-100</code> = bas) remplace les fins de course physiques. Les LEDs de la carte Vincent indiquent l'étape active. Version minimaliste : seuls <code>grafcet.py</code> et <code>essential.py</code> sont nécessaires.</p>
             <p class="mt-2"><strong>Fichiers nécessaires sur l'ESP32 :</strong> <code>grafcet.py</code>, <code>essential.py</code> (sans OLED).</p>
           </div>
-          <GitHubCodeBlock repo={REPO} file="avance/grafcet/ancien/ascenseur_enim_led.py" title="ascenseur_enim_led.py — Ascenseur ENIM avec LEDs" />
+          <GitHubCodeBlock repo={REPO} file="avance/grafcet/ancien/ascenseur_enim_led.py" title="ascenseur_enim_led.py — Ascenseur carte Vincent avec LEDs" />
         </div>
 
         <div>
@@ -213,7 +213,7 @@ transitions[0] = g.etapes[0] and g.fm[0]  # front montant au lieu de niveau</cod
             <p class="mt-2"><code>g.fm[0]</code> n'est <code>True</code> que pendant <strong>1 seul cycle</strong>, à l'instant précis où le bouton passe de relâché à enfoncé. Même si on maintient le bouton, <code>fm[0]</code> retombe à <code>False</code> au cycle suivant.</p>
             <p class="mt-2"><strong>Fichiers nécessaires sur l'ESP32 :</strong> <code>grafcet.py</code>, <code>essential.py</code> (sans OLED).</p>
           </div>
-          <GitHubCodeBlock repo={REPO} file="avance/grafcet/ancien/ascenseur_enim_led_front.py" title="ascenseur_enim_led_front.py — Ascenseur ENIM avec front montant" />
+          <GitHubCodeBlock repo={REPO} file="avance/grafcet/ancien/ascenseur_enim_led_front.py" title="ascenseur_enim_led_front.py — Ascenseur carte Vincent avec front montant" />
         </div>
 
       </div>

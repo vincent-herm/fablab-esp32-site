@@ -6,7 +6,7 @@ import { siteUrl } from '../../utils/url';
 
 const REPO = 'vincent-herm/fablab-esp32-ateliers';
 const title = 'NeoPixel progressif — Affichage fluide sur bandeau LED';
-const description = 'Interpolation douce entre LEDs WS2812 avec correction gamma — classe NeoProgressif MicroPython. Application : ascenseur simulé sur carte ENIM avec affichage progressif du niveau.';
+const description = 'Interpolation douce entre LEDs WS2812 avec correction gamma — classe NeoProgressif MicroPython. Application : ascenseur simulé sur carte Vincent avec affichage progressif du niveau.';
 ---
 <Layout title={title} description={description}>
 
@@ -176,7 +176,7 @@ neo.eteindre()       # tout éteindre</code></pre>
 # niveau=-100 → afficher(1000) → bandeau plein  (cabine en bas)</code></pre>
             <p class="mt-2"><strong>Fichiers nécessaires sur l'ESP32 :</strong> <code>grafcet.py</code>, <code>neoprog.py</code>, <code>essential.py</code> (sans OLED).</p>
           </div>
-          <GitHubCodeBlock repo={REPO} file="avance/neoprog/ascenseur_enim_v2.py" title="ascenseur_enim_v2.py — Ascenseur ENIM avec NeoProgressif" />
+          <GitHubCodeBlock repo={REPO} file="avance/neoprog/ascenseur_enim_v2.py" title="ascenseur_enim_v2.py — Ascenseur carte Vincent avec NeoProgressif" />
         </div>
 
       </div>
