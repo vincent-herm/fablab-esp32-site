@@ -1,5 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import Piege from '../../components/Piege.astro';
 import { siteUrl } from '../../utils/url';
 ---
 
@@ -136,13 +137,65 @@ def supprimer_tout():
     for f in os.listdir():
         try:
             os.remove(f)
-        except:
+        except OSError:
             pass  # dossiers ignorés
 
 # Ou depuis le REPL Thonny :
 # View → Files → clic droit → Delete</code></pre>
           </div>
         </div>
+      </div>
+
+      <!-- Cache de modules et redémarrages -->
+      <div>
+        <h2 class="text-2xl font-black mb-6">Recharger un module modifié</h2>
+
+        <Piege titre="Recopier un fichier ne suffit pas : l'ancienne version continue de tourner">
+
+          <p><strong>Symptôme.</strong> Tu corriges une bibliothèque sur ton ordinateur, tu la recopies sur l'ESP32, tu relances — et tu obtiens exactement la même erreur qu'avant. Comme si la correction n'avait servi à rien.</p>
+
+          <p><strong>Cause.</strong> MicroPython garde en mémoire tout module déjà importé, dans <code>sys.modules</code>. Un second <code>import</code> ne relit pas le fichier : il ressort la copie en mémoire. La nouvelle version est bien sur la carte, mais personne ne la lit.</p>
+
+          <p><strong>Les deux parades :</strong></p>
+
+          <pre><code># 1. Vider le cache pour ce seul module
+import sys
+del sys.modules['gdeh0213b73']
+from gdeh0213b73 import init_epd    # relit vraiment le fichier
+
+# 2. Plus simple et plus sûr : Ctrl+D dans Thonny
+#    Le redémarrage à chaud vide tout le cache d'un coup.</code></pre>
+
+          <p>Le réflexe à prendre : <strong>copier le fichier, puis Ctrl+D, puis relancer</strong>. Trois secondes qui évitent une demi-heure de recherche.</p>
+
+        </Piege>
+
+        <h3 class="text-lg font-bold mb-3 mt-8">Les deux types de redémarrage</h3>
+
+        <div class="overflow-x-auto rounded-xl border border-base-200/80 my-4">
+          <table class="table table-zebra w-full">
+            <thead>
+              <tr><th>Redémarrage</th><th>Comment</th><th>Effet</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="font-medium">À chaud <em class="text-base-content/40 not-italic">(soft)</em></td>
+                <td class="font-mono text-sm">Ctrl+D<br/>machine.soft_reset()</td>
+                <td class="text-base-content/60">Vide la RAM et le cache de modules, relance <code>boot.py</code> puis <code>main.py</code>. Le WiFi et les périphériques restent alimentés.</td>
+              </tr>
+              <tr>
+                <td class="font-medium">À froid <em class="text-base-content/40 not-italic">(hard)</em></td>
+                <td class="font-mono text-sm">machine.reset()<br/>bouton EN de la carte</td>
+                <td class="text-base-content/60">Redémarrage matériel complet, comme un débranchement. Tout repart de zéro, périphériques compris.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p class="text-sm text-base-content/60 mb-8">
+          Le redémarrage à chaud suffit dans l'immense majorité des cas. Le redémarrage à froid
+          sert quand un périphérique est bloqué — un bus I2C qui ne répond plus, par exemple.
+        </p>
       </div>
 
       <!-- Infos système -->
@@ -189,15 +242,20 @@ print("Flash libre :", libre * bloc, "octets /", total * bloc, "octets")</code><
         </div>
       </div>
 
-      <!-- Lien vers Thonny -->
-      <div class="rounded-xl border border-primary/20 bg-primary/5 p-6">
-        <div class="flex items-center justify-between gap-4 flex-wrap">
-          <div>
-            <h4 class="font-bold mb-1">Utiliser Thonny pour gérer les fichiers</h4>
-            <p class="text-sm text-base-content/60">Thonny a un gestionnaire de fichiers visuel — plus pratique que la ligne de commande pour débuter.</p>
-          </div>
-          <a href={siteUrl('/doc/thonny/')} class="btn btn-primary btn-sm whitespace-nowrap">
+      <!-- Pour aller plus loin -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="rounded-xl border border-primary/20 bg-primary/5 p-6 flex flex-col">
+          <h4 class="font-bold mb-1">Gérer les fichiers avec Thonny</h4>
+          <p class="text-sm text-base-content/60 mb-4 flex-1">Un gestionnaire de fichiers visuel — plus pratique que la ligne de commande pour débuter.</p>
+          <a href={siteUrl('/doc/thonny/')} class="btn btn-primary btn-sm self-start">
             Voir la fiche Thonny →
+          </a>
+        </div>
+        <div class="rounded-xl border border-primary/20 bg-primary/5 p-6 flex flex-col">
+          <h4 class="font-bold mb-1">Les bibliothèques à copier dans <code class="font-mono text-sm">/lib</code></h4>
+          <p class="text-sm text-base-content/60 mb-4 flex-1">Les drivers du fablab : câblage, API, et les pièges connus de chacun.</p>
+          <a href={siteUrl('/doc/bibliotheques/')} class="btn btn-primary btn-sm self-start">
+            Voir les bibliothèques →
           </a>
         </div>
       </div>
