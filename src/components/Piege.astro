@@ -1,0 +1,53 @@
+---
+// Piege — Avertissement sur un comportement inattendu d'une bibliothèque.
+// Le cœur des fiches Bibliothèques : ce qui fait perdre une heure la
+// première fois, et qu'on oublie entre deux projets.
+// Usage: <Piege titre="Mode paysage">{explication + solution}</Piege>
+
+export interface Props {
+  titre: string;
+  niveau?: 'bloquant' | 'attention';
+}
+
+const { titre, niveau = 'bloquant' } = Astro.props;
+
+const styles = {
+  bloquant:  { border: 'border-error/35',   bg: 'bg-error/[0.05]',   head: 'bg-error/[0.07]',   text: 'text-error',   icon: '⛔' },
+  attention: { border: 'border-warning/35', bg: 'bg-warning/[0.05]', head: 'bg-warning/[0.07]', text: 'text-warning', icon: '⚠️' },
+};
+const st = styles[niveau];
+---
+
+<div class={`not-prose rounded-xl border ${st.border} ${st.bg} my-6 overflow-hidden`}>
+  <div class={`flex items-center gap-2.5 px-5 py-3 border-b ${st.border} ${st.head}`}>
+    <span class="text-base leading-none">{st.icon}</span>
+    <span class={`font-semibold text-sm ${st.text}`}>{titre}</span>
+  </div>
+  <div class="px-5 py-4 text-sm text-base-content/75 leading-relaxed piege-body">
+    <slot />
+  </div>
+</div>
+
+<style is:global>
+  .piege-body p:first-child { margin-top: 0; }
+  .piege-body p:last-child  { margin-bottom: 0; }
+  .piege-body ul { margin: 0.5rem 0; padding-left: 1.15rem; list-style: disc; }
+  .piege-body li { margin: 0.3rem 0; }
+  .piege-body code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.85em;
+    padding: 0.1rem 0.35rem;
+    border-radius: 0.3rem;
+    background: hsl(var(--bc) / 0.08);
+  }
+  .piege-body pre {
+    background: #1a1b26;
+    color: rgba(255,255,255,0.75);
+    padding: 0.85rem 1rem;
+    border-radius: 0.6rem;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    margin: 0.7rem 0;
+  }
+  .piege-body pre code { background: none; padding: 0; font-size: inherit; }
+</style>

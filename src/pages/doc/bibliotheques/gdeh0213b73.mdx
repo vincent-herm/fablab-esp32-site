@@ -1,0 +1,187 @@
+---
+title: "gdeh0213b73.py — E-paper 2.13\""
+description: "Driver MicroPython pour l'écran e-paper 2.13\" du LilyGo T5 V2.3 : câblage, API, pièges connus et code minimal."
+---
+
+import Layout from '../../../layouts/Layout.astro';
+import GitHubCodeBlock from '../../../components/GitHubCodeBlock.astro';
+import Piege from '../../../components/Piege.astro';
+import ToiDeJouer from '../../../components/ToiDeJouer.astro';
+import { siteUrl } from '../../../utils/url';
+
+<Layout
+  title="gdeh0213b73.py — Driver e-paper 2.13&quot;"
+  description="Driver MicroPython pour écran e-paper LilyGo T5 : câblage, API, pièges connus, code minimal."
+>
+
+<div class="border-b border-base-200/60 bg-base-200/20">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+    <div class="flex items-center gap-2 text-sm text-base-content/50">
+      <a href={siteUrl('/')} class="hover:text-base-content transition-colors">Accueil</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <a href={siteUrl('/doc/')} class="hover:text-base-content transition-colors">Documentation</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <a href={siteUrl('/doc/bibliotheques/')} class="hover:text-base-content transition-colors">Bibliothèques</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <span class="text-base-content/80">gdeh0213b73</span>
+    </div>
+  </div>
+</div>
+
+<section class="py-12 hero-pattern border-b border-base-200/60">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center gap-3 mb-6">
+      <span class="text-xs font-mono font-bold text-orange-400 bg-orange-500/10 px-3 py-1 rounded-lg">SPI</span>
+      <span class="text-xs font-mono font-bold text-primary bg-primary/10 px-3 py-1 rounded-lg">BIBLIOTHÈQUE</span>
+    </div>
+    <h1 class="text-3xl sm:text-4xl font-black mb-4 font-mono">gdeh0213b73.py</h1>
+    <p class="text-base-content/65 text-lg leading-relaxed max-w-2xl">
+      Driver de l'écran e-paper 2,13 pouces monté sur la carte <strong>LilyGo T5 V2.3</strong>.
+      128 × 250 pixels en noir et blanc — et une image qui reste affichée même carte débranchée.
+    </p>
+  </div>
+</section>
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mdx-content">
+
+## À quoi ça sert
+
+L'e-paper n'affiche que du noir et du blanc, et met environ **2 secondes** à se rafraîchir. En échange, il ne consomme **rien pour maintenir l'image** : une fois les micro-billes déplacées par le champ électrique, elles restent en place, alimentation coupée.
+
+C'est le bon choix pour une étiquette, un panneau d'information, un badge d'atelier ou un capteur sur pile. C'est le mauvais choix pour tout ce qui bouge.
+
+## Câblage
+
+Sur la LilyGo T5 V2.3, l'écran est **déjà câblé sur la carte** — ce tableau sert pour un module e-paper nu, ou pour vérifier.
+
+<div class="overflow-x-auto rounded-xl border border-base-200/80 my-6">
+  <table class="table table-zebra w-full">
+    <thead><tr><th>Signal</th><th>GPIO</th><th>Rôle</th></tr></thead>
+    <tbody>
+      <tr><td class="font-mono font-medium">SCK</td><td class="font-mono">18</td><td class="text-base-content/60">Horloge SPI</td></tr>
+      <tr><td class="font-mono font-medium">MOSI</td><td class="font-mono">23</td><td class="text-base-content/60">Données ESP32 → écran</td></tr>
+      <tr><td class="font-mono font-medium">CS</td><td class="font-mono">5</td><td class="text-base-content/60">Sélection du composant</td></tr>
+      <tr><td class="font-mono font-medium">DC</td><td class="font-mono">17</td><td class="text-base-content/60">Commande (0) ou donnée (1)</td></tr>
+      <tr><td class="font-mono font-medium">RST</td><td class="font-mono">16</td><td class="text-base-content/60">Reset</td></tr>
+      <tr><td class="font-mono font-medium">BUSY</td><td class="font-mono">4</td><td class="text-base-content/60">L'écran signale qu'il travaille</td></tr>
+    </tbody>
+  </table>
+</div>
+
+Il n'y a **pas de MISO** : l'écran ne renvoie jamais rien. C'est la broche `BUSY` qui joue ce rôle, en indiquant simplement quand le rafraîchissement est terminé.
+
+## API
+
+`EPD` hérite de `framebuf.FrameBuffer` : **toutes les méthodes de dessin de `framebuf` sont disponibles** (`fill`, `pixel`, `text`, `line`, `hline`, `vline`, `rect`, `fill_rect`, `scroll`, `blit`).
+
+<div class="overflow-x-auto rounded-xl border border-base-200/80 my-6">
+  <table class="table w-full">
+    <thead><tr><th>Appel</th><th>Effet</th></tr></thead>
+    <tbody>
+      <tr><td class="font-mono text-sm">init_epd(rotation)</td><td class="text-base-content/60">Construit l'objet. Rotation par défaut : <code>ROTATION_0</code></td></tr>
+      <tr><td class="font-mono text-sm">epd.width / .height</td><td class="text-base-content/60">Dimensions <strong>après rotation</strong></td></tr>
+      <tr><td class="font-mono text-sm">epd.fill(0 | 1)</td><td class="text-base-content/60"><code>0</code> = blanc, <code>1</code> = noir</td></tr>
+      <tr><td class="font-mono text-sm">epd.text(s, x, y, 1)</td><td class="text-base-content/60">Texte 8 × 8 pixels, ASCII uniquement</td></tr>
+      <tr><td class="font-mono text-sm">epd.update()</td><td class="text-base-content/60">Envoie le tampon à la dalle (~2 s)</td></tr>
+      <tr><td class="font-mono text-sm">epd.deep_sleep()</td><td class="text-base-content/60">Endort l'écran. <strong>L'image reste affichée</strong></td></tr>
+    </tbody>
+  </table>
+</div>
+
+Les quatre orientations : `ROTATION_0` et `ROTATION_180` donnent **128 × 250** (portrait), `ROTATION_90` et `ROTATION_270` donnent **250 × 128** (paysage).
+
+## Pièges connus
+
+<Piege titre="Mode paysage — ValueError sans message à l'initialisation">
+
+**Symptôme.** `init_epd(rotation=ROTATION_90)` lève un `ValueError` vide, à la construction du `FrameBuffer` :
+
+```
+File "gdeh0213b73.py", line 110, in __init__
+ValueError:
+```
+
+**Cause.** En `MONO_HLSB`, `framebuf` arrondit la largeur de ligne au multiple de 8 supérieur. En paysage, 250 pixels deviennent 256, soit **32 octets par ligne et non 31,25**. Il faut donc 32 × 128 = **4096 octets**, alors que le calcul d'origine `width * height // 8` n'en réservait que 4000.
+
+En portrait le problème n'existe pas, 128 étant déjà un multiple de 8 — d'où un bug qui n'apparaît **que** en paysage.
+
+**Correction** (déjà appliquée dans le fichier du dépôt) :
+
+```python
+size = ((self.__width + 7) // 8) * self.__height
+```
+
+Sans effet sur le portrait : 4000 octets dans les deux cas.
+
+</Piege>
+
+<Piege titre="Les accents ne s'affichent pas" niveau="attention">
+
+La police intégrée de `framebuf` est en **ASCII pur**. `é`, `è`, `à`, `ç` sortent en caractères parasites ou en blanc.
+
+Écris donc « Ardeche », « fenetre », « degres » — ou dessine ton propre texte à partir d'une police bitmap, ce qui est un tout autre chantier.
+
+</Piege>
+
+<Piege titre="Rafraîchissement partiel non implémenté" niveau="attention">
+
+Le fichier contient bien une table `LUT_PART_UPDATE`, mais **aucune méthode ne l'utilise**. `update()` fait toujours un rafraîchissement complet, avec le clignotement noir/blanc caractéristique et ses ~2 secondes.
+
+Pour une horloge ou un compteur qui change souvent, c'est une limite réelle. L'ajout d'un `update_partial()` reste à faire.
+
+</Piege>
+
+<Piege titre="Après modification du driver, redémarrer la carte" niveau="attention">
+
+MicroPython garde en cache les modules déjà importés. Si tu recopies `gdeh0213b73.py` sur l'ESP32 sans faire `Ctrl+D`, c'est **l'ancienne version qui continue de tourner** — et tu obtiens exactement la même erreur qu'avant la correction.
+
+Le réflexe : copier le fichier, puis `Ctrl+D`, puis relancer.
+
+</Piege>
+
+## Code minimal
+
+```python
+from gdeh0213b73 import init_epd, ROTATION_90
+
+epd = init_epd(rotation=ROTATION_90)   # 250 x 128 paysage
+epd.fill(0)                            # fond blanc
+epd.text("Bonjour", 10, 10, 1)         # texte noir
+epd.rect(0, 0, epd.width, epd.height, 1)
+epd.update()                           # ~2 secondes
+epd.deep_sleep()                       # l'image reste affichee
+```
+
+## Exemple complet
+
+Affichage centré sur plusieurs tailles de texte, avec une fonction `texte_centre()` qui recalcule la position horizontale toute seule.
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="cours-exemples/epaper/payzac_fablab.py"
+  language="python"
+  title="payzac_fablab.py — affichage centré"
+/>
+
+<ToiDeJouer>
+
+- Remplace `"PAYZAC"` par ton prénom : `texte_centre()` garde le centrage tout seul
+- Passe `scale=4` à `scale=3` → texte plus petit, plus de place
+- Inverse la vidéo : `epd.fill(1)` puis `c=0` dans chaque appel → blanc sur noir
+- Débranche la carte après l'affichage : l'image est toujours là
+- Plus dur : affiche la date du prochain atelier, récupérée en WiFi
+
+</ToiDeJouer>
+
+## Le fichier source
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="cours-exemples/epaper/gdeh0213b73.py"
+  language="python"
+  title="gdeh0213b73.py — le driver complet"
+/>
+
+</div>
+
+</Layout>

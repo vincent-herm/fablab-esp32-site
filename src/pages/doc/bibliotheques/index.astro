@@ -1,0 +1,88 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import { siteUrl } from '../../../utils/url';
+
+const drivers = [
+  {
+    nom: 'gdeh0213b73.py',
+    titre: 'E-paper 2.13" — LilyGo T5',
+    desc: 'Écran e-paper 128 × 250. L\'image reste affichée hors tension.',
+    protocole: 'SPI',
+    href: siteUrl('/doc/bibliotheques/gdeh0213b73/'),
+    pieges: 2,
+  },
+  { nom: 'ssd1306.py', titre: 'OLED 128 × 64', desc: 'Le grand classique des afficheurs I2C.', protocole: 'I2C' },
+  { nom: 'sh1106.py', titre: 'OLED 128 × 64 (variante)', desc: 'Contrôleur proche du SSD1306, décalage de 2 px.', protocole: 'I2C' },
+  { nom: 'mfrc522.py', titre: 'Lecteur RFID RC522', desc: 'Lecture des badges Mifare 13,56 MHz.', protocole: 'SPI' },
+  { nom: 'max7219.py', titre: 'Matrice LED 8 × 32', desc: 'Chaînage de modules 1088AS.', protocole: 'SPI' },
+  { nom: 'neoprog.py', titre: 'NeoPixel progressif', desc: 'Interpolation entre LEDs + correction gamma.', protocole: 'GPIO', href: siteUrl('/avance/neoprog/') },
+  { nom: 'es8388.py', titre: 'Codec audio ES8388', desc: 'Carte AudioKit ESP32-A1S — adresse I2C 0x1A.', protocole: 'I2C+I2S' },
+];
+
+const couleurs: Record<string, string> = {
+  'GPIO': 'bg-blue-500/15 text-blue-400',
+  'I2C': 'bg-purple-500/15 text-purple-400',
+  'SPI': 'bg-orange-500/15 text-orange-400',
+  'I2C+I2S': 'bg-pink-500/15 text-pink-400',
+};
+---
+
+<Layout
+  title="Bibliothèques MicroPython"
+  description="Drivers MicroPython du fablab : câblage, API, pièges connus et code minimal pour chaque composant."
+>
+  <div class="border-b border-base-200/60 bg-base-200/20">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <div class="flex items-center gap-2 text-sm text-base-content/50">
+        <a href={siteUrl('/')} class="hover:text-base-content transition-colors">Accueil</a>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        <a href={siteUrl('/doc/')} class="hover:text-base-content transition-colors">Documentation</a>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        <span class="text-base-content/80">Bibliothèques</span>
+      </div>
+    </div>
+  </div>
+
+  <section class="py-14 hero-pattern border-b border-base-200/60">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <p class="text-primary text-sm font-mono font-medium mb-3">// doc / bibliothèques</p>
+      <h1 class="text-3xl sm:text-4xl font-black mb-4">Bibliothèques MicroPython</h1>
+      <p class="text-base-content/65 text-lg leading-relaxed max-w-3xl">
+        Les drivers utilisés en atelier. Chaque fiche donne le câblage, l'API, le code minimal
+        qui fonctionne — et surtout les <strong>pièges connus</strong>, ceux qui font perdre
+        une heure la première fois et qu'on oublie entre deux projets.
+      </p>
+    </div>
+  </section>
+
+  <section class="py-14">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {drivers.map(d => (
+          d.href ? (
+            <a href={d.href} class="group rounded-xl border border-base-200/80 bg-base-100/50 p-5 hover:border-primary/30 hover:bg-base-200/40 transition-all block">
+              <div class="flex items-center justify-between gap-2 mb-3">
+                <span class={`text-xs font-mono font-bold px-2.5 py-1 rounded-lg ${couleurs[d.protocole]}`}>{d.protocole}</span>
+                {d.pieges && (
+                  <span class="text-xs text-error/70 font-medium">{d.pieges} pièges</span>
+                )}
+              </div>
+              <h3 class="font-bold text-sm mb-1 group-hover:text-primary transition-colors">{d.titre}</h3>
+              <p class="text-xs font-mono text-base-content/40 mb-2">{d.nom}</p>
+              <p class="text-xs text-base-content/55 leading-relaxed">{d.desc}</p>
+              <p class="text-xs text-primary/60 mt-3 font-medium">Voir la fiche →</p>
+            </a>
+          ) : (
+            <div class="rounded-xl border border-base-200/80 bg-base-100/50 p-5">
+              <span class={`text-xs font-mono font-bold px-2.5 py-1 rounded-lg ${couleurs[d.protocole]}`}>{d.protocole}</span>
+              <h3 class="font-bold text-sm mt-3 mb-1">{d.titre}</h3>
+              <p class="text-xs font-mono text-base-content/40 mb-2">{d.nom}</p>
+              <p class="text-xs text-base-content/55 leading-relaxed">{d.desc}</p>
+              <p class="text-xs text-base-content/30 mt-3 italic">Fiche à venir</p>
+            </div>
+          )
+        ))}
+      </div>
+    </div>
+  </section>
+</Layout>
