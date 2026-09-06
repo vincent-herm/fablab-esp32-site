@@ -132,6 +132,11 @@
   <div class="card">
     <h2>Réglages d'ensemble</h2>
     <div class="row">
+      <label>Vitesse</label>
+      <div class="vitesses" id="vitesses"></div>
+    </div>
+    <p class="note" id="vitesseNote">La hauteur des notes ne change pas : le navigateur étire le temps sans transposer.</p>
+    <div class="row">
       <label for="master">Volume général</label>
       <input type="range" id="master" class="grow" min="0" max="150" value="100">
       <span class="pct" id="masterPct">100 %</span>
@@ -640,6 +645,7 @@ function finaliser() {
     : "Aucune piste chargée. Choisissez vos fichiers plus bas.";
   appliquerGains();
   majConf();
+  rendreVitesses();
 }
 
 /* ── interface des pistes ───────────────────────────────── */
@@ -687,28 +693,118 @@ function appliquerGains() {
   });
 }
 
+/* ── vitesse de lecture ─────────────────────────────────────
+   À 100 %, on garde le moteur d'origine : sources calées à
+   l'échantillon près sur l'horloge audio, synchronisation parfaite.
+   En dessous, on passe par des éléments <audio>, seuls capables de
+   ralentir SANS transposer (preservesPitch, intégré au navigateur) ;
+   ils sont réinjectés dans le même mélangeur, donc coupures, volumes,
+   réverbération et vumètres continuent de fonctionner. */
+let vitesse = 1;
+
+function elementDe(t) {
+  if (t.el) return t.el;
+  const a = new Audio();
+  a.src = t.src && t.src.slice(0, 5) !== "data:" ? t.src : (t.src || "");
+  if (t.fichierUrl) a.src = t.fichierUrl;
+  a.preload = "auto";
+  if ("preservesPitch" in a) a.preservesPitch = true;
+  if ("webkitPreservesPitch" in a) a.webkitPreservesPitch = true;
+  t.el = a;
+  try {
+    t.elSrc = audio().createMediaElementSource(a);
+    t.elSrc.connect(t.gain);
+  } catch (e) { t.elSrc = null; }
+  return a;
+}
+
+function vitesseUtilisable() {
+  return tracks.length > 0 && tracks.every((t) => t.src && (t.src.slice(0, 5) !== "data:" || true));
+}
+
+function rendreVitesses() {
+  const box = $("vitesses");
+  if (!box) return;
+  box.innerHTML = "";
+  [50, 60, 70, 80, 90, 100].forEach((v) => {
+    const b = document.createElement("button");
+    b.textContent = v + " %";
+    b.className = Math.round(vitesse * 100) === v ? "on" : "";
+    b.onclick = () => changerVitesse(v / 100);
+    box.appendChild(b);
+  });
+  $("vitesseNote").textContent = vitesse === 1
+    ? "La hauteur des notes ne change pas : le navigateur étire le temps sans transposer."
+    : "Ralenti à " + Math.round(vitesse * 100) + " %, sans transposition. L'export MP3, lui, reste à vitesse normale.";
+}
+
+function changerVitesse(v) {
+  if (v === vitesse) return;
+  const p = position(), enCours = playing;
+  arreter();
+  vitesse = v;
+  pausedAt = p;
+  rendreVitesses();
+  if (enCours) jouer(p);
+  else { $("cur").textContent = fmt(p); }
+}
+
 /* ── transport ──────────────────────────────────────────── */
 function jouer(offset) {
   audio();
   if (ctx.state === "suspended") ctx.resume();
   stopSources();
-  const t0 = ctx.currentTime + 0.06;
-  tracks.forEach((t) => {
-    if (offset >= t.buffer.duration) return;
-    const s = ctx.createBufferSource();
-    s.buffer = t.buffer;
-    s.connect(t.gain);
-    s.start(t0, offset);
-    t.node = s;
-  });
-  startAt = t0 - offset;
+  if (vitesse === 1) {
+    const t0 = ctx.currentTime + 0.06;
+    tracks.forEach((t) => {
+      if (offset >= t.buffer.duration) return;
+      const s = ctx.createBufferSource();
+      s.buffer = t.buffer;
+      s.connect(t.gain);
+      s.start(t0, offset);
+      t.node = s;
+    });
+    startAt = t0 - offset;
+  } else {
+    tracks.forEach((t) => {
+      const a = elementDe(t);
+      a.playbackRate = vitesse;
+      if ("preservesPitch" in a) a.preservesPitch = true;
+      try { a.currentTime = Math.min(offset, (a.duration || t.buffer.duration) - 0.05); } catch (e) {}
+      const promesse = a.play();
+      if (promesse && promesse.catch) promesse.catch(() => signalerEchecRalenti());
+    });
+    surveillerDemarrage(offset);
+  }
   playing = true;
   $("play").textContent = "Pause";
   boucle();
 }
 
+/* Si, quelques secondes après le lancement, aucune piste n'a avancé,
+   c'est que le ralenti n'est pas praticable sur cet appareil : on le
+   dit clairement et on revient à la vitesse normale, qui, elle, ne
+   dépend d'aucune fonction exotique du navigateur. */
+let surveillant = 0;
+function surveillerDemarrage(depart) {
+  clearTimeout(surveillant);
+  surveillant = setTimeout(() => {
+    if (!playing || vitesse === 1) return;
+    const avance = tracks.some((t) => t.el && t.el.currentTime > depart + 0.15);
+    if (!avance) signalerEchecRalenti();
+  }, 4000);
+}
+
+function signalerEchecRalenti() {
+  $("etat").textContent = "Le ralenti n'a pas démarré sur cet appareil — retour à la vitesse normale.";
+  changerVitesse(1);
+}
+
 function stopSources() {
-  tracks.forEach((t) => { if (t.node) { try { t.node.stop(); } catch (e) {} t.node = null; } });
+  tracks.forEach((t) => {
+    if (t.node) { try { t.node.stop(); } catch (e) {} t.node = null; }
+    if (t.el) { try { t.el.pause(); } catch (e) {} }
+  });
 }
 
 function pause() {
@@ -725,7 +821,12 @@ function arreter() {
   boucle();
 }
 
-const position = () => (playing ? Math.min(ctx.currentTime - startAt, duration) : pausedAt);
+const position = () => {
+  if (!playing) return pausedAt;
+  if (vitesse === 1) return Math.min(ctx.currentTime - startAt, duration);
+  const meneur = tracks.find((t) => t.el);
+  return meneur ? Math.min(meneur.el.currentTime, duration) : pausedAt;
+};
 
 function boucle() {
   const p = position();
@@ -743,7 +844,29 @@ function boucle() {
     for (let k = 0; k < d.length; k++) sum += d[k] * d[k];
     bar.style.width = Math.min(100, Math.sqrt(sum / d.length) * 260) + "%";
   });
+  if (vitesse !== 1 && playing) recalerElements();
   if (playing && p >= duration - 0.05) arreter();
+}
+
+/* Quatre éléments audio dérivent lentement les uns par rapport aux
+   autres. On compare chaque piste à la première et on rattrape : par
+   un petit coup d'accélérateur si l'écart est faible (inaudible), par
+   un repositionnement s'il devient net. */
+let dernierRecalage = 0;
+function recalerElements() {
+  const maintenant = performance.now();
+  if (maintenant - dernierRecalage < 700) return;
+  dernierRecalage = maintenant;
+  const meneur = tracks.find((t) => t.el);
+  if (!meneur) return;
+  const ref = meneur.el.currentTime;
+  tracks.forEach((t) => {
+    if (!t.el || t === meneur) return;
+    const ecart = t.el.currentTime - ref;
+    if (Math.abs(ecart) > 0.08) { try { t.el.currentTime = ref; } catch (e) {} t.el.playbackRate = vitesse; }
+    else if (Math.abs(ecart) > 0.004) t.el.playbackRate = vitesse * (1 - Math.max(-0.02, Math.min(0.02, ecart * 0.5)));
+    else t.el.playbackRate = vitesse;
+  });
 }
 
 /* Un minuteur plutôt que requestAnimationFrame : l'affichage continue de
@@ -789,7 +912,7 @@ $("files").onchange = async (e) => {
   for (const f of fs) {
     try {
       const buf = await decoder(await f.arrayBuffer());
-      ajouterTrack({ nom: f.name.replace(/\.[^.]+$/, ""), src: null, buffer: buf });
+      ajouterTrack({ nom: f.name.replace(/\.[^.]+$/, ""), src: null, buffer: buf, fichierUrl: URL.createObjectURL(f) });
     } catch (err) {
       $("etat").textContent = "Fichier « " + f.name + " » illisible.";
     }
