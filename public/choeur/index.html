@@ -148,7 +148,9 @@
     <h2>Emporter le mix</h2>
     <button id="exp" class="primary" disabled>Télécharger le mix en MP3</button>
     <div class="bar" id="expBar"><i></i></div>
+    <button id="save" class="primary" style="display:none;margin-top:12px">Enregistrer le fichier</button>
     <p class="note" id="expQuoi">—</p>
+    <p class="note" id="expEcran">Gardez la page à l'écran pendant le calcul : les téléphones et les navigateurs ralentissent fortement une page passée en arrière-plan.</p>
     <p class="note" id="expNote">Le fichier reprend exactement ce que vous entendez : volumes, voix coupées, réverbération.</p>
   </div>
 
@@ -868,6 +870,51 @@ function majResume() {
     : "Toutes les voix sont coupées : le fichier serait silencieux.";
 }
 
+/* Remettre le fichier à l'utilisateur.
+   Sur iPhone et Android, un lien de téléchargement fabriqué par la page
+   est souvent ignoré sans message : il faut passer par la feuille de
+   partage du téléphone (« Enregistrer dans Fichiers »), et celle-ci ne
+   peut s'ouvrir qu'en réponse à un appui — d'où le bouton dédié qui
+   apparaît une fois le calcul terminé. */
+function livrer(blob, nom) {
+  const taille = Math.round((blob.size / 1048576) * 10) / 10 + " Mo";
+  let fichier = null;
+  try { fichier = new File([blob], nom, { type: "audio/mpeg" }); } catch (e) {}
+  const partageable = !!(fichier && navigator.canShare && navigator.canShare({ files: [fichier] }));
+  const bouton = $("save");
+
+  const enregistrerParLien = () => {
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = nom;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 60000);
+  };
+
+  bouton.style.display = "block";
+  bouton.textContent = partageable ? "Enregistrer « " + nom + " »" : "Enregistrer à nouveau";
+  bouton.onclick = async () => {
+    if (partageable) {
+      try {
+        await navigator.share({ files: [fichier], title: nom });
+        $("etat").textContent = "Fichier remis : " + nom + " (" + taille + ")";
+      } catch (e) {
+        if (e && e.name === "AbortError") return;
+        enregistrerParLien();
+      }
+    } else {
+      enregistrerParLien();
+    }
+  };
+
+  if (partageable) {
+    $("etat").textContent = "Mix prêt : " + nom + " (" + taille + "). Appuyez sur « Enregistrer » ci-dessous.";
+  } else {
+    enregistrerParLien();
+    $("etat").textContent = "Mix enregistré : " + nom + " (" + taille + ")";
+  }
+}
+
 /* ── export MP3 ─────────────────────────────────────────── */
 const dansUnCadre = window.self !== window.top;
 if (dansUnCadre) {
@@ -878,6 +925,7 @@ $("exp").onclick = async () => {
   if (!tracks.length) return;
   const btn = $("exp"), bar = $("expBar");
   btn.disabled = true; btn.textContent = "Préparation du mix…";
+  $("save").style.display = "none";
   bar.style.display = "block"; bar.firstElementChild.style.width = "4%";
   try {
     const sr = ctx.sampleRate;
@@ -921,14 +969,9 @@ $("exp").onclick = async () => {
 
     const blob = new Blob(morceaux, { type: "audio/mpeg" });
     const nom = nomFichier();
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = nom;
-    document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(() => URL.revokeObjectURL(a.href), 30000);
     bar.firstElementChild.style.width = "100%";
     btn.textContent = "Télécharger le mix en MP3";
-    $("etat").textContent = "Mix enregistré : " + nom + " (" + Math.round(blob.size / 1048576 * 10) / 10 + " Mo)";
+    livrer(blob, nom);
   } catch (e) {
     btn.textContent = "Télécharger le mix en MP3";
     $("etat").textContent = "L'export a échoué : " + e.message;
