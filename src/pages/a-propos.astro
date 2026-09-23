@@ -1,5 +1,18 @@
 ---
 import Layout from '../layouts/Layout.astro';
+
+// --- Phase d'essai (automne 2026) -------------------------------------------
+// Mettre ESSAIS à false quand les séances d'essai gratuites sont terminées :
+// le bloc « séances d'essai » disparaît et le bloc « ateliers réguliers » prend
+// toute la place.
+const ESSAIS = true;
+
+// Lien d'invitation au groupe WhatsApp. Mettre à null pour ne pas le publier
+// sur le site (le groupe reste alors accessible uniquement par le lien envoyé
+// directement aux personnes concernées).
+const WHATSAPP = 'https://chat.whatsapp.com/HYJ9lmpL4XZ6FuiGdBWLc9?mode=gi_t';
+
+const EMAIL = 'vincent@opentek.fr';
 ---
 
 <Layout
@@ -87,19 +100,95 @@ import Layout from '../layouts/Layout.astro';
     </div>
   </section>
 
-  <!-- Réserver -->
+  <!-- Participer -->
   <section id="inscription" class="py-16 bg-base-200/30">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 class="text-2xl font-black mb-8">Réserver un atelier</h2>
+      <p class="text-base-content/50 text-sm font-mono font-medium mb-3">// participer</p>
+      <h2 class="text-2xl font-black mb-8">Venir à un atelier</h2>
+
+      {ESSAIS && (
+        <div class="rounded-xl border border-primary/30 bg-primary/5 p-6 sm:p-8 mb-8">
+          <div class="flex flex-wrap items-center gap-3 mb-4">
+            <span class="badge badge-primary badge-sm font-semibold">En ce moment</span>
+            <h3 class="font-black text-xl">Séances d'essai — gratuites</h3>
+          </div>
+
+          <p class="text-base-content/70 leading-relaxed mb-6 max-w-2xl">
+            Le fablab est en cours de création, et je le construis avec les premières
+            personnes qui viennent. Avant d'ouvrir pour de bon, j'anime des séances
+            d'essai chez moi, à Payzac. On programme un ESP32 et on lui fait faire
+            quelque chose de concret — une guirlande de LED pilotée depuis le téléphone,
+            un capteur de température, un lecteur de badge. Chacun repart avec ce qu'il
+            a fait.
+          </p>
+
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-4 mb-7">
+            {[
+              { k: 'Durée', v: '2 heures' },
+              { k: 'Groupe', v: '3 à 4 personnes' },
+              { k: 'Tarif', v: 'Gratuit' },
+              { k: 'Âge', v: 'À partir de 15 ans' },
+              { k: 'Prérequis', v: 'Aucun' },
+              { k: 'Engagement', v: 'Aucun' },
+            ].map(item => (
+              <div>
+                <p class="text-base-content/45 text-xs font-mono uppercase tracking-wider mb-1">{item.k}</p>
+                <p class="text-sm font-semibold">{item.v}</p>
+              </div>
+            ))}
+          </div>
+
+          <p class="text-base-content/65 text-sm leading-relaxed mb-6">
+            Le matériel est fourni. Viens avec ton ordinateur portable si tu en as un —
+            tu repartiras avec un environnement qui fonctionne chez toi. Sinon, une
+            machine t'attend sur place.
+          </p>
+
+          <div class="flex flex-col sm:flex-row gap-3">
+            {WHATSAPP && (
+              <a href={WHATSAPP} target="_blank" rel="noopener" class="btn btn-primary gap-2">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 00-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884a9.82 9.82 0 016.988 2.896 9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                </svg>
+                Rejoindre le groupe WhatsApp
+              </a>
+            )}
+            <a href={`mailto:${EMAIL}`} class="btn btn-outline gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+              </svg>
+              M'écrire
+            </a>
+          </div>
+
+          {WHATSAPP && (
+            <p class="text-base-content/45 text-xs mt-4">
+              C'est dans le groupe qu'on cale les dates ensemble.
+            </p>
+          )}
+        </div>
+      )}
+
+      <!-- Ateliers réguliers -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div class="space-y-4 text-base-content/70 leading-relaxed">
-          <p>Les ateliers ont lieu en présentiel en Ardèche. Pour réserver :</p>
+          <h3 class="font-bold text-lg">{ESSAIS ? 'Et après ?' : 'Réserver un atelier'}</h3>
+          {ESSAIS ? (
+            <p class="text-sm">
+              Les ateliers réguliers démarrent à l'automne. Leur format, leur rythme et
+              leurs conditions de participation se décident avec les personnes venues
+              aux séances d'essai — c'est tout l'objet de cette phase. Les modalités
+              seront publiées ici dès qu'elles seront arrêtées.
+            </p>
+          ) : (
+            <p class="text-sm">Les ateliers ont lieu en présentiel en Ardèche. Pour réserver :</p>
+          )}
           <ol class="space-y-2 text-sm list-none">
             {[
               'Envoie un email ou un message',
               'Indique l\'atelier qui t\'intéresse',
               'Je te confirme une date disponible',
-              'Paiement de 20 € sur place le jour J',
+              'Tout le matériel est fourni',
             ].map((step, i) => (
               <li class="flex items-start gap-3">
                 <span class="flex-shrink-0 w-6 h-6 rounded-full bg-primary/20 text-primary text-xs flex items-center justify-center font-bold">{i + 1}</span>
@@ -108,23 +197,41 @@ import Layout from '../layouts/Layout.astro';
             ))}
           </ol>
           <p class="text-base-content/50 text-sm mt-4">
-            Petits groupes (6 personnes max) pour assurer un suivi personnalisé. Tout le matériel est fourni.
+            Petits groupes pour assurer un suivi personnalisé — on ne fait pas de
+            l'électronique à vingt.
           </p>
         </div>
 
-        <div class="rounded-xl border border-primary/20 bg-primary/5 p-6">
+        <div class="rounded-xl border border-base-200/80 bg-base-200/40 p-6">
           <h3 class="font-bold mb-2">Contact</h3>
           <p class="text-base-content/60 text-sm mb-6">
-            Pour réserver ou pour toute question :
+            Pour venir à une séance ou pour toute question :
           </p>
-          <a href="mailto:vincent@opentek.fr" class="btn btn-primary w-full gap-2">
+          <a href={`mailto:${EMAIL}`} class="btn btn-primary w-full gap-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
             </svg>
-            vincent@opentek.fr
+            {EMAIL}
           </a>
+          <p class="text-base-content/45 text-xs mt-4 leading-relaxed">
+            Les ateliers ont lieu à Payzac, en Sud-Ardèche.
+          </p>
         </div>
       </div>
+
+      {/*
+        GRILLE TARIFAIRE — à activer quand elle sera arrêtée, en remplacement du
+        bloc « Et après ? » ci-dessus. Formulation à conserver telle quelle :
+        l'adhésion ne doit PAS « donner droit » aux séances (sinon la cotisation
+        est requalifiée en paiement de prestation).
+
+          Adhésion annuelle : 20 € — elle ouvre l'accès au fablab et aux activités.
+          Les deux premières séances sont offertes aux nouveaux adhérents.
+          Au-delà : carnet de 5 séances, 50 €, valable jusqu'à la date anniversaire
+          de l'adhésion.
+
+        Dépend de la forme juridique, non tranchée à ce jour.
+      */}
     </div>
   </section>
 
