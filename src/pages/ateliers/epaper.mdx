@@ -105,7 +105,7 @@ RST  → GPIO16      BUSY → GPIO4`}</code></pre>
       <tr><td class="font-mono">10 min</td><td>Manip 04 — formes et motifs</td></tr>
       <tr><td class="font-mono">20 min</td><td>Manip 05 — ton badge nominatif</td></tr>
       <tr><td class="font-mono">15 min</td><td>Manip 06 — pixel art</td></tr>
-      <tr><td class="font-mono">15 min</td><td>Manip 07 — compteur avec le bouton BOOT</td></tr>
+      <tr><td class="font-mono">15 min</td><td>Manip 07 — compteur avec le bouton</td></tr>
       <tr><td class="font-mono">10 min</td><td>Questions, bonus, rangement</td></tr>
     </tbody>
   </table>
@@ -268,9 +268,9 @@ Une image de 16 × 16 pixels est décrite par 16 lignes de texte : `#` pour un p
 
 ---
 
-## Manip 07 — Un compteur avec le bouton BOOT
+## Manip 07 — Un compteur avec le bouton
 
-Chaque appui sur BOOT ajoute 1, et le nombre est redessiné en très gros.
+Chaque appui sur le bouton de la carte (GPIO39) ajoute 1, et le nombre est redessiné en très gros.
 
 <GitHubCodeBlock
   repo="vincent-herm/fablab-esp32-ateliers"
@@ -279,7 +279,7 @@ Chaque appui sur BOOT ajoute 1, et le nombre est redessiné en très gros.
   title="manip07_compteur_bouton.py"
 />
 
-<Prediction question="Tu appuies très vite sur BOOT, 5 fois en 2 secondes. Le compteur arrive-t-il à 5 ?">
+<Prediction question="Tu appuies très vite sur le bouton, 5 fois en 2 secondes. Le compteur arrive-t-il à 5 ?">
 
 **Non, il reste plus bas.** Pendant les ~2 secondes du rafraîchissement, le programme est occupé dans `epd.update()` et ne regarde pas le bouton : les appuis pendant ce temps sont perdus.
 
