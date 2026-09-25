@@ -86,7 +86,7 @@ Un bandeau NeoPixel qui propose 6 animations différentes. Le bouton BOOT de l'E
   <div class="px-4 py-2 border-b border-white/8 text-white/50 text-xs font-mono">câblage</div>
   <pre class="p-4 text-xs font-mono text-white/70 leading-relaxed"><code>{`ESP32 5V   ──── NeoPixel 5V
 ESP32 GND  ──── NeoPixel GND
-ESP32 G26  ──── résistance 300Ω ──── NeoPixel DIN`}</code></pre>
+ESP32 G18  ──── résistance 300Ω ──── NeoPixel DIN`}</code></pre>
 </div>
 
 ---
@@ -189,13 +189,13 @@ En atelier, on reste donc sur des couleurs modérées. Pour un bandeau plus long
 
 ---
 
-## Six défis de plus — sans un fil en plus
+## Six défis de plus — avec un seul bouton en plus
 
-Ton montage ne change pas : le bandeau sur G26 et le bouton BOOT de la carte suffisent. Pour chaque défi, copie le fichier dans Thonny, enregistre-le sur l'ESP32 sous le nom `main.py`, et lance-le.
+Pour ces défis, ajoute **un bouton poussoir** : une patte sur G5, l'autre sur GND (la résistance interne de l'ESP32 est activée par le programme, aucun autre composant). Le bandeau reste sur **G18**. Pour chaque défi, copie le fichier dans Thonny, enregistre-le sur l'ESP32 sous le nom `main.py`, et lance-le.
 
 ### 1. La LED qui avance à chaque appui
 
-Un appui sur BOOT = un cran. Pas d'animation automatique : c'est toi qui tiens le rythme.
+Un appui sur le bouton = un cran. Pas d'animation automatique : c'est toi qui tiens le rythme.
 
 <GitHubCodeBlock
   repo="vincent-herm/fablab-esp32-ateliers"
@@ -223,7 +223,7 @@ Chaque LED est un bit : LED 0 = 1, LED 1 = 2, LED 2 = 4, et ainsi de suite jusqu
   title="02_compteur_binaire.py"
 />
 
-<Prediction question="Tu appuies 5 fois sur BOOT. Quelles LEDs sont allumées ?">
+<Prediction question="Tu appuies 5 fois sur le bouton. Quelles LEDs sont allumées ?">
 
 **Les LEDs 0 et 2.**
 
@@ -235,7 +235,7 @@ Et à 255 ? Toutes les LEDs sont allumées. Le 256ᵉ appui remet tout à zéro 
 
 ### 3. Le jeu de réflexes
 
-Un point bleu fait des allers-retours. Appuie sur BOOT quand il passe sur la LED verte du milieu. Chaque victoire l'accélère, une erreur remet tout à zéro.
+Un point bleu fait des allers-retours. Appuie sur le bouton quand il passe sur la LED verte du milieu. Chaque victoire l'accélère, une erreur remet tout à zéro.
 
 <GitHubCodeBlock
   repo="vincent-herm/fablab-esp32-ateliers"
@@ -292,7 +292,7 @@ Tout le bandeau monte et descend en luminosité. Un appui court change la couleu
 
 ### 6. Le chenillard qui rebondit
 
-C'est le défi proposé plus haut, avec une traînée qui s'éteint derrière le point rouge. Un appui sur BOOT change la vitesse.
+C'est le défi proposé plus haut, avec une traînée qui s'éteint derrière le point rouge. Un appui sur le bouton change la vitesse.
 
 <GitHubCodeBlock
   repo="vincent-herm/fablab-esp32-ateliers"
