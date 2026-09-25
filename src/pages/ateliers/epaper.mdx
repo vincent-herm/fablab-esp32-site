@@ -1,0 +1,362 @@
+---
+title: 'E-paper — écran sans courant'
+description: "Pilote l'écran e-paper de la carte LilyGo T5 : installer la bibliothèque, afficher du texte, dessiner, fabriquer ton badge nominatif."
+level: 'debutant'
+duration: '2h'
+tags: ['ESP32', 'E-paper', 'LilyGo T5', 'SPI', 'Affichage']
+---
+
+import Layout from '../../layouts/Layout.astro';
+import GitHubCodeBlock from '../../components/GitHubCodeBlock.astro';
+import ToiDeJouer from '../../components/ToiDeJouer.astro';
+import Prediction from '../../components/Prediction.astro';
+import Piege from '../../components/Piege.astro';
+import DifficultyBadge from '../../components/DifficultyBadge.astro';
+import { siteUrl } from '../../utils/url';
+
+<Layout title="Atelier 02 — E-paper" description="Pilote l'écran e-paper de la carte LilyGo T5 avec MicroPython.">
+
+<div class="border-b border-base-200/60 bg-base-200/20">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+    <div class="flex items-center gap-2 text-sm text-base-content/50">
+      <a href={siteUrl('/')} class="hover:text-base-content transition-colors">Accueil</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <a href={siteUrl('/ateliers/')} class="hover:text-base-content transition-colors">Ateliers</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <span class="text-base-content/80">E-paper</span>
+    </div>
+  </div>
+</div>
+
+<section class="py-12 hero-pattern border-b border-base-200/60">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center gap-3 mb-6">
+      <span class="font-mono text-primary/60 text-sm font-bold bg-primary/10 px-3 py-1 rounded-lg">ATELIER 02</span>
+      <DifficultyBadge level="debutant" />
+    </div>
+    <h1 class="text-3xl sm:text-4xl font-black mb-4">E-paper : un écran qui garde l'image sans courant</h1>
+    <p class="text-base-content/65 text-lg leading-relaxed max-w-2xl mb-8">
+      Installe la bibliothèque, écris du texte en gros, dessine des formes et repars avec ton badge nominatif : l'image reste affichée même débranché. Rien à câbler, l'écran est déjà sur la carte.
+    </p>
+    <div class="flex flex-wrap gap-4">
+      <div class="flex items-center gap-2 text-sm text-base-content/60">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        2h
+      </div>
+      <div class="flex flex-wrap gap-2">
+        {['ESP32', 'E-paper', 'LilyGo T5', 'SPI', 'Affichage'].map(tag => (
+          <span class="text-xs px-2.5 py-1 rounded-lg bg-base-200/60 text-base-content/50 font-mono">{tag}</span>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mdx-content">
+
+## Ce que tu vas créer
+
+Un badge nominatif sur un écran e-paper, et sept petites manipulations pour y arriver : vérifier la bibliothèque, afficher du texte, l'agrandir, dessiner des formes et des pixels, réagir à un bouton.
+
+L'e-paper fonctionne comme une liseuse : **l'image reste affichée sans aucune alimentation**. En contrepartie, le rafraîchissement est lent, environ 2 secondes.
+
+---
+
+## Matériel nécessaire
+
+<div class="overflow-x-auto rounded-xl border border-base-200/80 my-6">
+  <table class="table table-zebra w-full">
+    <thead>
+      <tr><th>Composant</th><th>Quantité</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="font-medium">Carte LilyGo T5 V2.3</td><td>1</td><td class="text-base-content/60">ESP32 + écran e-paper 2,13" (250 × 128 pixels) déjà câblé</td></tr>
+      <tr><td class="font-medium">Câble USB</td><td>1</td><td class="text-base-content/60">De données (pas un câble de charge seule)</td></tr>
+      <tr><td class="font-medium">Ordinateur avec Thonny</td><td>1</td><td class="text-base-content/60">MicroPython déjà installé sur la carte</td></tr>
+    </tbody>
+  </table>
+</div>
+
+## Connexions
+
+**Aucune.** L'écran est soudé sur la carte. Pour information, voici les broches utilisées en interne, elles ne sont donc plus disponibles pour autre chose :
+
+<div class="rounded-xl overflow-hidden border border-base-200/60 bg-[#1a1b26] my-4">
+  <div class="px-4 py-2 border-b border-white/8 text-white/50 text-xs font-mono">broches internes</div>
+  <pre class="p-4 text-xs font-mono text-white/70 leading-relaxed"><code>{`SCK  → GPIO18      MOSI → GPIO23
+CS   → GPIO5       DC   → GPIO17
+RST  → GPIO16      BUSY → GPIO4`}</code></pre>
+</div>
+
+---
+
+## Déroulé (2 h)
+
+<div class="overflow-x-auto rounded-xl border border-base-200/80 my-6">
+  <table class="table table-zebra w-full">
+    <thead>
+      <tr><th>Durée</th><th>Étape</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="font-mono">10 min</td><td>Présentation : qu'est-ce que l'e-paper, pourquoi ça consomme zéro</td></tr>
+      <tr><td class="font-mono">15 min</td><td>Manip 01 — installer la bibliothèque</td></tr>
+      <tr><td class="font-mono">10 min</td><td>Manip 02 — premier affichage</td></tr>
+      <tr><td class="font-mono">15 min</td><td>Manip 03 — agrandir le texte</td></tr>
+      <tr><td class="font-mono">10 min</td><td>Manip 04 — formes et motifs</td></tr>
+      <tr><td class="font-mono">20 min</td><td>Manip 05 — ton badge nominatif</td></tr>
+      <tr><td class="font-mono">15 min</td><td>Manip 06 — pixel art</td></tr>
+      <tr><td class="font-mono">15 min</td><td>Manip 07 — compteur avec le bouton BOOT</td></tr>
+      <tr><td class="font-mono">10 min</td><td>Questions, bonus, rangement</td></tr>
+    </tbody>
+  </table>
+</div>
+
+---
+
+## Manip 01 — Installer la bibliothèque
+
+Pour piloter l'écran, la carte a besoin d'un fichier de plus : **`gdeh0213b73.py`**. C'est le « pilote » de l'écran : il sait lui parler en SPI.
+
+1. Télécharge le fichier : [gdeh0213b73.py sur GitHub](https://github.com/vincent-herm/fablab-esp32-ateliers/blob/main/cours-exemples/epaper/gdeh0213b73.py) (bouton « Download raw file »).
+2. Ouvre Thonny et affiche le panneau des fichiers : **Affichage → Fichiers**.
+3. Repère le fichier dans la partie haute (ton ordinateur), **clic droit → Téléverser vers /**.
+4. Il apparaît dans la partie basse (l'ESP32). C'est installé.
+
+Puis lance ce programme pour vérifier :
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="atelier-epaper/manip01_verifier_installation.py"
+  language="python"
+  title="manip01_verifier_installation.py"
+/>
+
+<Piege titre="Le fichier doit être sur l'ESP32, pas sur ton ordinateur">
+
+Si Thonny affiche `ImportError: no module named 'gdeh0213b73'`, le fichier est resté sur ton ordinateur. Vérifie qu'il apparaît dans la **partie basse** du panneau des fichiers (celle de l'ESP32), sinon recommence le téléversement.
+
+Autre réflexe : après avoir téléversé, fais **Ctrl+D** dans le Shell pour redémarrer MicroPython.
+
+</Piege>
+
+Le détail de la bibliothèque (toutes les fonctions, les pièges connus) est dans la <a href={siteUrl('/doc/bibliotheques/gdeh0213b73/')}>fiche gdeh0213b73</a>.
+
+---
+
+## Manip 02 — Premier affichage
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="atelier-epaper/manip02_premier_affichage.py"
+  language="python"
+  title="manip02_premier_affichage.py"
+/>
+
+<Prediction question="Tu supprimes la ligne `epd.update()`. Que voit-on sur l'écran ?">
+
+**Rien de nouveau.** Tout ce que tu écris avec `fill`, `text`, `rect` est dessiné **en mémoire**, dans l'ESP32. C'est `epd.update()` qui envoie l'image vers l'écran, et c'est à ce moment-là seulement que les micro-billes bougent.
+
+C'est le même principe que `np.write()` pour les NeoPixel : on prépare, puis on envoie d'un coup.
+
+</Prediction>
+
+<ToiDeJouer>
+
+- Remplace `ROTATION_0` par `ROTATION_90` : l'écran passe en paysage (250 × 128)
+- Écris ton prénom à la place de « Bonjour »
+- Regarde la durée affichée dans le Shell : environ combien de secondes ?
+- Débranche le câble USB : l'image reste-t-elle ?
+
+</ToiDeJouer>
+
+<Piege titre="Pas d'accents" niveau="attention">
+
+La police intégrée est en ASCII pur : « é », « è », « à » s'affichent mal. Écris « Ardeche » et non « Ardèche ».
+
+</Piege>
+
+---
+
+## Manip 03 — Agrandir le texte
+
+La police intégrée fait 8 pixels de haut. Pour un badge ou une affiche, c'est trop petit : `big_text()` redessine chaque pixel sous forme d'un carré plus grand.
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="atelier-epaper/manip03_gros_texte.py"
+  language="python"
+  title="manip03_gros_texte.py"
+/>
+
+<ToiDeJouer>
+
+- Change `scale=4` en `scale=2` : comment évolue la taille du texte ?
+- Écris « ESP32 » à la place de « 32 px »
+- `texte_centre` calcule `x` toute seule : essaie un texte plus long, puis un texte plus court
+- Inverse les couleurs : `epd.fill(1)` au départ, puis `c=0` dans les appels
+
+</ToiDeJouer>
+
+---
+
+## Manip 04 — Formes et motifs
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="atelier-epaper/manip04_formes.py"
+  language="python"
+  title="manip04_formes.py"
+/>
+
+<Prediction question="Dans la boucle du damier, la condition est `(ligne + col) % 2 == 0`. Que se passe-t-il si tu la remplaces par `== 1` ?">
+
+**Le damier s'inverse** : les cases noires deviennent blanches et inversement. Une case est noire quand la somme ligne + colonne est paire, c'est-à-dire une case sur deux, en alternance.
+
+</Prediction>
+
+<ToiDeJouer>
+
+- Dessine un damier de 8 × 8 cases plus petites (change 4 et 24)
+- Ajoute un rectangle plein avec `fill_rect`
+- Change le pas de la cible : `range(0, 40, 8)` devient `range(0, 40, 4)`
+
+</ToiDeJouer>
+
+---
+
+## Manip 05 — Ton badge nominatif
+
+C'est **le** moment de l'atelier : chacun fabrique son badge. Le programme agrandit ton prénom au maximum, centré, avec un cadre et une deuxième ligne.
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="atelier-epaper/manip05_badge.py"
+  language="python"
+  title="manip05_badge.py"
+/>
+
+<ToiDeJouer>
+
+- Change `PRENOM` et `LIGNE2`
+- Un prénom long (10 lettres) : que fait `echelle_max` ?
+- Ajoute une ligne sous le trait, par exemple ton pseudo ou une date
+- Repars avec ta carte débranchée : le badge reste affiché, sans pile
+
+</ToiDeJouer>
+
+---
+
+## Manip 06 — Pixel art
+
+Une image de 16 × 16 pixels est décrite par 16 lignes de texte : `#` pour un pixel noir, `.` pour un pixel blanc.
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="atelier-epaper/manip06_pixel_art.py"
+  language="python"
+  title="manip06_pixel_art.py"
+/>
+
+<ToiDeJouer>
+
+- Modifie le smiley : ajoute une moustache, change la bouche
+- Dessine ta propre image de 16 × 16 (une maison, un chat, tes initiales)
+- Passe l'échelle de 6 à 4, puis à 7 : à partir de quelle taille l'image sort-elle de l'écran ?
+- Ajoute une troisième image entre les deux
+
+</ToiDeJouer>
+
+---
+
+## Manip 07 — Un compteur avec le bouton BOOT
+
+Chaque appui sur BOOT ajoute 1, et le nombre est redessiné en très gros.
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="atelier-epaper/manip07_compteur_bouton.py"
+  language="python"
+  title="manip07_compteur_bouton.py"
+/>
+
+<Prediction question="Tu appuies très vite sur BOOT, 5 fois en 2 secondes. Le compteur arrive-t-il à 5 ?">
+
+**Non, il reste plus bas.** Pendant les ~2 secondes du rafraîchissement, le programme est occupé dans `epd.update()` et ne regarde pas le bouton : les appuis pendant ce temps sont perdus.
+
+C'est la contrepartie de l'e-paper : zéro consommation pour garder l'image, mais un affichage lent. On l'utilise pour de l'information qui change rarement (étiquette, météo, badge), pas pour un jeu en temps réel.
+
+</Prediction>
+
+<ToiDeJouer>
+
+- Compte à rebours : pars de 10 et retire 1 à chaque appui
+- Affiche aussi le message « Bravo ! » quand le compteur atteint 10
+- Change `scale=8` en `scale=6` : combien de chiffres tiennent à l'écran ?
+
+</ToiDeJouer>
+
+<Piege titre="4 chiffres ne tiennent pas" niveau="attention">
+
+Avec `scale=8`, chaque chiffre fait 64 pixels de large : 3 chiffres (192 px) tiennent dans les 250 pixels de l'écran, mais pas 4. Au-delà de 999, l'affichage sort de l'écran.
+
+</Piege>
+
+---
+
+## Bonus — « Payzac et son FabLab »
+
+Un affichage complet, avec cadre, titre en grand et filets décoratifs.
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="cours-exemples/epaper/payzac_fablab.py"
+  language="python"
+  title="payzac_fablab.py"
+/>
+
+---
+
+## Comment ça marche
+
+### Pourquoi l'image reste sans courant
+
+L'écran contient des millions de micro-capsules avec des billes noires et blanches chargées électriquement. Un champ électrique les déplace vers la surface, et **une fois en place, elles ne bougent plus** : maintenir l'image ne demande aucune énergie. C'est ce qui permet aux liseuses de tenir des semaines.
+
+### Pourquoi c'est lent
+
+Pour effacer proprement l'image précédente, l'écran fait plusieurs cycles de noir et de blanc avant d'afficher la nouvelle : c'est le clignotement que tu vois. D'où les 2 secondes.
+
+### `deep_sleep()`
+
+`epd.deep_sleep()` met le contrôleur de l'écran en veille profonde. L'image reste, la consommation tombe presque à zéro. Pour ré-afficher ensuite, par prudence, réinitialise l'écran en rappelant `init_epd()` avant de dessiner.
+
+---
+
+## Pour aller plus loin
+
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6">
+  {[
+    { title: 'Étiquette de prix', desc: 'Affiche un produit et son prix : idéal pour un petit commerce, l\'écran ne consomme rien.' },
+    { title: 'Mesure affichée', desc: 'Branche un capteur de température (atelier Station météo) et affiche la valeur sur l\'e-paper.' },
+    { title: 'Sur batterie', desc: 'Entre deux affichages, deep_sleep réduit la consommation au minimum : de quoi alimenter un affichage sur batterie.' },
+  ].map(card => (
+    <div class="rounded-xl border border-base-200/80 bg-base-200/30 p-5">
+      <h4 class="font-semibold text-sm mb-2">{card.title}</h4>
+      <p class="text-xs text-base-content/60">{card.desc}</p>
+    </div>
+  ))}
+</div>
+
+<div class="border-t border-base-200/60 pt-10 mt-10 flex items-center justify-between">
+  <a href={siteUrl('/ateliers/neopixel/')} class="group flex items-center gap-3 rounded-xl border border-base-200/80 bg-base-200/30 px-5 py-4 hover:border-primary/30 transition-colors">
+    <svg class="w-5 h-5 text-base-content/40 group-hover:text-primary group-hover:-translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+    <div><div class="text-xs text-base-content/50 mb-0.5">Atelier précédent</div><div class="font-semibold text-sm group-hover:text-primary transition-colors">LED RGB et NeoPixel</div></div>
+  </a>
+  <a href={siteUrl('/ateliers/station-meteo/')} class="group flex items-center gap-3 rounded-xl border border-base-200/80 bg-base-200/30 px-5 py-4 hover:border-primary/30 transition-colors">
+    <div class="text-right"><div class="text-xs text-base-content/50 mb-0.5">Atelier suivant</div><div class="font-semibold text-sm group-hover:text-primary transition-colors">Station météo</div></div>
+    <svg class="w-5 h-5 text-base-content/40 group-hover:text-primary group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+  </a>
+</div>
+
+</div>
+</Layout>

@@ -13,7 +13,7 @@ import Prediction from '../../components/Prediction.astro';
 import DifficultyBadge from '../../components/DifficultyBadge.astro';
 import { siteUrl } from '../../utils/url';
 
-<Layout title="Atelier 02 — LED RGB et NeoPixel" description="Anime un bandeau de LED RGB WS2812 avec MicroPython.">
+<Layout title="Atelier 01 — LED RGB et NeoPixel" description="Anime un bandeau de LED RGB WS2812 avec MicroPython.">
 
 <div class="border-b border-base-200/60 bg-base-200/20">
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
@@ -30,7 +30,7 @@ import { siteUrl } from '../../utils/url';
 <section class="py-12 hero-pattern border-b border-base-200/60">
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex items-center gap-3 mb-6">
-      <span class="font-mono text-primary/60 text-sm font-bold bg-primary/10 px-3 py-1 rounded-lg">ATELIER 02</span>
+      <span class="font-mono text-primary/60 text-sm font-bold bg-primary/10 px-3 py-1 rounded-lg">ATELIER 01</span>
       <DifficultyBadge level="debutant" />
     </div>
     <h1 class="text-3xl sm:text-4xl font-black mb-4">LED RGB et NeoPixel</h1>
@@ -206,6 +206,7 @@ Un appui sur le bouton = un cran. Pas d'animation automatique : c'est toi qui ti
 
 <ToiDeJouer>
 
+- Change la couleur : `COULEUR = (0, 40, 120)` devient `(120, 0, 0)` pour du rouge
 - Fais **reculer** la LED au lieu de la faire avancer
 - Fais avancer la LED de **deux** crans à chaque appui
 - Ajoute un second sens : un appui court avance, un appui long recule
@@ -321,8 +322,8 @@ C'est le défi proposé plus haut, avec une traînée qui s'éteint derrière le
     <svg class="w-5 h-5 text-base-content/40 group-hover:text-primary group-hover:-translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
     <div><div class="text-xs text-base-content/50 mb-0.5">Atelier précédent</div><div class="font-semibold text-sm group-hover:text-primary transition-colors">Initiation — Zéro câblage</div></div>
   </a>
-  <a href={siteUrl('/ateliers/station-meteo/')} class="group flex items-center gap-3 rounded-xl border border-base-200/80 bg-base-200/30 px-5 py-4 hover:border-primary/30 transition-colors">
-    <div class="text-right"><div class="text-xs text-base-content/50 mb-0.5">Atelier suivant</div><div class="font-semibold text-sm group-hover:text-primary transition-colors">Station météo</div></div>
+  <a href={siteUrl('/ateliers/epaper/')} class="group flex items-center gap-3 rounded-xl border border-base-200/80 bg-base-200/30 px-5 py-4 hover:border-primary/30 transition-colors">
+    <div class="text-right"><div class="text-xs text-base-content/50 mb-0.5">Atelier suivant</div><div class="font-semibold text-sm group-hover:text-primary transition-colors">E-paper</div></div>
     <svg class="w-5 h-5 text-base-content/40 group-hover:text-primary group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
   </a>
 </div>
