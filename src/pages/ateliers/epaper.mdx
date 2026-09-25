@@ -36,7 +36,7 @@ import { siteUrl } from '../../utils/url';
     </div>
     <h1 class="text-3xl sm:text-4xl font-black mb-4">E-paper : un écran qui garde l'image sans courant</h1>
     <p class="text-base-content/65 text-lg leading-relaxed max-w-2xl mb-8">
-      Installe la bibliothèque, écris du texte en gros, dessine des formes et repars avec ton badge nominatif : l'image reste affichée même débranché. Rien à câbler, l'écran est déjà sur la carte.
+      Installe la bibliothèque, écris du texte en gros, dessine des formes, repars avec ton badge nominatif et écris sur l'écran depuis ton téléphone : l'image reste affichée même débranché. Rien à câbler, l'écran est déjà sur la carte.
     </p>
     <div class="flex flex-wrap gap-4">
       <div class="flex items-center gap-2 text-sm text-base-content/60">
@@ -56,7 +56,7 @@ import { siteUrl } from '../../utils/url';
 
 ## Ce que tu vas créer
 
-Un badge nominatif sur un écran e-paper, et sept petites manipulations pour y arriver : vérifier la bibliothèque, afficher du texte, l'agrandir, dessiner des formes et des pixels, réagir à un bouton.
+Un badge nominatif sur un écran e-paper, et sept petites manipulations pour y arriver : vérifier la bibliothèque, afficher du texte, l'agrandir, dessiner des formes, réagir à un bouton, puis écrire sur l'écran depuis ton téléphone.
 
 L'e-paper fonctionne comme une liseuse : **l'image reste affichée sans aucune alimentation**. En contrepartie, le rafraîchissement est lent, environ 2 secondes.
 
@@ -104,9 +104,9 @@ RST  → GPIO16      BUSY → GPIO4`}</code></pre>
       <tr><td class="font-mono">15 min</td><td>Manip 03 — agrandir le texte</td></tr>
       <tr><td class="font-mono">10 min</td><td>Manip 04 — formes et motifs</td></tr>
       <tr><td class="font-mono">20 min</td><td>Manip 05 — ton badge nominatif</td></tr>
-      <tr><td class="font-mono">15 min</td><td>Manip 06 — pixel art</td></tr>
-      <tr><td class="font-mono">15 min</td><td>Manip 07 — compteur avec le bouton</td></tr>
-      <tr><td class="font-mono">10 min</td><td>Questions, bonus, rangement</td></tr>
+      <tr><td class="font-mono">15 min</td><td>Manip 06 — compteur avec le bouton</td></tr>
+      <tr><td class="font-mono">20 min</td><td>Manip 07 — écris sur l'écran depuis ton téléphone</td></tr>
+      <tr><td class="font-mono">5 min</td><td>Questions et rangement (bonus : pixel art, « Payzac et son FabLab »)</td></tr>
     </tbody>
   </table>
 </div>
@@ -246,37 +246,15 @@ C'est **le** moment de l'atelier : chacun fabrique son badge. Le programme agran
 
 ---
 
-## Manip 06 — Pixel art
-
-Une image de 16 × 16 pixels est décrite par 16 lignes de texte : `#` pour un pixel noir, `.` pour un pixel blanc.
-
-<GitHubCodeBlock
-  repo="vincent-herm/fablab-esp32-ateliers"
-  file="atelier-epaper/manip06_pixel_art.py"
-  language="python"
-  title="manip06_pixel_art.py"
-/>
-
-<ToiDeJouer>
-
-- Modifie le smiley : ajoute une moustache, change la bouche
-- Dessine ta propre image de 16 × 16 (une maison, un chat, tes initiales)
-- Passe l'échelle de 6 à 4, puis à 7 : à partir de quelle taille l'image sort-elle de l'écran ?
-- Ajoute une troisième image entre les deux
-
-</ToiDeJouer>
-
----
-
-## Manip 07 — Un compteur avec le bouton
+## Manip 06 — Un compteur avec le bouton
 
 Chaque appui sur le bouton de la carte (GPIO39) ajoute 1, et le nombre est redessiné en très gros.
 
 <GitHubCodeBlock
   repo="vincent-herm/fablab-esp32-ateliers"
-  file="atelier-epaper/manip07_compteur_bouton.py"
+  file="atelier-epaper/manip06_compteur_bouton.py"
   language="python"
-  title="manip07_compteur_bouton.py"
+  title="manip06_compteur_bouton.py"
 />
 
 <Prediction question="Tu appuies très vite sur le bouton, 5 fois en 2 secondes. Le compteur arrive-t-il à 5 ?">
@@ -303,7 +281,58 @@ Avec `scale=8`, chaque chiffre fait 64 pixels de large : 3 chiffres (192 px) tie
 
 ---
 
-## Bonus — « Payzac et son FabLab »
+## Manip 07 — Écris sur l'écran depuis ton téléphone
+
+C'est le grand final. La carte crée son propre réseau WiFi et un mini site web : depuis ton iPhone (ou Android), tu tapes un message, il s'affiche en gros sur l'écran, et **il y reste même quand tu débranches la carte**.
+
+**Avant de lancer**, change `NOM_RESEAU` : chaque carte de la salle doit avoir un nom bien à elle, sinon on ne sait plus laquelle est la tienne.
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="atelier-epaper/manip07_message_iphone.py"
+  language="python"
+  title="manip07_message_iphone.py"
+/>
+
+Une fois le programme lancé, **l'écran affiche les instructions** :
+
+1. Sur ton téléphone : **Réglages → WiFi**, choisis ton réseau et tape le mot de passe (`fablab2026`).
+2. Ouvre **Safari** et tape l'adresse `192.168.4.1`.
+3. Écris ton message et appuie sur **Afficher**. Compte environ 2 secondes.
+
+<Piege titre="iPhone : « pas de connexion Internet »" niveau="attention">
+
+Le réseau de la carte n'a pas d'accès à Internet, et l'iPhone le signale. C'est normal : **garde-le connecté** (si iOS propose « utiliser sans Internet », accepte) et ouvre l'adresse à la main dans Safari.
+
+</Piege>
+
+<Prediction question="Tu écris « Café à Payzac » avec des accents. Que voit-on sur l'écran ?">
+
+**« Cafe a Payzac »**, sans accents. La police intégrée ne connaît que l'ASCII, alors le programme remplace lui-même « é » par « e », « à » par « a », « ç » par « c ». Un caractère qu'il ne sait pas remplacer (un smiley, par exemple) devient un « ? ».
+
+</Prediction>
+
+<ToiDeJouer>
+
+- Écris un message très court (« OK »), puis un message long : comment change la taille du texte ?
+- Envoie deux messages coup sur coup : que répond la page ? (indice : `DELAI_MINI`)
+- Change `NOM_RESEAU` et `MOT_DE_PASSE`
+- Fais afficher aussi l'heure d'envoi sur l'écran
+- Connecte deux téléphones à la même carte : qui gagne ?
+
+</ToiDeJouer>
+
+<Piege titre="L'écran n'aime pas le rafraîchissement continu" niveau="attention">
+
+Un e-paper s'use si on le redessine sans arrêt : c'est pour ça que le programme impose un délai entre deux affichages. Pour un usage permanent, les fabricants d'écrans e-paper conseillent en général au moins 3 minutes entre deux rafraîchissements.
+
+</Piege>
+
+---
+
+## Bonus
+
+### « Payzac et son FabLab »
 
 Un affichage complet, avec cadre, titre en grand et filets décoratifs.
 
@@ -313,6 +342,26 @@ Un affichage complet, avec cadre, titre en grand et filets décoratifs.
   language="python"
   title="payzac_fablab.py"
 />
+
+### Pixel art
+
+Une image de 16 × 16 pixels est décrite par 16 lignes de texte : `#` pour un pixel noir, `.` pour un pixel blanc.
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="atelier-epaper/bonus_pixel_art.py"
+  language="python"
+  title="bonus_pixel_art.py"
+/>
+
+<ToiDeJouer>
+
+- Modifie le smiley : ajoute une moustache, change la bouche
+- Dessine ta propre image de 16 × 16 (une maison, un chat, tes initiales)
+- Passe l'échelle de 6 à 4, puis à 7 : à partir de quelle taille l'image sort-elle de l'écran ?
+- Ajoute une troisième image entre les deux
+
+</ToiDeJouer>
 
 ---
 
