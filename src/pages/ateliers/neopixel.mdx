@@ -187,6 +187,128 @@ En atelier, on reste donc sur des couleurs modérées. Pour un bandeau plus long
   ))}
 </div>
 
+---
+
+## Six défis de plus — sans un fil en plus
+
+Ton montage ne change pas : le bandeau sur G26 et le bouton BOOT de la carte suffisent. Pour chaque défi, copie le fichier dans Thonny, enregistre-le sur l'ESP32 sous le nom `main.py`, et lance-le.
+
+### 1. La LED qui avance à chaque appui
+
+Un appui sur BOOT = un cran. Pas d'animation automatique : c'est toi qui tiens le rythme.
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="atelier2-neopixel/aller-plus-loin/01_pas_a_pas.py"
+  language="python"
+  title="01_pas_a_pas.py"
+/>
+
+<ToiDeJouer>
+
+- Fais **reculer** la LED au lieu de la faire avancer
+- Fais avancer la LED de **deux** crans à chaque appui
+- Ajoute un second sens : un appui court avance, un appui long recule
+
+</ToiDeJouer>
+
+### 2. Un compteur binaire
+
+Chaque LED est un bit : LED 0 = 1, LED 1 = 2, LED 2 = 4, et ainsi de suite jusqu'à 128 avec la LED 7. C'est exactement comme ça qu'un ordinateur compte.
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="atelier2-neopixel/aller-plus-loin/02_compteur_binaire.py"
+  language="python"
+  title="02_compteur_binaire.py"
+/>
+
+<Prediction question="Tu appuies 5 fois sur BOOT. Quelles LEDs sont allumées ?">
+
+**Les LEDs 0 et 2.**
+
+5 = 4 + 1, soit `00000101` en binaire : la LED 0 vaut 1 et la LED 2 vaut 4. Regarde aussi le Shell de Thonny : le programme y écrit le nombre en décimal **et** en binaire.
+
+Et à 255 ? Toutes les LEDs sont allumées. Le 256ᵉ appui remet tout à zéro : avec 8 bits, on ne peut pas aller plus loin.
+
+</Prediction>
+
+### 3. Le jeu de réflexes
+
+Un point bleu fait des allers-retours. Appuie sur BOOT quand il passe sur la LED verte du milieu. Chaque victoire l'accélère, une erreur remet tout à zéro.
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="atelier2-neopixel/aller-plus-loin/03_jeu_reflexes.py"
+  language="python"
+  title="03_jeu_reflexes.py"
+/>
+
+<ToiDeJouer>
+
+- Change la cible : `CIBLE = 0` pour viser le bout du bandeau
+- Rends le jeu plus dur : `delai - 25` au lieu de `delai - 15`
+- Ajoute un défi à deux : le premier qui rate perd, l'autre gagne le point
+
+</ToiDeJouer>
+
+### 4. Un dé électronique
+
+Le dé tire des valeurs au hasard de plus en plus lentement, puis s'arrête. Le résultat est le nombre de LEDs allumées, de 1 à 6.
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="atelier2-neopixel/aller-plus-loin/04_de_electronique.py"
+  language="python"
+  title="04_de_electronique.py"
+/>
+
+<ToiDeJouer>
+
+- Passe à un dé à 8 faces : `random.randint(1, 8)`
+- Change la vitesse du ralentissement : `delai * 1.25` devient `delai * 1.1`
+- Lance le dé 60 fois : comptes-tu vraiment autant de 6 que de 1 ?
+
+</ToiDeJouer>
+
+### 5. Une veilleuse qui respire
+
+Tout le bandeau monte et descend en luminosité. Un appui court change la couleur, un appui long change l'intensité maximale.
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="atelier2-neopixel/aller-plus-loin/05_veilleuse.py"
+  language="python"
+  title="05_veilleuse.py"
+/>
+
+<ToiDeJouer>
+
+- Ajoute une couleur à la liste `COULEURS`
+- Ralentis la respiration : remplace `time.sleep_ms(20)` par `time.sleep_ms(40)`
+- Le programme distingue un appui court d'un appui long : trouve où, et change la limite de 600 ms
+
+</ToiDeJouer>
+
+### 6. Le chenillard qui rebondit
+
+C'est le défi proposé plus haut, avec une traînée qui s'éteint derrière le point rouge. Un appui sur BOOT change la vitesse.
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="atelier2-neopixel/aller-plus-loin/06_chenillard_rebond.py"
+  language="python"
+  title="06_chenillard_rebond.py"
+/>
+
+<ToiDeJouer>
+
+- Allonge la traînée : remplace `* 2 // 3` par `* 4 // 5`
+- Change la couleur de la tête : `(255, 0, 0)` devient `(0, 100, 255)`
+- Fais varier la couleur de la tête à chaque rebond
+
+</ToiDeJouer>
+
 <div class="border-t border-base-200/60 pt-10 mt-10 flex items-center justify-between">
   <a href={siteUrl('/ateliers/initiation/')} class="group flex items-center gap-3 rounded-xl border border-base-200/80 bg-base-200/30 px-5 py-4 hover:border-primary/30 transition-colors">
     <svg class="w-5 h-5 text-base-content/40 group-hover:text-primary group-hover:-translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
