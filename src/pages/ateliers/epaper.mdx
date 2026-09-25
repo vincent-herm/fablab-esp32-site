@@ -106,7 +106,7 @@ RST  → GPIO16      BUSY → GPIO4`}</code></pre>
       <tr><td class="font-mono">20 min</td><td>Manip 05 — ton badge nominatif</td></tr>
       <tr><td class="font-mono">15 min</td><td>Manip 06 — compteur avec le bouton</td></tr>
       <tr><td class="font-mono">20 min</td><td>Manip 07 — écris sur l'écran depuis ton téléphone</td></tr>
-      <tr><td class="font-mono">5 min</td><td>Questions et rangement (bonus : pixel art, « Payzac et son FabLab »)</td></tr>
+      <tr><td class="font-mono">5 min</td><td>Questions et rangement (bonus : « Payzac et son FabLab », ESP-NOW)</td></tr>
     </tbody>
   </table>
 </div>
@@ -343,23 +343,65 @@ Un affichage complet, avec cadre, titre en grand et filets décoratifs.
   title="payzac_fablab.py"
 />
 
-### Pixel art
+### Deux cartes qui se parlent : ESP-NOW
 
-Une image de 16 × 16 pixels est décrite par 16 lignes de texte : `#` pour un pixel noir, `.` pour un pixel blanc.
+Pas besoin de WiFi ni de box : avec **ESP-NOW**, deux cartes ESP32 s'envoient des messages directement. Ici, un bouton sur une carte compte les appuis, et le nombre s'affiche sur l'écran e-paper de l'autre.
+
+**Matériel en plus :** une carte ESP32 simple, un bouton poussoir entre **GPIO5** et **GND**.
+
+**1. Lire l'adresse de chaque carte.** Chaque ESP32 a une adresse unique, l'adresse MAC : c'est le « numéro de téléphone » qui permet d'écrire à une carte précise. Lance ce programme sur chaque carte et note l'adresse qui s'affiche.
 
 <GitHubCodeBlock
   repo="vincent-herm/fablab-esp32-ateliers"
-  file="atelier-epaper/bonus_pixel_art.py"
+  file="atelier-epaper/espnow/manip01_adresse_mac.py"
   language="python"
-  title="bonus_pixel_art.py"
+  title="manip01_adresse_mac.py"
 />
+
+**2. Lancer le récepteur sur la T5.** L'écran affiche « En attente » et **son adresse**.
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="atelier-epaper/espnow/manip03_recepteur_epaper.py"
+  language="python"
+  title="manip03_recepteur_epaper.py"
+/>
+
+**3. Configurer l'émetteur** sur l'ESP32 simple : recopie l'adresse de la T5 dans `MAC_RECEPTEUR`, puis lance le programme.
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="atelier-epaper/espnow/manip02_emetteur_bouton.py"
+  language="python"
+  title="manip02_emetteur_bouton.py"
+/>
+
+**4. Appuie sur le bouton.** La LED de l'émetteur s'allume brièvement si l'autre carte a répondu, et clignote 3 fois sinon. Quelques secondes plus tard, le nombre apparaît en gros sur l'écran, avec la force du signal.
+
+<Piege titre="Enregistre le programme sur la carte pour l'utiliser sans ordinateur">
+
+Un programme lancé avec F5 depuis Thonny reste en mémoire et **disparaît quand on coupe l'alimentation**. Pour faire fonctionner une carte sur batterie, enregistre le programme sous le nom **`main.py`** directement sur la carte : Fichier → Enregistrer sous → « Appareil MicroPython ». Il démarrera alors tout seul à chaque mise sous tension.
+
+</Piege>
+
+<Piege titre="« PAS de réponse » sur l'émetteur" niveau="attention">
+
+Cela veut dire que la T5 n'a pas accusé réception. Vérifie que le récepteur tourne bien (l'écran affiche « En attente ») et que l'adresse recopiée est exactement celle affichée. Pour séparer les deux causes, remplace l'adresse par `ff:ff:ff:ff:ff:ff` (diffusion à toutes les cartes) : si le nombre apparaît sur l'écran de la T5, la radio fonctionne et l'adresse était fausse.
+
+</Piege>
+
+<Prediction question="Tu appuies 5 fois très vite sur le bouton. L'écran passe-t-il par 1, 2, 3, 4, 5 ?">
+
+**Non, il affiche directement 5.** L'écran met environ 2 secondes à se rafraîchir, et le récepteur ne dessine que **le dernier nombre reçu**, au plus une fois toutes les 3 secondes. Rien n'est perdu : l'émetteur envoie le **total** et non « +1 », donc un message manqué ne fausse pas le compte.
+
+</Prediction>
 
 <ToiDeJouer>
 
-- Modifie le smiley : ajoute une moustache, change la bouche
-- Dessine ta propre image de 16 × 16 (une maison, un chat, tes initiales)
-- Passe l'échelle de 6 à 4, puis à 7 : à partir de quelle taille l'image sort-elle de l'écran ?
-- Ajoute une troisième image entre les deux
+- Éloigne-toi avec l'émetteur (sur batterie) et regarde la valeur du signal en dBm : plus elle est négative, plus le signal est faible. Jusqu'où le message passe-t-il ?
+- Change `DELAI_MINI` (récepteur) : que se passe-t-il à 1 seconde ? à 10 secondes ?
+- Envoie un mot au lieu d'un nombre : que faut-il changer des deux côtés ?
+- Ajoute un deuxième bouton sur l'émetteur qui remet le compteur à zéro
 
 </ToiDeJouer>
 
