@@ -35,7 +35,7 @@ import { siteUrl } from '../../utils/url';
     </div>
     <h1 class="text-3xl sm:text-4xl font-black mb-4">LED RGB et NeoPixel</h1>
     <p class="text-base-content/65 text-lg leading-relaxed max-w-2xl mb-8">
-      Prends le contrôle d'un bandeau de 8 LED RGB WS2812. Couleurs sur mesure, animations de défilement, arc-en-ciel automatique — tout ça avec un seul fil de données.
+      Prends le contrôle d'un bandeau de 16 LED RGB WS2812. Couleurs sur mesure, animations de défilement, arc-en-ciel automatique — tout ça avec un seul fil de données.
     </p>
     <div class="flex flex-wrap gap-4">
       <div class="flex items-center gap-2 text-sm text-base-content/60">
@@ -72,7 +72,7 @@ Un bandeau NeoPixel qui propose 6 animations différentes. Le bouton BOOT de l'E
     </thead>
     <tbody>
       <tr><td class="font-medium">ESP32</td><td>1</td><td class="text-base-content/60">Fourni en atelier</td></tr>
-      <tr><td class="font-medium">Bandeau NeoPixel WS2812</td><td>1 (8 LEDs)</td><td class="text-base-content/60">Fourni en atelier</td></tr>
+      <tr><td class="font-medium">Bandeau NeoPixel WS2812</td><td>1 (16 LEDs)</td><td class="text-base-content/60">Fourni en atelier</td></tr>
       <tr><td class="font-medium">Condensateur 1000 µF</td><td>1</td><td class="text-base-content/60">Protection contre les pics de courant</td></tr>
       <tr><td class="font-medium">Résistance 300-500 Ω</td><td>1</td><td class="text-base-content/60">Sur le fil DATA</td></tr>
       <tr><td class="font-medium">Câble micro-USB</td><td>1</td><td class="text-base-content/60">Fourni en atelier</td></tr>
@@ -106,7 +106,7 @@ ESP32 G18  ──── résistance 300Ω ──── NeoPixel DIN`}</code></pr
 
 `np[3] = (255, 0, 0)` ne fait que noter la couleur **en mémoire**, dans l'ESP32. C'est `np.write()` qui envoie réellement toutes les couleurs vers le bandeau, sur le fil de données.
 
-C'est d'ailleurs pratique : on prépare les 8 LEDs tranquillement, puis un seul `write()` les met toutes à jour d'un coup — donc sans scintillement.
+C'est d'ailleurs pratique : on prépare les 16 LEDs tranquillement, puis un seul `write()` les met toutes à jour d'un coup — donc sans scintillement.
 
 </Prediction>
 
@@ -115,8 +115,8 @@ C'est d'ailleurs pratique : on prépare les 8 LEDs tranquillement, puis un seul 
 - Change la couleur du défilement : `couleur=(255, 0, 0)` pour du rouge
 - Change la vitesse : `delai=20` au lieu de `80`
 - Baisse l'intensité : `(0, 20, 60)` au lieu de `(0, 80, 255)` — bien moins éblouissant, et ça consomme trois fois moins
-- Si ton bandeau a plus de 8 LEDs, ajuste `N = 8`
-- Dans l'arc-en-ciel, remplace `i * 32` par `i * 8` → les couleurs se resserrent
+- Si ton bandeau n'a pas 16 LEDs, ajuste `N = 16`
+- Dans l'arc-en-ciel, remplace `i * 16` par `i * 4` → les couleurs se resserrent
 - Plus dur : fais un chenillard qui **rebondit** (aller-retour) au lieu de repartir à gauche
 
 </ToiDeJouer>
@@ -139,7 +139,7 @@ np[4] = (128, 0, 128)  # violet
 np.write()             # envoyer vers les LEDs
 ```
 
-### Un seul fil pour 8 LEDs
+### Un seul fil pour 16 LEDs
 
 C'est la particularité des WS2812 : **un seul fil de données** commande tout le bandeau, quelle que soit sa longueur.
 
@@ -162,11 +162,11 @@ D'où deux conséquences pratiques :
 
 À chaque instant, la somme des trois composantes reste constante — la luminosité ne varie pas, seule la teinte tourne. Et comme `pos = pos % 256` ramène toujours dans l'intervalle, on peut incrémenter indéfiniment : l'arc-en-ciel boucle tout seul.
 
-Le décalage `i * 32` dans l'animation donne à chaque LED une teinte légèrement différente de sa voisine : c'est ce qui étale l'arc-en-ciel sur le bandeau au lieu de le faire clignoter d'un bloc.
+Le décalage `i * 16` dans l'animation donne à chaque LED une teinte légèrement différente de sa voisine (16 LEDs × 16 = 256, soit un tour complet des teintes) : c'est ce qui étale l'arc-en-ciel sur le bandeau au lieu de le faire clignoter d'un bloc.
 
 ### Attention à la consommation
 
-Une LED WS2812 à fond en blanc (`255, 255, 255`) tire environ **60 mA**. Pour 8 LEDs, cela fait presque 500 mA — davantage que ce qu'un port USB fournit confortablement.
+Une LED WS2812 à fond en blanc (`255, 255, 255`) tire environ **60 mA**. Pour 16 LEDs, cela fait presque 1 A — bien plus que ce qu'un port USB fournit confortablement.
 
 En atelier, on reste donc sur des couleurs modérées. Pour un bandeau plus long ou à pleine puissance, il faut une **alimentation 5 V séparée**, avec la masse reliée à celle de l'ESP32.
 
@@ -214,7 +214,7 @@ Un appui sur le bouton = un cran. Pas d'animation automatique : c'est toi qui ti
 
 ### 2. Un compteur binaire
 
-Chaque LED est un bit : LED 0 = 1, LED 1 = 2, LED 2 = 4, et ainsi de suite jusqu'à 128 avec la LED 7. C'est exactement comme ça qu'un ordinateur compte.
+Chaque LED est un bit : LED 0 = 1, LED 1 = 2, LED 2 = 4, et ainsi de suite jusqu'à 128 avec la LED 7 (le programme compte sur 8 bits, les LEDs 8 à 15 restent éteintes). C'est exactement comme ça qu'un ordinateur compte.
 
 <GitHubCodeBlock
   repo="vincent-herm/fablab-esp32-ateliers"
@@ -229,9 +229,16 @@ Chaque LED est un bit : LED 0 = 1, LED 1 = 2, LED 2 = 4, et ainsi de suite jusqu
 
 5 = 4 + 1, soit `00000101` en binaire : la LED 0 vaut 1 et la LED 2 vaut 4. Regarde aussi le Shell de Thonny : le programme y écrit le nombre en décimal **et** en binaire.
 
-Et à 255 ? Toutes les LEDs sont allumées. Le 256ᵉ appui remet tout à zéro : avec 8 bits, on ne peut pas aller plus loin.
+Et à 255 ? Les 8 premières LEDs sont toutes allumées. Le 256ᵉ appui remet tout à zéro : avec 8 bits, on ne peut pas aller plus loin.
 
 </Prediction>
+
+<ToiDeJouer>
+
+- Ton bandeau a 16 LEDs : mets `BITS = 16` et compte jusqu'à **65 535**. Combien d'appuis pour allumer la LED 15 ? (Indice : 32 768.)
+- Change la couleur des LEDs allumées : `(0, 20, 60)`
+
+</ToiDeJouer>
 
 ### 3. Le jeu de réflexes
 
@@ -265,7 +272,7 @@ Le dé tire des valeurs au hasard de plus en plus lentement, puis s'arrête. Le 
 
 <ToiDeJouer>
 
-- Passe à un dé à 8 faces : `random.randint(1, 8)`
+- Passe à un dé à 12 faces : `random.randint(1, 12)`
 - Change la vitesse du ralentissement : `delai * 1.25` devient `delai * 1.1`
 - Lance le dé 60 fois : comptes-tu vraiment autant de 6 que de 1 ?
 
