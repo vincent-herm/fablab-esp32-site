@@ -4,7 +4,7 @@ import Layout from '../layouts/Layout.astro';
 // Page d'information pour le comité MESH07, en cours de validation. Vendeur : association SOLEVIAH.
 // Détail du calcul : Coffre Vincent/1 PROJECTS/Meshtastic Sud-Ardèche…/kit-mesh-solaire-etude.md
 
-const PRIX = 109;
+const PRIX = 100;
 const EMAIL = 'vincent@opentek.fr';
 const sujet = encodeURIComponent('Nœud Meshtastic solaire : mon avis');
 const corps = encodeURIComponent('Bonjour,\n\nMon avis sur le nœud Meshtastic solaire proposé :\n\nNom :\nCommune / hameau :\nIntéressé·e par ... nœud(s) : \n');
@@ -35,7 +35,7 @@ const questions = [
   noindex
   description="Un nœud de communication sans réseau mobile ni internet, alimenté par le soleil, déjà réglé pour le réseau mesh du Sud-Ardèche."
 >
-  <div class="bg-amber-500/15 border-b border-amber-500/30 text-amber-300 text-sm text-center py-3 px-4">
+  <div class="bg-amber-400 border-b border-amber-600 text-neutral-900 text-sm sm:text-base text-center py-3 px-4">
     <strong>En cours de validation</strong> : page donnée uniquement pour information au comité MESH07. Le prix et les conditions peuvent changer, aucune commande n'est possible pour l'instant.
   </div>
 
@@ -43,14 +43,14 @@ const questions = [
     <img src="/images/mesh/hameau.jpg" alt="Hameau ardéchois entouré de prés, vu depuis les hauteurs" class="absolute inset-0 w-full h-full object-cover opacity-50" width="1280" height="960" loading="eager" />
     <div class="absolute inset-0 bg-gradient-to-b from-base-100/20 via-base-100/55 to-base-100"></div>
     <div class="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-      <p class="text-base-content/60 text-sm font-mono font-medium mb-3">// mesh07 · Sud-Ardèche</p>
+      <p class="text-base-content/75 text-sm font-mono font-medium mb-3">// mesh07 · Sud-Ardèche</p>
       <h1 class="text-4xl sm:text-5xl font-black mb-5 max-w-3xl">Écrire à ses voisins quand le réseau est tombé</h1>
       <p class="text-base-content/75 text-lg leading-relaxed max-w-2xl">
         Un petit boîtier posé dehors, alimenté par le soleil, qui relaie des messages d'un hameau à l'autre. Sans réseau mobile, sans internet, sans abonnement : votre smartphone sert d'écran et de clavier.
       </p>
       <div class="mt-8 flex flex-wrap items-center gap-4">
         <a href="#reserver" class="btn btn-primary btn-lg">Voir le prix prévisionnel · {PRIX} €</a>
-        <span class="text-sm text-base-content/60">Prix net, remise en main propre, réservé aux adhérents</span>
+        <span class="text-sm text-base-content/75">Prix net, remise en main propre, réservé aux adhérents</span>
       </div>
     </div>
   </section>
@@ -99,7 +99,7 @@ const questions = [
             <text x="266" y="286" font-size="11" opacity="0.7">Bluetooth</text>
           </g>
         </svg>
-        <figcaption class="text-xs text-base-content/50 mt-2 text-center">Schéma de principe</figcaption>
+        <figcaption class="text-xs text-base-content/75 mt-2 text-center">Schéma de principe</figcaption>
       </figure>
     </div>
   </section>
@@ -113,22 +113,22 @@ const questions = [
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <figure>
           <img src="/images/mesh/produit-face.jpg" alt="Face avant du nœud : le panneau solaire, avec ses dimensions 191,2 par 201,2 mm et 40 mm d'épaisseur" class="rounded-xl w-full bg-white" width="974" height="570" loading="lazy" />
-          <figcaption class="text-xs text-base-content/50 mt-2">Face avant : le panneau solaire de 5 W.</figcaption>
+          <figcaption class="text-xs text-base-content/75 mt-2">Face avant : le panneau solaire de 5 W.</figcaption>
         </figure>
         <figure>
           <img src="/images/mesh/produit-contenu.jpg" alt="Contenu de la boîte : nœud, antenne, équerres et collier de fixation en inox, câbles, visserie" class="rounded-xl w-full bg-white" width="1070" height="774" loading="lazy" />
-          <figcaption class="text-xs text-base-content/50 mt-2">Dans la boîte : antenne, équerres et collier inox, câble USB, câble d'antenne, visserie.</figcaption>
+          <figcaption class="text-xs text-base-content/75 mt-2">Dans la boîte : antenne, équerres et collier inox, câble USB, câble d'antenne, visserie.</figcaption>
         </figure>
         <figure>
           <img src="/images/mesh/produit-dos.jpg" alt="Face arrière du nœud avec les deux inserts de fixation et les connecteurs étanches" class="rounded-xl w-full bg-white" width="1078" height="798" loading="lazy" />
-          <figcaption class="text-xs text-base-content/50 mt-2">Face arrière : inserts de fixation et connecteurs.</figcaption>
+          <figcaption class="text-xs text-base-content/75 mt-2">Face arrière : inserts de fixation et connecteurs.</figcaption>
         </figure>
         <figure>
           <img src="/images/mesh/produit-connecteur.jpg" alt="Gros plan sur le connecteur d'antenne doré et le bouchon étanche" class="rounded-xl w-full bg-white" width="1122" height="864" loading="lazy" />
-          <figcaption class="text-xs text-base-content/50 mt-2">Le connecteur d'antenne, sur le côté du boîtier.</figcaption>
+          <figcaption class="text-xs text-base-content/75 mt-2">Le connecteur d'antenne, sur le côté du boîtier.</figcaption>
         </figure>
       </div>
-      <p class="text-xs text-base-content/45 mt-6">Photos : Seeed Studio.</p>
+      <p class="text-xs text-base-content/75 mt-6">Photos : Seeed Studio.</p>
     </div>
   </section>
 
@@ -143,14 +143,14 @@ const questions = [
         </ul>
       </div>
       <div class="rounded-2xl border border-primary/30 bg-primary/5 p-6 sm:p-8 self-start">
-        <p class="text-sm text-base-content/60 mb-1">Prix prévisionnel · nœud Meshtastic solaire, prêt à poser</p>
+        <p class="text-sm text-base-content/75 mb-1">Prix prévisionnel · nœud Meshtastic solaire, prêt à poser</p>
         <p class="text-5xl font-black mb-1">{PRIX} €</p>
-        <p class="text-sm text-base-content/60 mb-6">Prix net : SOLEVIAH n'est pas assujettie à la TVA. Pas de frais de port, garantie comprise.</p>
+        <p class="text-sm text-base-content/75 mb-6">Prix net : SOLEVIAH n'est pas assujettie à la TVA. Pas de frais de port, garantie comprise.</p>
         <a class="btn btn-outline w-full" href={`mailto:${EMAIL}?subject=${sujet}&body=${corps}`}>Donner son avis au comité</a>
-        <p class="text-xs text-base-content/55 mt-4 leading-relaxed">
+        <p class="text-xs text-base-content/75 mt-4 leading-relaxed">
           Aucune commande n'est ouverte. Ce prix repose sur une remise du fabricant pour une commande groupée d'une cinquantaine de pièces, qui reste à confirmer.
         </p>
-        <div class="border-t border-base-200/60 mt-5 pt-4 text-xs text-base-content/55 leading-relaxed">
+        <div class="border-t border-base-200/60 mt-5 pt-4 text-xs text-base-content/75 leading-relaxed">
           <strong class="text-base-content/70">Vendeur :</strong> association SOLEVIAH (loi 1901), SIREN 991 879 214, 593 route de Brès, 07230 Payzac. Vente réservée aux adhérents (cotisation de 20 € par an, valable un an).
         </div>
       </div>
@@ -175,7 +175,7 @@ const questions = [
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 sm:grid-cols-2 gap-6">
       <figure>
         <img src="/images/mesh/hameau2.jpg" alt="Hameau de pierre niché dans la végétation, Sud-Ardèche" class="rounded-xl w-full h-64 object-cover" width="1280" height="960" loading="lazy" />
-        <figcaption class="text-xs text-base-content/50 mt-2">Hameau de Rimouren (Gras), FredSeiller, CC BY-SA 4.0, via Wikimedia Commons</figcaption>
+        <figcaption class="text-xs text-base-content/75 mt-2">Hameau de Rimouren (Gras), FredSeiller, CC BY-SA 4.0, via Wikimedia Commons</figcaption>
       </figure>
       <div class="flex flex-col justify-center">
         <h2 class="text-2xl font-black mb-3">Un réseau de voisins</h2>
@@ -184,7 +184,7 @@ const questions = [
         </p>
       </div>
     </div>
-    <p class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-xs text-base-content/45 mt-8">
+    <p class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-xs text-base-content/75 mt-8">
       Photo d'ouverture : hameau de La Prade-Freyssenet (Darbres), Kakoula10, CC BY-SA 4.0, via Wikimedia Commons.
     </p>
   </section>
