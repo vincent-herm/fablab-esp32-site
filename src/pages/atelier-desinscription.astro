@@ -1,0 +1,75 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const ENDPOINT = 'https://n8n.opentek.fr/webhook/omaiah-atelier-desinscription';
+const EMAIL = 'vincent@opentek.fr';
+---
+
+<Layout
+  title="Me désinscrire de l'atelier ESP32"
+  description="Libérer ma place à l'atelier découverte de l'univers ESP32."
+>
+  <section class="py-20 hero-pattern border-b border-base-200/60">
+    <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+      <p class="text-base-content/50 text-sm font-mono font-medium mb-3">// atelier découverte</p>
+      <h1 class="text-4xl sm:text-5xl font-black mb-5">Me désinscrire</h1>
+    </div>
+  </section>
+
+  <section class="py-12">
+    <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div id="bloc" class="rounded-xl border border-primary/30 bg-primary/5 p-6 sm:p-8 space-y-5" data-endpoint={ENDPOINT}>
+        <p id="question" class="text-base-content/80 leading-relaxed"></p>
+        <div class="flex flex-wrap items-center gap-4">
+          <button id="confirmer" type="button" class="btn btn-primary">Oui, libérer ma place</button>
+          <a href="/atelier-decouverte/" class="btn btn-ghost">Non, je garde ma place</a>
+        </div>
+        <p id="statut" role="status" aria-live="polite" class="text-sm text-base-content/70"></p>
+      </div>
+      <p class="mt-6 text-sm text-base-content/60">Un souci avec ce lien ? Écrivez à <a class="link" href={`mailto:${EMAIL}`}>{EMAIL}</a>.</p>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  const LAB: Record<string, string> = { '16': 'mercredi 4 novembre', '17': 'mercredi 18 novembre' };
+  const bloc = document.getElementById('bloc');
+  const question = document.getElementById('question');
+  const bouton = document.getElementById('confirmer') as HTMLButtonElement | null;
+  const statut = document.getElementById('statut');
+  const t = new URLSearchParams(location.search).get('t') || '';
+  const seance = LAB[t.split('.')[1]];
+
+  if (bloc && question && bouton && statut) {
+    if (!seance) {
+      question.textContent = 'Ce lien n’est pas valide. Utilisez le lien reçu dans votre email de confirmation.';
+      bouton.style.display = 'none';
+    } else {
+      question.textContent = `Voulez-vous libérer votre place pour l’atelier découverte ESP32 du ${seance} (14 h – 17 h) ?`;
+      bouton.addEventListener('click', async () => {
+        bouton.disabled = true;
+        statut.textContent = 'Un instant…';
+        try {
+          const r = await fetch(bloc.dataset.endpoint as string, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ t }),
+          });
+          const rep = await r.json().catch(() => null);
+          if (rep && rep.ok && rep.deja) {
+            statut.textContent = 'Votre place était déjà libérée. Rien à faire de plus.';
+          } else if (rep && rep.ok) {
+            statut.textContent = 'C’est fait : votre place est libérée. Un email de confirmation vous est envoyé.';
+            bouton.style.display = 'none';
+          } else {
+            statut.textContent = (rep && rep.erreur) || 'Une erreur est survenue. Écrivez-moi à vincent@opentek.fr.';
+            bouton.disabled = false;
+          }
+        } catch {
+          statut.textContent = 'Une erreur est survenue. Écrivez-moi à vincent@opentek.fr.';
+          bouton.disabled = false;
+        }
+      });
+    }
+  }
+</script>
