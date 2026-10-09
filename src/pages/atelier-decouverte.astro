@@ -72,9 +72,9 @@ const seances = [
           </div>
 
           <div class="space-y-3 text-sm">
+            <label class="flex items-start gap-3 cursor-pointer"><input type="checkbox" name="consentement" id="a-consentement" required class="checkbox checkbox-sm mt-0.5" /><span>J'accepte que mes coordonnées soient utilisées pour gérer mon inscription à l'atelier. Elles ne servent à rien d'autre.</span></label>
             <label class="flex items-start gap-3 cursor-pointer"><input type="checkbox" name="mineur" class="checkbox checkbox-sm mt-0.5" /><span>J'ai moins de 18 ans (une autorisation parentale écrite sera demandée).</span></label>
             <label class="flex items-start gap-3 cursor-pointer"><input type="checkbox" name="dejaAdherent" class="checkbox checkbox-sm mt-0.5" /><span>Je suis déjà adhérent·e de l'association SOLEVIAH.</span></label>
-            <label class="flex items-start gap-3 cursor-pointer"><input type="checkbox" name="consentement" id="a-consentement" required class="checkbox checkbox-sm mt-0.5" /><span>J'accepte que mes coordonnées soient utilisées pour gérer mon inscription à l'atelier. Elles ne servent à rien d'autre.</span></label>
             <label class="flex items-start gap-3 cursor-pointer"><input type="checkbox" name="optinFablab" id="a-optin" class="checkbox checkbox-sm mt-0.5" /><span>(Facultatif) J'accepte d'être prévenu·e par email des prochains ateliers et événements du fablab. Je peux retirer mon accord à tout moment. Cela n'a aucun effet sur mon inscription.</span></label>
           </div>
 
@@ -108,11 +108,15 @@ const seances = [
         const txt = label?.querySelector('[data-restantes]');
         if (!label || !input || !txt) continue;
         input.disabled = false;
+        const el = label as HTMLElement;
+        const pleine = ['rounded-lg', 'border-2', 'border-warning', 'bg-warning/10', 'p-3'];
         if (s.complet) {
-          (label as HTMLElement).dataset.complet = '1';
-          txt.textContent = '· complet : liste d’attente';
+          el.dataset.complet = '1';
+          el.classList.add(...pleine);
+          txt.innerHTML = '<span class="badge badge-warning font-black mr-2">COMPLET</span><span class="font-semibold text-warning">cochez pour vous inscrire sur la liste d’attente</span>';
         } else {
-          delete (label as HTMLElement).dataset.complet;
+          delete el.dataset.complet;
+          el.classList.remove(...pleine);
           txt.textContent = `· ${s.restantes} place${s.restantes > 1 ? 's' : ''} restante${s.restantes > 1 ? 's' : ''}`;
         }
       }
@@ -121,6 +125,14 @@ const seances = [
     }
   }
   majPlaces();
+
+  function majBouton() {
+    if (!form || !envoi) return;
+    const cochees = Array.from(form.querySelectorAll<HTMLInputElement>('input[name="seances"]:checked'));
+    const pleines = cochees.filter((c) => (c.closest('label') as HTMLElement | null)?.dataset.complet === '1');
+    envoi.textContent = cochees.length && pleines.length === cochees.length ? 'Me mettre sur la liste d’attente' : pleines.length ? 'Je réserve / liste d’attente' : 'Je réserve';
+  }
+  form?.addEventListener('change', majBouton);
 
   if (form && statut && envoi) {
     form.addEventListener('submit', async (e) => {
