@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { siteUrl } from '../utils/url';
 
 const ENDPOINT = 'https://n8n.opentek.fr/webhook/omaiah-atelier-inscription';
 const PLACES = 'https://n8n.opentek.fr/webhook/omaiah-atelier-places';
@@ -13,15 +14,23 @@ const seances = [
 
 <Layout
   title="Atelier découverte de l'univers ESP32"
-  description="Deux mercredis pour découvrir l'ESP32, une petite carte programmable, au Polinno de Joyeuse : gratuit pour le lancement, sur inscription, 10 places par séance."
+  description="Initiation à l'électronique numérique : contrôlez votre monde avec l'ESP32, une carte programmable à quelques euros. Deux mercredis au Polinno de Joyeuse, gratuit pour le lancement, 10 places par séance."
 >
-  <section class="py-20 hero-pattern border-b border-base-200/60">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-      <p class="text-base-content/50 text-sm font-mono font-medium mb-3">// atelier découverte</p>
-      <h1 class="text-4xl sm:text-5xl font-black mb-5">Découvrez l'univers ESP32</h1>
-      <p class="text-base-content/65 text-lg leading-relaxed max-w-2xl">
-        Une petite carte à quelques euros, qui se programme en direct. Vous travaillez à votre rythme, accompagné, avec des supports fournis. Une séance ou les deux, c'est vous qui choisissez.
-      </p>
+  <section class="py-16 hero-pattern border-b border-base-200/60">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-5 gap-10 items-center">
+      <div class="md:col-span-3">
+        <p class="text-primary text-xs font-bold uppercase tracking-widest mb-3">Électronique numérique · Atelier découverte</p>
+        <h1 class="text-4xl sm:text-5xl font-black mb-3">Découvrez l'univers ESP32</h1>
+        <p class="text-2xl font-serif italic font-bold text-warning mb-5">Contrôlez votre monde.</p>
+        <p class="text-base-content/70 text-lg leading-relaxed">
+          Initiation à l'électronique numérique avec l'ESP32, une carte programmable à quelques euros qui permet de <strong class="text-base-content">mesurer et de piloter le monde réel</strong> : capteurs, lumières, écrans, objets connectés, depuis son téléphone. Aucune connaissance requise, chacun avance à son rythme. Une séance ou les deux.
+        </p>
+        <p class="mt-6"><a href="#reserver" class="btn btn-primary">Réserver ma place</a></p>
+      </div>
+      <figure class="md:col-span-2">
+        <img src={siteUrl('/atelier-decouverte-ecosysteme.jpg')} alt="Une carte électronique entourée d'un écosystème connecté : éolienne, arbres, ondes Wi-Fi" class="rounded-xl bg-white w-full" width="1198" height="799" loading="eager" />
+        <figcaption class="text-xs text-base-content/50 mt-2">Illustration générée par IA</figcaption>
+      </figure>
     </div>
   </section>
 
