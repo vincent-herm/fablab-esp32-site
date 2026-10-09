@@ -21,6 +21,6 @@ export default defineConfig({
   },
   integrations: [
     mdx(),
-    sitemap()
+    sitemap({ filter: (page) => !page.includes('/noeud-solaire/') })
   ]
 });
