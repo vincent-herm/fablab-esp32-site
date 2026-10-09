@@ -1,0 +1,174 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const ENDPOINT = 'https://n8n.opentek.fr/webhook/omaiah-atelier-inscription';
+const PLACES = 'https://n8n.opentek.fr/webhook/omaiah-atelier-places';
+const EMAIL = 'vincent@opentek.fr';
+const seances = [
+  { id: 16, jour: 'Mercredi 4 novembre', horaire: '14 h – 17 h' },
+  { id: 17, jour: 'Mercredi 18 novembre', horaire: '14 h – 17 h' },
+];
+---
+
+<Layout
+  title="Atelier découverte de l'univers ESP32"
+  description="Deux mercredis pour découvrir l'ESP32, une petite carte programmable, à Payzac : gratuit pour le lancement, sur inscription, 10 places par séance."
+>
+  <section class="py-20 hero-pattern border-b border-base-200/60">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <p class="text-base-content/50 text-sm font-mono font-medium mb-3">// atelier découverte</p>
+      <h1 class="text-4xl sm:text-5xl font-black mb-5">Découvrez l'univers ESP32</h1>
+      <p class="text-base-content/65 text-lg leading-relaxed max-w-2xl">
+        Une petite carte à quelques euros, qui se programme en direct. Vous travaillez à votre rythme, accompagné, avec des supports fournis. Une séance ou les deux, c'est vous qui choisissez.
+      </p>
+    </div>
+  </section>
+
+  <section class="py-16">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 gap-12">
+      <div>
+        <h2 class="text-2xl font-black mb-5">Comment ça se passe</h2>
+        <ul class="space-y-3 text-base-content/70 leading-relaxed list-disc pl-5">
+          <li>Deux séances de 3 heures, à Payzac : <strong>mercredi 4 novembre</strong> et <strong>mercredi 18 novembre</strong>, de 14 h à 17 h. On peut venir à l'une, à l'autre, ou aux deux.</li>
+          <li>Chacun avance en autonomie, accompagné, à partir de supports fournis. Aucun prérequis, dès 15 ans.</li>
+          <li>Les ordinateurs sont sur place. Vous pouvez aussi apporter le vôtre pour y installer ce qu'il faut (Windows, Mac ou Linux). Les tablettes ne conviennent pas.</li>
+          <li>Une carte ESP32 est offerte pour continuer le travail chez soi, si vous le souhaitez.</li>
+          <li><strong>10 places maximum</strong> par séance.</li>
+        </ul>
+        <h2 class="text-2xl font-black mt-10 mb-4">Tarif</h2>
+        <p class="text-base-content/70 leading-relaxed">
+          Les séances sont <strong>gratuites pour le lancement</strong>. Seule l'adhésion à l'association SOLEVIAH est demandée : <strong>20 €</strong>, valable un an, à régler sur place (une attestation vous est remise). Si vous êtes déjà adhérent·e, il n'y a rien à payer.
+        </p>
+      </div>
+
+      <div id="reserver" class="rounded-xl border border-primary/30 bg-primary/5 p-6 sm:p-8 scroll-mt-24">
+        <h2 class="text-2xl font-black mb-6">Réserver sa place</h2>
+        <form id="form-atelier" class="space-y-5" novalidate data-endpoint={ENDPOINT} data-places={PLACES}>
+          <fieldset class="space-y-3">
+            <legend class="font-semibold text-sm mb-2">Quelle(s) séance(s) ?</legend>
+            {seances.map((s) => (
+              <label class="flex items-center gap-3 cursor-pointer" data-seance={s.id}>
+                <input type="checkbox" name="seances" value={s.id} class="checkbox checkbox-primary" />
+                <span>{s.jour}, {s.horaire} <span class="text-base-content/60 text-sm" data-restantes></span></span>
+              </label>
+            ))}
+          </fieldset>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <label class="form-control"><span class="text-sm font-semibold">Prénom</span>
+              <input id="a-prenom" class="input input-bordered w-full" name="prenom" required autocomplete="given-name" /></label>
+            <label class="form-control"><span class="text-sm font-semibold">Nom</span>
+              <input id="a-nom" class="input input-bordered w-full" name="nom" required autocomplete="family-name" /></label>
+            <label class="form-control"><span class="text-sm font-semibold">Email</span>
+              <input id="a-email" class="input input-bordered w-full" name="email" type="email" required autocomplete="email" /></label>
+            <label class="form-control"><span class="text-sm font-semibold">Téléphone <span class="font-normal text-base-content/60">(facultatif)</span></span>
+              <input id="a-tel" class="input input-bordered w-full" name="telephone" type="tel" autocomplete="tel" /></label>
+          </div>
+
+          <!-- piège à robots : invisible pour une personne -->
+          <div aria-hidden="true" style="position:absolute;left:-9999px;height:0;overflow:hidden">
+            <label>Ne pas remplir <input name="website" tabindex="-1" autocomplete="off" /></label>
+          </div>
+
+          <div class="space-y-3 text-sm">
+            <label class="flex items-start gap-3 cursor-pointer"><input type="checkbox" name="mineur" class="checkbox checkbox-sm mt-0.5" /><span>J'ai moins de 18 ans (une autorisation parentale écrite sera demandée).</span></label>
+            <label class="flex items-start gap-3 cursor-pointer"><input type="checkbox" name="dejaAdherent" class="checkbox checkbox-sm mt-0.5" /><span>Je suis déjà adhérent·e de l'association SOLEVIAH.</span></label>
+            <label class="flex items-start gap-3 cursor-pointer"><input type="checkbox" name="consentement" id="a-consentement" required class="checkbox checkbox-sm mt-0.5" /><span>J'accepte que mes coordonnées soient utilisées pour gérer mon inscription à l'atelier. Elles ne servent à rien d'autre.</span></label>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-4">
+            <button type="submit" id="atelier-envoi" class="btn btn-primary">Je réserve</button>
+            <p id="atelier-statut" role="status" aria-live="polite" class="text-sm text-base-content/70"></p>
+          </div>
+        </form>
+        <p class="mt-6 pt-4 border-t border-base-200/80 text-sm text-base-content/60">
+          Une question, ou plus de place ? Écrivez à <a class="link" href={`mailto:${EMAIL}`}>{EMAIL}</a> ou appelez le <a class="link" href="tel:+33646246199">06 46 24 61 99</a>. Atelier proposé par l'association SOLEVIAH.
+        </p>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  const form = document.getElementById('form-atelier') as HTMLFormElement | null;
+  const statut = document.getElementById('atelier-statut');
+  const envoi = document.getElementById('atelier-envoi') as HTMLButtonElement | null;
+
+  async function majPlaces() {
+    if (!form) return;
+    try {
+      const r = await fetch(form.dataset.places as string);
+      if (!r.ok) return;
+      const data = await r.json();
+      for (const s of data.seances as { id: number; restantes: number; complet: boolean }[]) {
+        const label = form.querySelector(`label[data-seance="${s.id}"]`);
+        const input = label?.querySelector('input') as HTMLInputElement | null;
+        const txt = label?.querySelector('[data-restantes]');
+        if (!label || !input || !txt) continue;
+        if (s.complet) {
+          input.checked = false;
+          input.disabled = true;
+          txt.textContent = '· complet';
+        } else {
+          input.disabled = false;
+          txt.textContent = `· ${s.restantes} place${s.restantes > 1 ? 's' : ''} restante${s.restantes > 1 ? 's' : ''}`;
+        }
+      }
+    } catch {
+      /* l’affichage des places est facultatif */
+    }
+  }
+  majPlaces();
+
+  if (form && statut && envoi) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!form.querySelector('input[name="seances"]:checked')) {
+        statut.textContent = 'Choisissez au moins une séance.';
+        return;
+      }
+      if (!form.reportValidity()) return;
+      const data = new FormData(form);
+      const corps = {
+        prenom: data.get('prenom'),
+        nom: data.get('nom'),
+        email: data.get('email'),
+        telephone: data.get('telephone'),
+        seances: data.getAll('seances').map(Number),
+        mineur: data.get('mineur') === 'on',
+        dejaAdherent: data.get('dejaAdherent') === 'on',
+        consentement: data.get('consentement') === 'on',
+        consentementTexte: document.getElementById('a-consentement')?.closest('label')?.textContent?.trim().replace(/\s+/g, ' '),
+        website: data.get('website'),
+        source: location.pathname,
+      };
+      envoi.disabled = true;
+      statut.textContent = 'Envoi en cours…';
+      try {
+        const r = await fetch(form.dataset.endpoint as string, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(corps),
+        });
+        const rep = await r.json().catch(() => null);
+        if (rep && rep.ok && rep.deja) {
+          statut.textContent = 'Vous êtes déjà inscrit·e à cette séance. Rien à refaire.';
+        } else if (rep && rep.ok) {
+          form.reset();
+          statut.textContent = 'C’est réservé ! Un email de confirmation vous est envoyé (pensez à regarder vos courriers indésirables).';
+        } else if (rep && Array.isArray(rep.complet)) {
+          statut.textContent = 'Une des séances choisies vient de se remplir. Choisissez-en une autre, ou écrivez-moi.';
+        } else if (rep && rep.erreur) {
+          statut.textContent = rep.erreur;
+        } else {
+          throw new Error(String(r.status));
+        }
+      } catch {
+        statut.textContent = 'Une erreur est survenue. Écrivez-moi à vincent@opentek.fr ou appelez le 06 46 24 61 99.';
+      } finally {
+        envoi.disabled = false;
+        majPlaces();
+      }
+    });
+  }
+</script>
