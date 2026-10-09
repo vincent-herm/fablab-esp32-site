@@ -3,6 +3,7 @@ import Layout from '../layouts/Layout.astro';
 
 const ENDPOINT = 'https://n8n.opentek.fr/webhook/omaiah-atelier-inscription';
 const PLACES = 'https://n8n.opentek.fr/webhook/omaiah-atelier-places';
+const ATTENTE = 'https://n8n.opentek.fr/webhook/omaiah-atelier-attente';
 const EMAIL = 'vincent@opentek.fr';
 const seances = [
   { id: 16, jour: 'Mercredi 4 novembre', horaire: '14 h – 17 h' },
@@ -43,7 +44,7 @@ const seances = [
 
       <div id="reserver" class="rounded-xl border border-primary/30 bg-primary/5 p-6 sm:p-8 scroll-mt-24">
         <h2 class="text-2xl font-black mb-6">Réserver sa place</h2>
-        <form id="form-atelier" class="space-y-5" novalidate data-endpoint={ENDPOINT} data-places={PLACES}>
+        <form id="form-atelier" class="space-y-5" novalidate data-endpoint={ENDPOINT} data-places={PLACES} data-attente={ATTENTE}>
           <fieldset class="space-y-3">
             <legend class="font-semibold text-sm mb-2">Quelle(s) séance(s) ?</legend>
             {seances.map((s) => (
@@ -106,12 +107,12 @@ const seances = [
         const input = label?.querySelector('input') as HTMLInputElement | null;
         const txt = label?.querySelector('[data-restantes]');
         if (!label || !input || !txt) continue;
+        input.disabled = false;
         if (s.complet) {
-          input.checked = false;
-          input.disabled = true;
-          txt.textContent = '· complet';
+          (label as HTMLElement).dataset.complet = '1';
+          txt.textContent = '· complet : liste d’attente';
         } else {
-          input.disabled = false;
+          delete (label as HTMLElement).dataset.complet;
           txt.textContent = `· ${s.restantes} place${s.restantes > 1 ? 's' : ''} restante${s.restantes > 1 ? 's' : ''}`;
         }
       }
@@ -147,24 +148,33 @@ const seances = [
       };
       envoi.disabled = true;
       statut.textContent = 'Envoi en cours…';
+      const post = async (url: string, seances: number[]) => {
+        const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...corps, seances }) });
+        return r.json().catch(() => null);
+      };
       try {
-        const r = await fetch(form.dataset.endpoint as string, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(corps),
-        });
-        const rep = await r.json().catch(() => null);
-        if (rep && rep.ok && rep.deja) {
-          statut.textContent = 'Vous êtes déjà inscrit·e à cette séance. Rien à refaire.';
-        } else if (rep && rep.ok) {
-          form.reset();
-          statut.textContent = 'C’est réservé ! Un email de confirmation vous est envoyé (pensez à regarder vos courriers indésirables).';
-        } else if (rep && Array.isArray(rep.complet)) {
-          statut.textContent = 'Une des séances choisies vient de se remplir. Choisissez-en une autre, ou écrivez-moi.';
-        } else if (rep && rep.erreur) {
-          statut.textContent = rep.erreur;
+        const choisies = corps.seances as number[];
+        const pleines = choisies.filter((id) => form.querySelector<HTMLElement>(`label[data-seance="${id}"]`)?.dataset.complet === '1');
+        const libres = choisies.filter((id) => !pleines.includes(id));
+        const messages: string[] = [];
+        let echec: string | null = null;
+        if (libres.length) {
+          const rep = await post(form.dataset.endpoint as string, libres);
+          if (rep && rep.ok && rep.deja) messages.push('Vous étiez déjà inscrit·e à cette séance.');
+          else if (rep && rep.ok) messages.push('C’est réservé ! Un email de confirmation vous est envoyé (pensez à regarder vos courriers indésirables).');
+          else if (rep && Array.isArray(rep.complet)) pleines.push(...rep.complet);
+          else echec = (rep && rep.erreur) || 'erreur';
+        }
+        if (!echec && pleines.length) {
+          const rep = await post(form.dataset.attente as string, pleines);
+          if (rep && rep.ok) messages.push('Cette séance est complète : vous êtes sur la liste d’attente. Si une place se libère, vous recevrez un email et aurez 2 heures pour confirmer.');
+          else echec = (rep && rep.erreur) || 'erreur';
+        }
+        if (echec) {
+          statut.textContent = echec === 'erreur' ? 'Une erreur est survenue. Écrivez-moi à vincent@opentek.fr ou appelez le 06 46 24 61 99.' : echec;
         } else {
-          throw new Error(String(r.status));
+          form.reset();
+          statut.textContent = messages.join(' ');
         }
       } catch {
         statut.textContent = 'Une erreur est survenue. Écrivez-moi à vincent@opentek.fr ou appelez le 06 46 24 61 99.';
