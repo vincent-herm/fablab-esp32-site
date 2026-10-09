@@ -5,6 +5,7 @@ import Layout from '../layouts/Layout.astro';
 // Détail du calcul : Coffre Vincent/1 PROJECTS/Meshtastic Sud-Ardèche…/kit-mesh-solaire-etude.md
 
 const PRIX = 100;
+const PRIX_PERSO = 71;
 const EMAIL = 'vincent@opentek.fr';
 const sujet = encodeURIComponent('Nœud Meshtastic solaire : mon avis');
 const corps = encodeURIComponent('Bonjour,\n\nMon avis sur le nœud Meshtastic solaire proposé :\n\nNom :\nCommune / hameau :\nIntéressé·e par ... nœud(s) : \n');
@@ -19,6 +20,15 @@ const inclus = [
   'Notice en français : pose, appairage au smartphone, premiers messages',
   'Remise en main propre en Sud-Ardèche, sans frais de port',
   'Garantie légale de 2 ans, assistance par email',
+];
+
+const inclusPerso = [
+  'Boîtier compact en aluminium et verre (52 × 52 × 15 mm) avec carte Heltec WiFi LoRa 32 V4, version 868 MHz',
+  'Antenne 868 MHz fournie, et une antenne supplémentaire de rechange ou plus performante',
+  'Batterie 18650 rechargeable, installée, rechargeable en USB-C',
+  'Se connecte en Bluetooth à l\'appli Meshtastic de votre smartphone',
+  'Notice en français : appairage, premiers messages',
+  'Remise en main propre en Sud-Ardèche, garantie légale de 2 ans',
 ];
 
 const questions = [
@@ -46,11 +56,11 @@ const questions = [
       <p class="text-base-content/75 text-sm font-mono font-medium mb-3">// mesh07 · Sud-Ardèche</p>
       <h1 class="text-4xl sm:text-5xl font-black mb-5 max-w-3xl">Écrire à ses voisins quand le réseau est tombé</h1>
       <p class="text-base-content/75 text-lg leading-relaxed max-w-2xl">
-        Un petit boîtier posé dehors, alimenté par le soleil, qui relaie des messages d'un hameau à l'autre. Sans réseau mobile, sans internet, sans abonnement : votre smartphone sert d'écran et de clavier.
+        Un boîtier sur le toit, alimenté par le soleil, relaie les messages d'un hameau à l'autre. Dans la maison, un petit boîtier personnel relie votre smartphone au réseau. Sans réseau mobile, sans internet, sans abonnement.
       </p>
       <div class="mt-8 flex flex-wrap items-center gap-4">
-        <a href="#reserver" class="btn btn-primary btn-lg">Voir le prix prévisionnel · {PRIX} €</a>
-        <span class="text-sm text-base-content/75">Prix net, remise en main propre, réservé aux adhérents</span>
+        <a href="#reserver" class="btn btn-primary btn-lg">Voir les prix prévisionnels : {PRIX} € et {PRIX_PERSO} €</a>
+        <span class="text-sm text-base-content/75">Prix nets, remise en main propre, réservé aux adhérents</span>
       </div>
     </div>
   </section>
@@ -128,7 +138,24 @@ const questions = [
 
   <section class="py-16 border-t border-base-200/60">
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 class="text-2xl font-black mb-2">Le nœud, de près</h2>
+      <h2 class="text-2xl font-black mb-6">Deux boîtiers, deux rôles</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="rounded-xl border border-base-200/80 bg-base-200/20 p-6">
+          <h3 class="font-bold text-lg mb-2">Le nœud de toit · {PRIX} €</h3>
+          <p class="text-base-content/80 leading-relaxed">Posé dehors, au soleil, il est autonome et sert de <strong>relais</strong> au hameau. Il étend la portée du réseau et reste en service jour et nuit.</p>
+        </div>
+        <div class="rounded-xl border border-base-200/80 bg-base-200/20 p-6">
+          <h3 class="font-bold text-lg mb-2">Le nœud personnel · {PRIX_PERSO} €</h3>
+          <p class="text-base-content/80 leading-relaxed">Dans la maison, il relie <strong>votre smartphone</strong> au réseau : le téléphone se connecte en Bluetooth au boîtier, et le boîtier parle par radio au nœud du toit.</p>
+        </div>
+      </div>
+      <p class="text-sm text-base-content/75 mt-5 max-w-3xl">Un smartphone ne sait pas émettre en radio : chaque foyer a donc besoin de son boîtier personnel. Le nœud de toit, lui, n'est pas fait pour écrire depuis son salon, le Bluetooth ne portant que quelques mètres.</p>
+    </div>
+  </section>
+
+  <section class="py-16 border-t border-base-200/60">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-black mb-2">Le nœud de toit, de près</h2>
       <p class="text-base-content/70 leading-relaxed mb-8 max-w-2xl">
         Le panneau solaire fait office de couvercle : un seul boîtier gris, plat, de 191 × 201 mm pour 40 mm d'épaisseur. L'antenne se visse sur le côté, et la fixation sur un mât ou un mur se fait avec les pièces fournies.
       </p>
@@ -175,7 +202,7 @@ const questions = [
   <section class="py-16 border-t border-base-200/60" id="reserver">
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 gap-12">
       <div>
-        <h2 class="text-2xl font-black mb-5">Ce qui est inclus</h2>
+        <h2 class="text-2xl font-black mb-5">Nœud de toit : ce qui est inclus</h2>
         <ul class="space-y-3">
           {inclus.map((x) => (
             <li class="flex items-start gap-3 text-base-content/75 leading-relaxed"><span class="text-success mt-0.5">✓</span><span>{x}</span></li>
@@ -183,7 +210,7 @@ const questions = [
         </ul>
       </div>
       <div class="rounded-2xl border border-primary/30 bg-primary/5 p-6 sm:p-8 self-start">
-        <p class="text-sm text-base-content/75 mb-1">Prix prévisionnel · nœud Meshtastic solaire, prêt à poser</p>
+        <p class="text-sm text-base-content/75 mb-1">Prix prévisionnel · nœud de toit solaire, prêt à poser</p>
         <p class="text-5xl font-black mb-1">{PRIX} €</p>
         <p class="text-sm text-base-content/75 mb-6">Prix net : SOLEVIAH n'est pas assujettie à la TVA. Pas de frais de port, garantie comprise.</p>
         <a class="btn btn-outline w-full" href={`mailto:${EMAIL}?subject=${sujet}&body=${corps}`}>Donner son avis au comité</a>
@@ -193,6 +220,29 @@ const questions = [
         <div class="border-t border-base-200/60 mt-5 pt-4 text-xs text-base-content/75 leading-relaxed">
           <strong class="text-base-content/70">Vendeur :</strong> association SOLEVIAH (loi 1901), SIREN 991 879 214, 593 route de Brès, 07230 Payzac. Vente réservée aux adhérents (cotisation de 20 € par an, valable un an).
         </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-16 border-t border-base-200/60" id="perso">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 gap-12">
+      <div>
+        <h2 class="text-2xl font-black mb-5">Nœud personnel : ce qui est inclus</h2>
+        <ul class="space-y-3">
+          {inclusPerso.map((x) => (
+            <li class="flex items-start gap-3 text-base-content/80 leading-relaxed"><span class="text-success mt-0.5">✓</span><span>{x}</span></li>
+          ))}
+        </ul>
+        <p class="text-sm text-base-content/75 mt-5 leading-relaxed">Il est préparé comme le nœud de toit : firmware Meshtastic vérifié, région EU_868, nom et canal du groupe mesh07, test d'appairage avec votre smartphone.</p>
+      </div>
+      <div class="rounded-2xl border border-primary/30 bg-primary/5 p-6 sm:p-8 self-start">
+        <p class="text-sm text-base-content/75 mb-1">Prix prévisionnel · nœud personnel, prêt à l'emploi</p>
+        <p class="text-5xl font-black mb-1">{PRIX_PERSO} €</p>
+        <p class="text-sm text-base-content/75 mb-6">Prix net : SOLEVIAH n'est pas assujettie à la TVA. Pas de frais de port, garantie comprise.</p>
+        <a class="btn btn-outline w-full" href={`mailto:${EMAIL}?subject=${sujet}&body=${corps}`}>Donner son avis au comité</a>
+        <p class="text-xs text-base-content/75 mt-4 leading-relaxed">
+          Aucune commande n'est ouverte. Ce prix repose sur une remise du fabricant pour une commande groupée d'une cinquantaine de pièces, qui reste à confirmer.
+        </p>
       </div>
     </div>
   </section>
