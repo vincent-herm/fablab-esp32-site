@@ -74,6 +74,7 @@ const seances = [
             <label class="flex items-start gap-3 cursor-pointer"><input type="checkbox" name="mineur" class="checkbox checkbox-sm mt-0.5" /><span>J'ai moins de 18 ans (une autorisation parentale écrite sera demandée).</span></label>
             <label class="flex items-start gap-3 cursor-pointer"><input type="checkbox" name="dejaAdherent" class="checkbox checkbox-sm mt-0.5" /><span>Je suis déjà adhérent·e de l'association SOLEVIAH.</span></label>
             <label class="flex items-start gap-3 cursor-pointer"><input type="checkbox" name="consentement" id="a-consentement" required class="checkbox checkbox-sm mt-0.5" /><span>J'accepte que mes coordonnées soient utilisées pour gérer mon inscription à l'atelier. Elles ne servent à rien d'autre.</span></label>
+            <label class="flex items-start gap-3 cursor-pointer"><input type="checkbox" name="optinFablab" id="a-optin" class="checkbox checkbox-sm mt-0.5" /><span>(Facultatif) J'accepte d'être prévenu·e par email des prochains ateliers et événements du fablab. Je le confirmerai par un clic dans l'email que je recevrai, et je pourrai retirer mon accord à tout moment. Cela n'a aucun effet sur mon inscription.</span></label>
           </div>
 
           <div class="flex flex-wrap items-center gap-4">
@@ -139,6 +140,8 @@ const seances = [
         dejaAdherent: data.get('dejaAdherent') === 'on',
         consentement: data.get('consentement') === 'on',
         consentementTexte: document.getElementById('a-consentement')?.closest('label')?.textContent?.trim().replace(/\s+/g, ' '),
+        optinFablab: data.get('optinFablab') === 'on',
+        optinTexte: document.getElementById('a-optin')?.closest('label')?.textContent?.trim().replace(/\s+/g, ' '),
         website: data.get('website'),
         source: location.pathname,
       };
