@@ -33,7 +33,7 @@ const EMAIL = 'vincent@opentek.fr';
   <!-- À propos de Vincent -->
   <section class="py-16">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+      <div class="max-w-3xl">
         <div>
           <h2 class="text-2xl font-black mb-5">Vincent</h2>
           <div class="space-y-4 text-base-content/70 leading-relaxed">
@@ -46,29 +46,6 @@ const EMAIL = 'vincent@opentek.fr';
             <p>
               Aujourd'hui, je transmets cette expérience de deux façons :
             </p>
-          </div>
-        </div>
-
-        <div class="space-y-4">
-          <div class="rounded-xl border border-base-200/80 bg-base-200/30 p-5">
-            <h3 class="font-semibold text-sm mb-3">Ce que j'ai dans le fablab</h3>
-            <ul class="space-y-2 text-sm text-base-content/60">
-              {[
-                'Cartes ESP32',
-                'Lots de capteurs : DHT22, HC-SR04, MPU6050, RFID RC522...',
-                'Actionneurs : servos, moteurs, relais, LEDs',
-                'Cartes de prototypage et breadboards en quantité',
-                'Waveshare ESP32 Touch LCD 3.5" (écran + codec audio + micro)',
-                'Écrans Waveshare Touch LCD (1.28", 1.69", 2.1")',
-                'M5Stack : StickC Plus2, Core2, Cardputer',
-                'Alimentation et câbles',
-              ].map(item => (
-                <li class="flex items-start gap-2">
-                  <span class="text-primary mt-0.5 text-xs">▸</span>
-                  {item}
-                </li>
-              ))}
-            </ul>
           </div>
         </div>
       </div>
