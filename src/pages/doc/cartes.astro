@@ -21,6 +21,7 @@ const cartes = [
     ],
     pourquoi: "C'est la carte pour démarrer. Elle fait tout ce dont tu as besoin pour tes premiers projets : contrôler des LEDs, lire des capteurs, se connecter à Internet. Elle est suffisamment puissante pour des projets avancés et suffisamment simple pour débuter.",
     color: 'border-primary/30 bg-primary/5',
+    pinout: '/images/pinouts/esp32-devkit-v1-pinout.png',
   },
   {
     id: 'esp32-s3',
@@ -198,6 +199,18 @@ const cartes = [
               </div>
 
             </div>
+
+            {carte.pinout && (
+              <div class="mt-6 rounded-xl bg-white p-4">
+                <h4 class="text-xs font-bold text-base-content/50 uppercase tracking-wider mb-3">Brochage (pinout)</h4>
+                <img
+                  src={carte.pinout}
+                  alt={`Brochage de la carte ${carte.nom}`}
+                  class="w-full h-auto rounded-lg"
+                  loading="lazy"
+                />
+              </div>
+            )}
           </div>
         ))}
       </div>
