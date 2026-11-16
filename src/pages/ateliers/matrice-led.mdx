@@ -63,12 +63,16 @@ import { siteUrl } from '../../utils/url';
 
 **Manip 3 — Compteur tactile.** Le même afficheur affiche un nombre. Touche D4 pour incrémenter, D15 pour décrémenter. Pas de bouton : l'ESP32 mesure la capacité de ton doigt.
 
+**Manip 4 — Pong solo.** Une balle rebondit sur les murs et sur une raquette que tu déplaces avec D4 et D15. La balle accélère à chaque rebond — de 4 pixels/s au départ à 20 pixels/s au 10e rebond.
+
+**Manip 5 — Tetris.** Des pièces tombent du haut de la matrice. D4 = gauche, D15 = droite, D4+D15 court = rotation, D4+D15 long = chute immédiate.
+
 <div class="rounded-xl border border-success/30 bg-success/5 p-5 my-6 flex gap-4 items-start">
   <span class="text-2xl">🔌</span>
   <div>
-    <p class="font-semibold text-success mb-1">Un seul câblage pour les trois manips</p>
+    <p class="font-semibold text-success mb-1">Un seul câblage pour les cinq manips</p>
     <p class="text-sm text-base-content/60">
-      Les manips 2 et 3 utilisent exactement le même montage que la manip 1, avec deux fils supplémentaires
+      Les manips 2 à 5 utilisent exactement le même montage que la manip 1, avec deux fils supplémentaires
       pour les touch pads. <strong>Aucun fil à déplacer</strong> entre les manips.
     </p>
   </div>
@@ -259,6 +263,81 @@ C'est le même principe que l'écran de ton smartphone, en beaucoup plus simple.
 - Empêche le compteur de passer en dessous de 0 : `compteur = max(0, compteur - 1)`
 - Affiche un message spécial quand le compteur atteint 10 — par exemple fais clignoter l'affichage
 - Plus dur : ajoute un troisième touch pad (D13 par exemple) qui remet le compteur à zéro
+
+</ToiDeJouer>
+
+---
+
+## Manip 4 — Pong solo
+
+Une balle se déplace en diagonale sur la matrice 8 × 32. Ta raquette (3 pixels) est en bas. D4 la déplace à gauche, D15 à droite. Si la balle passe la raquette, game over.
+
+La vitesse de la balle augmente à chaque rebond sur la raquette : elle part à **4 pixels par seconde** et atteint **20 pixels par seconde** au 10e rebond.
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="atelier9-matrice-led/manip4_pong.py"
+  language="python"
+  title="manip4_pong.py — Pong solo avec accélération"
+/>
+
+<Prediction question="La balle démarre à 4 LEDs/s (250 ms par pas) et doit atteindre 20 LEDs/s (50 ms par pas) après 10 rebonds. Comment la fonction `speed_ms` calcule-t-elle cette accélération progressive ?">
+
+La formule `spd = 4 + (16 * min(bounces, 10)) // 10` fait une **interpolation linéaire** entre 4 et 20 :
+
+- 0 rebond : `4 + 0 = 4` → 250 ms par pas
+- 5 rebonds : `4 + 8 = 12` → 83 ms par pas
+- 10 rebonds : `4 + 16 = 20` → 50 ms par pas
+
+`min(bounces, 10)` plafonne à 10 — au-delà, la vitesse reste à 20 LEDs/s. Sans ce plafond, la balle deviendrait incontrôlable.
+
+</Prediction>
+
+<ToiDeJouer>
+
+- Observe l'accélération : essaie de tenir 10 rebonds et remarque la différence de vitesse
+- Modifie `speed_ms` pour démarrer plus lentement (remplace 4 par 2) ou accélérer plus vite (remplace 10 par 5)
+- Réduis la raquette à 2 pixels au lieu de 3 : cherche la ligne `for i in range(3)` et change en `range(2)`
+- Plus dur : fais clignoter la raquette quand la balle est dans la moitié basse (avertissement de danger)
+- Affiche le nombre de rebonds dans le Shell pour connaître ton record
+
+</ToiDeJouer>
+
+---
+
+## Manip 5 — Tetris
+
+Des pièces classiques (I, O, T, S, Z, J, L) tombent du haut de la matrice. Empile-les, les lignes complètes disparaissent. La matrice est orientée en portrait : 8 colonnes de large pour 32 lignes de haut.
+
+| Touch pad | Action |
+|---|---|
+| D4 | déplacer à gauche |
+| D15 | déplacer à droite |
+| D4 + D15 court (< 400 ms) | rotation |
+| D4 + D15 long (≥ 400 ms) | chute immédiate |
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="atelier9-matrice-led/manip5_tetris.py"
+  language="python"
+  title="manip5_tetris.py — Tetris complet"
+/>
+
+<Prediction question="Le jeu tourne dans une boucle principale avec `sleep_ms(40)`, soit 25 fois par seconde. Mais la pièce ne tombe pas à 25 lignes par seconde. Comment le code gère-t-il la vitesse de chute indépendamment de la boucle ?">
+
+Le code compare `ticks_ms()` à `fall_time + fall_ms` à chaque passage de boucle. Tant que l'écart n'atteint pas `fall_ms` (600 ms au départ), la pièce ne bouge pas.
+
+C'est le principe du **timer non bloquant** : la boucle tourne vite (40 ms) pour détecter les touches sans délai, mais l'action "chute d'un cran" n'est déclenchée que quand le délai `fall_ms` est écoulé. Les deux cadences sont indépendantes et ne se bloquent pas l'une l'autre.
+
+</Prediction>
+
+<ToiDeJouer>
+
+- Accélère la chute : réduis `fall_ms = 600` à `300` — le jeu devient nettement plus difficile
+- Essaie la chute immédiate (D4 + D15 maintenu ≥ 400 ms) pour placer rapidement une pièce
+- Observe l'animation game over : toutes les lignes s'allument de haut en bas, puis s'éteignent
+- Plus dur : modifie `new_piece()` pour que les pièces n'apparaissent que sur la moitié gauche (change `3` en `1`)
+- Cherche dans le code comment les collisions sont détectées : trouve la fonction `valid()` et lis-la
 
 </ToiDeJouer>
 
