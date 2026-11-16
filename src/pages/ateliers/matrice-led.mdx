@@ -63,7 +63,7 @@ import { siteUrl } from '../../utils/url';
 
 **Manip 3 — Compteur tactile.** Le même afficheur affiche un nombre. Touche D4 pour incrémenter, D15 pour décrémenter. Pas de bouton : l'ESP32 mesure la capacité de ton doigt.
 
-**Manip 4 — Pong solo.** Une balle rebondit sur les murs et sur une raquette que tu déplaces avec D4 et D15. La balle accélère à chaque rebond — de 4 pixels/s au départ à 20 pixels/s au 10e rebond.
+**Manip 4 — Snake.** Le serpent avance tout seul : D4 le fait virer à gauche, D15 à droite. Il mange la nourriture qui clignote, s'allonge et accélère. Un mur ou sa propre queue, et c'est perdu.
 
 **Manip 5 — Tetris.** Des pièces tombent du haut de la matrice. D4 = gauche, D15 = droite, D4+D15 court = rotation, D4+D15 long = chute immédiate.
 
@@ -268,38 +268,32 @@ C'est le même principe que l'écran de ton smartphone, en beaucoup plus simple.
 
 ---
 
-## Manip 4 — Pong solo
+## Manip 4 — Snake
 
-Une balle se déplace en diagonale sur la matrice 8 × 32. Ta raquette (3 pixels) est en bas. D4 la déplace à gauche, D15 à droite. Si la balle passe la raquette, game over.
-
-La vitesse de la balle augmente à chaque rebond sur la raquette : elle part à **4 pixels par seconde** et atteint **20 pixels par seconde** au 10e rebond.
+Le serpent (3 pixels au départ) avance tout seul sur la matrice 8 × 32. Tu ne le déplaces pas : tu le fais **virer**. D4 tourne à gauche, D15 tourne à droite, par rapport à sa direction actuelle. La nourriture clignote pour se distinguer du corps. Chaque bouchée allonge le serpent d'un pixel et l'accélère.
 
 <GitHubCodeBlock
   repo="vincent-herm/fablab-esp32-ateliers"
-  file="atelier9-matrice-led/manip4_pong.py"
+  file="atelier9-matrice-led/manip4_snake.py"
   language="python"
-  title="manip4_pong.py — Pong solo avec accélération"
+  title="manip4_snake.py — Snake à deux touches"
 />
 
-<Prediction question="La balle démarre à 4 LEDs/s (250 ms par pas) et doit atteindre 20 LEDs/s (50 ms par pas) après 10 rebonds. Comment la fonction `speed_ms` calcule-t-elle cette accélération progressive ?">
+<Prediction question="Les directions sont rangées dans une liste `DIRS = [haut, droite, bas, gauche]`. Pourquoi `direction = (direction + 1) % 4` fait-il tourner le serpent à droite, quelle que soit sa direction ?">
 
-La formule `spd = 4 + (16 * min(bounces, 10)) // 10` fait une **interpolation linéaire** entre 4 et 20 :
+Les quatre directions sont rangées **dans le sens des aiguilles d'une montre**. Avancer d'une case dans la liste, c'est tourner d'un quart de tour à droite : haut → droite → bas → gauche.
 
-- 0 rebond : `4 + 0 = 4` → 250 ms par pas
-- 5 rebonds : `4 + 8 = 12` → 83 ms par pas
-- 10 rebonds : `4 + 16 = 20` → 50 ms par pas
-
-`min(bounces, 10)` plafonne à 10 — au-delà, la vitesse reste à 20 LEDs/s. Sans ce plafond, la balle deviendrait incontrôlable.
+Le `% 4` (reste de la division par 4) fait **boucler** la liste : après « gauche » (indice 3), `3 + 1 = 4`, et `4 % 4 = 0` ramène à « haut ». Pour tourner à gauche, on recule : `(direction - 1) % 4`. En Python, `-1 % 4` vaut 3, donc ça boucle aussi dans l'autre sens.
 
 </Prediction>
 
 <ToiDeJouer>
 
-- Observe l'accélération : essaie de tenir 10 rebonds et remarque la différence de vitesse
-- Modifie `speed_ms` pour démarrer plus lentement (remplace 4 par 2) ou accélérer plus vite (remplace 10 par 5)
-- Réduis la raquette à 2 pixels au lieu de 3 : cherche la ligne `for i in range(3)` et change en `range(2)`
-- Plus dur : fais clignoter la raquette quand la balle est dans la moitié basse (avertissement de danger)
-- Affiche le nombre de rebonds dans le Shell pour connaître ton record
+- Ralentis le départ : dans `step_ms`, remplace `350` par `500`
+- Fais clignoter la nourriture plus vite : remplace `300` par `100` dans `ticks_ms() // 300`
+- Démarre avec un serpent plus long : ajoute des cases dans `reset()`, par exemple `(4, 1)` en dernier
+- Affiche la longueur du serpent dans le Shell à chaque bouchée pour connaître ton record
+- Plus dur : supprime les murs, le serpent qui sort d'un côté réapparaît de l'autre (indice : `nx % W`)
 
 </ToiDeJouer>
 
