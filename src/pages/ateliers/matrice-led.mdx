@@ -59,15 +59,17 @@ import { siteUrl } from '../../utils/url';
 
 **Manip 1 — Texte défilant.** Un message de ton choix défile en continu sur les 4 matrices chaînées. Une seule ligne à modifier pour changer le texte.
 
-**Manip 2 — Compteur tactile.** Le même afficheur affiche un nombre. Touche la broche D4 pour l'incrémenter, D15 pour le décrémenter. Pas de bouton : l'ESP32 mesure la capacité de ton doigt sur le fil.
+**Manip 2 — Calibrage touch.** Tu branches deux fils sur D4 et D15, et le Shell affiche leurs valeurs en temps réel. Tu touches, tu lis, tu trouves le bon seuil pour ta peau et ton environnement.
+
+**Manip 3 — Compteur tactile.** Le même afficheur affiche un nombre. Touche D4 pour incrémenter, D15 pour décrémenter. Pas de bouton : l'ESP32 mesure la capacité de ton doigt.
 
 <div class="rounded-xl border border-success/30 bg-success/5 p-5 my-6 flex gap-4 items-start">
   <span class="text-2xl">🔌</span>
   <div>
-    <p class="font-semibold text-success mb-1">Un seul câblage pour les deux manips</p>
+    <p class="font-semibold text-success mb-1">Un seul câblage pour les trois manips</p>
     <p class="text-sm text-base-content/60">
-      La manip 2 utilise exactement le même montage que la manip 1, avec deux fils supplémentaires
-      pour les touch pads. <strong>Aucun fil à déplacer</strong> entre les deux.
+      Les manips 2 et 3 utilisent exactement le même montage que la manip 1, avec deux fils supplémentaires
+      pour les touch pads. <strong>Aucun fil à déplacer</strong> entre les manips.
     </p>
   </div>
 </div>
@@ -105,7 +107,7 @@ Le module MAX7219 dialogue en **SPI** (comme le lecteur RFID de l'atelier 08). I
   CS   ──── D5       sélection du composant
   CLK  ──── D18      horloge
 
-Manip 2 — touch pads (en plus, aucun fil à retirer) :
+Manips 2 & 3 — touch pads (en plus, aucun fil à retirer) :
   D4   ──── fil libre de ~10 cm  (incrément  +)
   D15  ──── fil libre de ~10 cm  (décrément  −)`}</code></pre>
 </div>
@@ -115,7 +117,7 @@ Manip 2 — touch pads (en plus, aucun fil à retirer) :
   <div>
     <p class="font-semibold text-info mb-1">Touch pad = fil nu dans l'air</p>
     <p class="text-sm text-base-content/60">
-      Pour la manip 2, branche simplement un fil Dupont sur D4 et un autre sur D15 —
+      Pour les manips 2 et 3, branche simplement un fil Dupont sur D4 et un autre sur D15 —
       laisse l'autre extrémité libre. C'est ce bout de fil que tu toucheras du doigt.
       Pas besoin de composant supplémentaire.
     </p>
@@ -192,18 +194,51 @@ Le chaînage de 4 matrices fonctionne comme une file : chaque donnée entre par 
 
 ---
 
-## Manip 2 — Compteur tactile
+## Manip 2 — Calibrage des touch pads
 
-Même câblage, même bibliothèque — ajoute juste les deux fils de touch. Le programme affiche un nombre et le met à jour quand tu effleure D4 ou D15.
+Avant de programmer le compteur, on vérifie que les touch pads répondent bien sur ton matériel. L'ESP32 affiche dans le Shell les valeurs brutes de D4 et D15 — tu poses le doigt, tu lis, tu trouves le bon seuil.
 
 <GitHubCodeBlock
   repo="vincent-herm/fablab-esp32-ateliers"
-  file="atelier9-matrice-led/manip2_compteur_touch.py"
+  file="atelier9-matrice-led/manip2_test_touch.py"
   language="python"
-  title="manip2_compteur_touch.py — Compteur +/−"
+  title="manip2_test_touch.py — Lecture des valeurs touch"
 />
 
-<Prediction question="Le seuil est fixé à 200. Le code attend que la valeur repasse au-dessus de 200 après un appui (`while touch_plus.read() < SEUIL`). Pourquoi ce délai d'attente est-il nécessaire ?">
+<Prediction question="Au repos, les deux valeurs sont autour de 500. Quand tu poses le doigt, elles tombent vers 80. Pourquoi la valeur diminue-t-elle quand tu touches ?">
+
+L'ESP32 mesure une **charge capacitive** : plus le condensateur formé par la broche et ce qui l'entoure est grand, plus le temps de charge est long, plus la valeur lue est faible.
+
+Au repos, le fil dans l'air forme un tout petit condensateur → charge rapide → valeur haute (~500).  
+Ton doigt, beaucoup plus conducteur et plus grand, agrandit ce condensateur → charge plus lente → valeur basse (~80).
+
+C'est l'inverse de ce qu'on attendrait d'un "compteur" : la valeur ne monte pas quand tu touches, elle descend. D'où le test `< SEUIL` dans la manip suivante.
+
+</Prediction>
+
+<ToiDeJouer>
+
+- Observe la valeur au repos puis pose le doigt lentement — à quel moment la valeur commence-t-elle à bouger ?
+- Essaie avec un doigt mouillé, puis avec un ongle : quelle différence ?
+- Note la valeur minimale obtenue en contact et la valeur au repos → le seuil idéal est à mi-chemin entre les deux
+- Que se passe-t-il si tu approches le doigt sans toucher ? (effet de proximité)
+
+</ToiDeJouer>
+
+---
+
+## Manip 3 — Compteur tactile
+
+Même câblage — le programme affiche un nombre sur les matrices et le met à jour quand tu effleure D4 ou D15. Remplace la valeur `200` par ton seuil mesuré en manip 2.
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="atelier9-matrice-led/manip3_compteur_touch.py"
+  language="python"
+  title="manip3_compteur_touch.py — Compteur +/−"
+/>
+
+<Prediction question="Le seuil est fixé à 200 dans le code — mais tu viens de mesurer le tien en manip 2. Le code attend que la valeur repasse au-dessus du seuil après un appui (`while touch_plus.read() &lt; SEUIL`). Pourquoi ce délai d'attente est-il nécessaire ?">
 
 Sans ce délai, **un seul appui d'une seconde** déclencherait des dizaines d'incréments.
 
