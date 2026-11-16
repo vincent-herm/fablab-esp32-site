@@ -94,12 +94,21 @@ const ateliers = [
     duration: '3h',
     tags: ['ESP32', 'MAX7219', 'SPI', 'Matrice LED', 'Touch'],
   },
+  {
+    numero: 10,
+    title: 'Écran OLED et animations',
+    description: 'Texte et formes sur un écran OLED 0,96", puis sinusoïdes, étoiles, pluie Matrix et cube 3D qui tourne.',
+    href: siteUrl('/ateliers/ecran-oled/'),
+    level: 'debutant' as const,
+    duration: '2h',
+    tags: ['ESP32', 'OLED', 'SSD1306', 'I2C', 'Animations'],
+  },
 ];
 ---
 
 <Layout
   title="Ateliers pratiques"
-  description="10 ateliers MicroPython pour débutants en Ardèche. ESP32, NeoPixel, capteurs, RFID, son. Code sur GitHub, matériel fourni, gratuit en 2026."
+  description="11 ateliers MicroPython pour débutants en Ardèche. ESP32, NeoPixel, capteurs, RFID, son. Code sur GitHub, matériel fourni, gratuit en 2026."
 >
   <section class="py-20 hero-pattern border-b border-base-200/60">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -112,7 +121,7 @@ const ateliers = [
         <div class="flex flex-wrap gap-3 mt-8">
           <div class="inline-flex items-center gap-2 bg-base-200/60 rounded-full px-4 py-2 text-sm">
             <span class="w-2 h-2 rounded-full bg-success"></span>
-            10 ateliers disponibles
+            11 ateliers disponibles
           </div>
           <div class="inline-flex items-center gap-2 bg-base-200/60 rounded-full px-4 py-2 text-sm font-semibold">
             Gratuit en 2026 · 20 € / 3 h dès 2027 · 6 personnes max

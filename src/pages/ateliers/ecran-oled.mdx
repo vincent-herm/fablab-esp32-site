@@ -1,0 +1,213 @@
+---
+title: 'Écran OLED et animations'
+description: "Un écran OLED de 0,96 pouce en I2C : texte, formes, puis sinusoïdes, ondes, étoiles, pluie Matrix et cube 3D."
+level: 'debutant'
+duration: '2h'
+tags: ['ESP32', 'OLED', 'SSD1306', 'I2C', 'Animations']
+---
+
+import Layout from '../../layouts/Layout.astro';
+import GitHubCodeBlock from '../../components/GitHubCodeBlock.astro';
+import DifficultyBadge from '../../components/DifficultyBadge.astro';
+import ToiDeJouer from '../../components/ToiDeJouer.astro';
+import Prediction from '../../components/Prediction.astro';
+import { siteUrl } from '../../utils/url';
+
+<Layout title="Atelier 10 — Écran OLED et animations" description="Texte, formes et animations (sinusoïdes, étoiles, pluie Matrix, cube 3D) sur un écran OLED 0,96 pouce relié en I2C à l'ESP32.">
+
+<div class="border-b border-base-200/60 bg-base-200/20">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+    <div class="flex items-center gap-2 text-sm text-base-content/50">
+      <a href={siteUrl('/')} class="hover:text-base-content transition-colors">Accueil</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <a href={siteUrl('/ateliers/')} class="hover:text-base-content transition-colors">Ateliers</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <span class="text-base-content/80">Écran OLED et animations</span>
+    </div>
+  </div>
+</div>
+
+<section class="py-12 hero-pattern border-b border-base-200/60">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center gap-3 mb-6">
+      <span class="font-mono text-primary/60 text-sm font-bold bg-primary/10 px-3 py-1 rounded-lg">ATELIER 10</span>
+      <DifficultyBadge level="debutant" />
+    </div>
+    <h1 class="text-3xl sm:text-4xl font-black mb-4">Écran OLED et animations</h1>
+    <p class="text-base-content/65 text-lg leading-relaxed max-w-2xl mb-8">
+      Un petit écran de 128 × 64 pixels, quatre fils, et l'ESP32 dessine ce que tu veux :
+      du texte d'abord, puis des sinusoïdes, des étoiles qui filent, une pluie à la Matrix
+      et un cube en 3D qui tourne. Aucun bouton : on regarde, on comprend, on modifie.
+    </p>
+    <div class="flex flex-wrap gap-4">
+      <div class="flex items-center gap-2 text-sm text-base-content/60">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        2h
+      </div>
+      <div class="flex flex-wrap gap-2">
+        {['ESP32', 'OLED', 'SSD1306', 'I2C', 'Animations'].map(tag => (
+          <span class="text-xs px-2.5 py-1 rounded-lg bg-base-200/60 text-base-content/50 font-mono">{tag}</span>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mdx-content">
+
+## Matériel nécessaire
+
+<div class="overflow-x-auto rounded-xl border border-base-200/80 my-6">
+  <table class="table table-zebra w-full">
+    <thead>
+      <tr><th>Composant</th><th>Quantité</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="font-medium">ESP32</td><td>1</td><td class="text-base-content/60">Fourni en atelier</td></tr>
+      <tr><td class="font-medium">Écran OLED 0,96" I2C</td><td>1</td><td class="text-base-content/60">128 × 64 pixels, contrôleur SSD1306, 4 broches</td></tr>
+      <tr><td class="font-medium">Fils Dupont M-F</td><td>4</td><td class="text-base-content/60">Pour les 4 broches de l'écran</td></tr>
+      <tr><td class="font-medium">Câble micro-USB</td><td>1</td><td class="text-base-content/60">Fourni en atelier</td></tr>
+    </tbody>
+  </table>
+</div>
+
+---
+
+## Connexions
+
+L'écran dialogue en **I2C** : deux fils suffisent pour les données, plus l'alimentation.
+
+<div class="rounded-xl overflow-hidden border border-base-200/60 bg-[#1a1b26] my-4">
+  <div class="px-4 py-2 border-b border-white/8 text-white/50 text-xs font-mono">câblage</div>
+  <pre class="p-4 text-xs font-mono text-white/70 leading-relaxed"><code>{`Écran OLED (bus I2C) :
+  GND  ──── GND
+  VDD  ──── 3V3
+  SCK  ──── D22      horloge (SCL)
+  SDA  ──── D21      données`}</code></pre>
+</div>
+
+Selon les fabricants, la broche d'horloge s'appelle **SCK** ou **SCL** : c'est la même.
+
+### La bibliothèque `ssd1306.py`
+
+L'écran a besoin d'une bibliothèque à installer une fois sur la carte. Depuis Thonny :
+
+1. Ouvre le fichier `cours-exemples/oled/ssd1306.py` depuis le dépôt
+2. **Enregistre-le sur l'ESP32** (« Enregistrer sous… » → « MicroPython device ») sous le nom `ssd1306.py`
+
+Pour le détail, voir la <a href={siteUrl('/doc/bibliotheques/oled/')} class="link link-primary">fiche de la bibliothèque OLED</a>.
+
+---
+
+## Manip 1 — Texte et formes
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="atelier10-oled/manip1_texte.py"
+  language="python"
+  title="manip1_texte.py — Premier affichage"
+/>
+
+Au démarrage, le Shell affiche l'adresse de l'écran sur le bus I2C (en général `0x3c`). Si la liste est vide, l'écran n'est pas vu : vérifie les fils SDA et SCK.
+
+<Prediction question="Le programme appelle `oled.text(...)` plusieurs fois, mais rien ne s'affiche avant la ligne `oled.show()`. Pourquoi ?">
+
+L'ESP32 dessine d'abord dans une **image en mémoire** (un tableau de 128 × 64 points). `text`, `rect` ou `hline` ne modifient que cette image.
+
+`oled.show()` envoie l'image complète vers l'écran par le bus I2C, d'un seul coup. On prépare tout, puis on affiche : l'écran ne montre jamais un dessin à moitié fait.
+
+C'est aussi pour ça que le compteur efface seulement sa petite zone avec `fill_rect` avant d'écrire le nouveau nombre : sans ça, les chiffres se superposeraient.
+
+</Prediction>
+
+### Les coordonnées de l'écran
+
+Le point `(0, 0)` est **en haut à gauche**. `x` va de 0 à 127 vers la droite, `y` de 0 à 63 vers le bas. Chaque caractère de `oled.text` occupe 8 × 8 pixels : on peut écrire 16 caractères sur 8 lignes.
+
+<ToiDeJouer>
+
+- Écris ton prénom au centre de l'écran : calcule `x` pour qu'il soit centré (indice : `(128 - 8 × nombre_de_lettres) // 2`)
+- Remplace le cadre `rect` par `fill_rect` : que se passe-t-il pour le texte ?
+- Écris un texte en noir sur fond blanc : `oled.fill(1)` puis `oled.text("...", x, y, 0)`
+- Retire la ligne `fill_rect` du compteur et observe les chiffres
+- Plus dur : dessine un smiley avec `oled.ellipse` (cercle) et `oled.pixel` (yeux)
+
+</ToiDeJouer>
+
+---
+
+## Manip 2 — Les animations
+
+Cinq animations s'enchaînent en boucle, environ 8 secondes chacune :
+
+1. **Sinusoïde puis courbe de Lissajous**, tracées point par point
+2. **Ondes** qui défilent
+3. **Champ d'étoiles** : on traverse l'espace à toute vitesse
+4. **Pluie Matrix** : des caractères qui tombent en colonnes
+5. **Cube 3D** qui tourne, avec ses faces cachées
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="atelier10-oled/manip2_animations.py"
+  language="python"
+  title="manip2_animations.py — Cinq animations"
+/>
+
+<Prediction question="Une sinusoïde vaut entre −1 et 1, mais l'écran compte en pixels, de 0 à 63. Comment la ligne `round(32 - 26 * y)` transforme-t-elle l'un en l'autre ?">
+
+On part de `y`, entre −1 et 1 :
+
+- `26 * y` agrandit la courbe : entre −26 et 26 pixels
+- `32 - ...` la place au milieu de l'écran (ligne 32) et la **retourne**, car sur l'écran `y` grandit vers le bas, alors qu'en maths il grandit vers le haut
+- `round` arrondit au pixel le plus proche
+
+Résultat : `y = 1` donne la ligne 6 (en haut), `y = −1` la ligne 58 (en bas). Toutes les animations utilisent ce même passage des maths aux pixels.
+
+</Prediction>
+
+### Le principe d'une animation
+
+Chaque animation répète la même boucle : **effacer** (`oled.fill(0)`), **dessiner** l'image suivante, **envoyer** (`oled.show()`). Entre deux images, on change un tout petit peu une valeur : la `phase` pour les ondes, la distance des étoiles, l'`angle` du cube. Répété 30 à 50 fois par seconde, l'œil voit un mouvement.
+
+Le cube montre en plus une idée de jeu vidéo : on ne dessine que les faces **tournées vers toi**. Sans ça, toutes les arêtes s'affichent et l'œil ne sait plus quelle face est devant.
+
+<ToiDeJouer>
+
+- Change `DUREE` pour que chaque animation dure 4 secondes, ou 20
+- Ne garde que ton animation préférée : modifie la liste `animations` à la fin du code
+- Ondes : change `x / 11` en `x / 5` pour des vagues plus serrées, ou `0.16` en `0.05` pour les ralentir
+- Lissajous : remplace `sin(2 * a)` et `sin(3 * a)` par d'autres nombres (3 et 4, 5 et 4…) et découvre de nouvelles figures
+- Cube : agrandis-le avec `TAILLE`, ou change `INCLINAISON` pour le voir de plus haut
+- Plus dur : fais tourner le cube dans l'autre sens, puis alterne le sens toutes les 2 secondes
+
+</ToiDeJouer>
+
+---
+
+## Pour aller plus loin
+
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6">
+  {[
+    { title: 'Oscilloscope', desc: 'Lis une tension sur une entrée analogique (potentiomètre, micro) et trace sa courbe en direct.' },
+    { title: 'Station météo', desc: 'Affiche une température mesurée par un capteur DS18B20 : c\'est l\'atelier 03.' },
+    { title: 'Tes propres animations', desc: 'Une balle qui rebondit, un feu d\'artifice, un logo qui tourne : tout se construit avec effacer, dessiner, envoyer.' },
+  ].map(card => (
+    <div class="rounded-xl border border-base-200/80 bg-base-200/30 p-5">
+      <h4 class="font-semibold text-sm mb-2">{card.title}</h4>
+      <p class="text-xs text-base-content/60">{card.desc}</p>
+    </div>
+  ))}
+</div>
+
+<div class="border-t border-base-200/60 pt-10 mt-10 flex items-center justify-between">
+  <a href={siteUrl('/ateliers/matrice-led/')} class="group flex items-center gap-3 rounded-xl border border-base-200/80 bg-base-200/30 px-5 py-4 hover:border-primary/30 transition-colors">
+    <svg class="w-5 h-5 text-base-content/40 group-hover:text-primary group-hover:-translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+    <div><div class="text-xs text-base-content/50 mb-0.5">Atelier précédent</div><div class="font-semibold text-sm group-hover:text-primary transition-colors">Matrice LED MAX7219</div></div>
+  </a>
+  <div class="rounded-xl border border-base-200/40 bg-base-200/10 px-5 py-4 opacity-40 cursor-not-allowed">
+    <div class="text-right"><div class="text-xs text-base-content/50 mb-0.5">Atelier suivant</div><div class="font-semibold text-sm text-base-content/40">Bientôt disponible</div></div>
+  </div>
+</div>
+
+</div>
+</Layout>
