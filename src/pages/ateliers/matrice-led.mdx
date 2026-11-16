@@ -1,6 +1,6 @@
 ---
 title: 'Matrice LED MAX7219'
-description: "Affiche un texte défilant sur 4 matrices 8×8 chaînées, puis crée un compteur piloté par touch pads — sans bouton, juste les doigts."
+description: "Texte défilant sur 4 matrices 8×8 chaînées, touches tactiles sans bouton, puis Snake et Tetris pilotés du bout des doigts."
 level: 'debutant'
 duration: '3h'
 tags: ['ESP32', 'MAX7219', 'SPI', 'Matrice LED', 'Touch']
@@ -13,7 +13,7 @@ import ToiDeJouer from '../../components/ToiDeJouer.astro';
 import Prediction from '../../components/Prediction.astro';
 import { siteUrl } from '../../utils/url';
 
-<Layout title="Atelier 09 — Matrice LED MAX7219" description="Texte défilant et compteur tactile sur 4 matrices 8×8 chaînées en SPI.">
+<Layout title="Atelier 09 — Matrice LED MAX7219" description="Texte défilant, touches tactiles, Snake et Tetris sur 4 matrices 8×8 chaînées en SPI.">
 
 <div class="border-b border-base-200/60 bg-base-200/20">
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
@@ -36,8 +36,8 @@ import { siteUrl } from '../../utils/url';
     <h1 class="text-3xl sm:text-4xl font-black mb-4">Matrice LED MAX7219</h1>
     <p class="text-base-content/65 text-lg leading-relaxed max-w-2xl mb-8">
       4 matrices 8×8 chaînées forment un afficheur de 32 × 8 pixels. Tu fais défiler
-      un message personnalisé, puis tu construis un compteur que tu pilotes du bout
-      des doigts — sans aucun bouton.
+      un message personnalisé, tu apprends à lire le toucher de tes doigts, puis tu
+      joues à Snake et à Tetris — sans aucun bouton.
     </p>
     <div class="flex flex-wrap gap-4">
       <div class="flex items-center gap-2 text-sm text-base-content/60">
@@ -90,7 +90,7 @@ import { siteUrl } from '../../utils/url';
     <tbody>
       <tr><td class="font-medium">ESP32</td><td>1</td><td class="text-base-content/60">Fourni en atelier</td></tr>
       <tr><td class="font-medium">Module MAX7219 4-en-1</td><td>1</td><td class="text-base-content/60">4 matrices 8×8 chaînées sur un seul PCB</td></tr>
-      <tr><td class="font-medium">Fils Dupont M-F</td><td>5</td><td class="text-base-content/60">Pour les 5 broches du module</td></tr>
+      <tr><td class="font-medium">Fils Dupont M-F</td><td>7</td><td class="text-base-content/60">5 pour le module, 2 pour les touches tactiles</td></tr>
       <tr><td class="font-medium">Câble micro-USB</td><td>1</td><td class="text-base-content/60">Fourni en atelier</td></tr>
     </tbody>
   </table>
@@ -111,9 +111,9 @@ Le module MAX7219 dialogue en **SPI** (comme le lecteur RFID de l'atelier 08). I
   CS   ──── D5       sélection du composant
   CLK  ──── D18      horloge
 
-Manips 2 & 3 — touch pads (en plus, aucun fil à retirer) :
-  D4   ──── fil libre de ~10 cm  (incrément  +)
-  D15  ──── fil libre de ~10 cm  (décrément  −)`}</code></pre>
+Manips 2 à 5 — touches tactiles (en plus, aucun fil à retirer) :
+  D4   ──── fil libre de ~10 cm  (+ / gauche)
+  D15  ──── fil libre de ~10 cm  (− / droite)`}</code></pre>
 </div>
 
 <div class="rounded-xl border border-info/30 bg-info/5 p-5 my-6 flex gap-4 items-start">
@@ -121,7 +121,7 @@ Manips 2 & 3 — touch pads (en plus, aucun fil à retirer) :
   <div>
     <p class="font-semibold text-info mb-1">Touch pad = fil nu dans l'air</p>
     <p class="text-sm text-base-content/60">
-      Pour les manips 2 et 3, branche simplement un fil Dupont sur D4 et un autre sur D15 —
+      À partir de la manip 2, branche simplement un fil Dupont sur D4 et un autre sur D15 —
       laisse l'autre extrémité libre. C'est ce bout de fil que tu toucheras du doigt.
       Pas besoin de composant supplémentaire.
     </p>
@@ -205,7 +205,7 @@ L'ESP32 mesure une **charge capacitive** : plus le condensateur formé par la br
 Au repos, le fil dans l'air forme un tout petit condensateur → charge rapide → valeur haute (~500).  
 Ton doigt, beaucoup plus conducteur et plus grand, agrandit ce condensateur → charge plus lente → valeur basse (~80).
 
-C'est l'inverse de ce qu'on attendrait d'un "compteur" : la valeur ne monte pas quand tu touches, elle descend. D'où le test `< SEUIL` dans la manip suivante.
+Toucher fait donc **baisser** la valeur. D'où le test `< SEUIL` dans les manips suivantes.
 
 </Prediction>
 
@@ -222,7 +222,7 @@ C'est l'inverse de ce qu'on attendrait d'un "compteur" : la valeur ne monte pas 
 
 ## Manip 3 — Compteur tactile
 
-Même câblage — le programme affiche un nombre sur les matrices et le met à jour quand tu effleure D4 ou D15. Remplace la valeur `200` par ton seuil mesuré en manip 2.
+Même câblage — le programme affiche un nombre sur les matrices et le met à jour quand tu effleures D4 ou D15. Remplace la valeur `200` par ton seuil mesuré en manip 2.
 
 <GitHubCodeBlock
   repo="vincent-herm/fablab-esp32-ateliers"
@@ -231,7 +231,7 @@ Même câblage — le programme affiche un nombre sur les matrices et le met à 
   title="manip3_compteur_touch.py — Compteur +/−"
 />
 
-<Prediction question="Le seuil est fixé à 200 dans le code — mais tu viens de mesurer le tien en manip 2. Le code attend que la valeur repasse au-dessus du seuil après un appui (`while touch_plus.read() &lt; SEUIL`). Pourquoi ce délai d'attente est-il nécessaire ?">
+<Prediction question="Après un appui, le code attend que la valeur repasse au-dessus du seuil après un appui (`while touch_plus.read() &lt; SEUIL`). Pourquoi ce délai d'attente est-il nécessaire ?">
 
 Sans ce délai, **un seul appui d'une seconde** déclencherait des dizaines d'incréments.
 
@@ -239,16 +239,8 @@ L'ESP32 lit le touch pad en continu dans la boucle principale à ~50 fois par se
 
 </Prediction>
 
-### Le touch pad en interne
-
-L'ESP32 intègre 10 capteurs tactiles capacitifs. Quand tu poses le doigt sur un fil relié à une broche tactile, la capacité du circuit change. L'ESP32 mesure cette variation et renvoie une **valeur numérique** : haute au repos (~500-600), basse au contact (~50-100). Fixer un seuil à 200 distingue les deux états de façon robuste.
-
-C'est le même principe que l'écran de ton smartphone, en beaucoup plus simple.
-
 <ToiDeJouer>
 
-- Affiche dans le Shell la valeur brute du touch pad : `print(touch_plus.read())` — observe les variations au repos et au contact
-- Ajuste le seuil si tes doigts donnent des valeurs différentes
 - Empêche le compteur de passer en dessous de 0 : `compteur = max(0, compteur - 1)`
 - Affiche un message spécial quand le compteur atteint 10 — par exemple fais clignoter l'affichage
 - Plus dur : ajoute un troisième touch pad (D13 par exemple) qui remet le compteur à zéro
@@ -317,7 +309,6 @@ C'est le principe du **timer non bloquant** : la boucle tourne vite (40 ms) pour
 <ToiDeJouer>
 
 - Accélère la chute : réduis `fall_ms = 600` à `300` — le jeu devient nettement plus difficile
-- Essaie la chute immédiate (D4 + D15 maintenu ≥ 400 ms) pour placer rapidement une pièce
 - Observe l'animation game over : toutes les lignes s'allument de haut en bas, puis s'éteignent
 - Plus dur : modifie `new_piece()` pour que les pièces n'apparaissent que sur la moitié gauche (change `3` en `1`)
 - Cherche dans le code comment les collisions sont détectées : trouve la fonction `valid()` et lis-la
