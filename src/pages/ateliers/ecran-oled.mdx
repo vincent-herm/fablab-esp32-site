@@ -124,16 +124,6 @@ C'est aussi pour ça que le compteur efface seulement sa petite zone avec `fill_
 
 Le point `(0, 0)` est **en haut à gauche**. `x` va de 0 à 127 vers la droite, `y` de 0 à 63 vers le bas. Chaque caractère de `oled.text` occupe 8 × 8 pixels : on peut écrire 16 caractères sur 8 lignes.
 
-<ToiDeJouer>
-
-- Écris ton prénom au centre de l'écran : calcule `x` pour qu'il soit centré (indice : `(128 - 8 × nombre_de_lettres) // 2`)
-- Remplace le cadre `rect` par `fill_rect` : que se passe-t-il pour le texte ?
-- Écris un texte en noir sur fond blanc : `oled.fill(1)` puis `oled.text("...", x, y, 0)`
-- Retire la ligne `fill_rect` du compteur et observe les chiffres
-- Plus dur : dessine un smiley avec `oled.ellipse` (cercle) et `oled.pixel` (yeux)
-
-</ToiDeJouer>
-
 ---
 
 ## Manip 2 — Les animations
