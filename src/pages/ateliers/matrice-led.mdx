@@ -1,6 +1,6 @@
 ---
 title: 'Matrice LED MAX7219'
-description: "Texte défilant sur 4 matrices 8×8 chaînées, touches tactiles sans bouton, puis Snake et Tetris pilotés du bout des doigts."
+description: "Texte défilant sur 4 matrices 8×8 chaînées, touches tactiles sans bouton, puis un Snake piloté du bout des doigts."
 level: 'debutant'
 duration: '3h'
 tags: ['ESP32', 'MAX7219', 'SPI', 'Matrice LED', 'Touch']
@@ -13,7 +13,7 @@ import ToiDeJouer from '../../components/ToiDeJouer.astro';
 import Prediction from '../../components/Prediction.astro';
 import { siteUrl } from '../../utils/url';
 
-<Layout title="Atelier 09 — Matrice LED MAX7219" description="Texte défilant, touches tactiles, Snake et Tetris sur 4 matrices 8×8 chaînées en SPI.">
+<Layout title="Atelier 09 — Matrice LED MAX7219" description="Texte défilant, touches tactiles et Snake sur 4 matrices 8×8 chaînées en SPI.">
 
 <div class="border-b border-base-200/60 bg-base-200/20">
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
@@ -37,7 +37,7 @@ import { siteUrl } from '../../utils/url';
     <p class="text-base-content/65 text-lg leading-relaxed max-w-2xl mb-8">
       4 matrices 8×8 chaînées forment un afficheur de 32 × 8 pixels. Tu fais défiler
       un message personnalisé, tu apprends à lire le toucher de tes doigts, puis tu
-      joues à Snake et à Tetris — sans aucun bouton.
+      joues à Snake — sans aucun bouton.
     </p>
     <div class="flex flex-wrap gap-4">
       <div class="flex items-center gap-2 text-sm text-base-content/60">
@@ -65,14 +65,12 @@ import { siteUrl } from '../../utils/url';
 
 **Manip 4 — Snake.** Le serpent avance tout seul : D4 le fait virer à gauche, D15 à droite. Il mange la nourriture qui clignote, s'allonge et accélère. Un mur ou sa propre queue, et c'est perdu.
 
-**Manip 5 — Tetris.** Des pièces tombent du haut de la matrice. D4 = gauche, D15 = droite, D4+D15 court = rotation, D4+D15 long = chute immédiate.
-
 <div class="rounded-xl border border-success/30 bg-success/5 p-5 my-6 flex gap-4 items-start">
   <span class="text-2xl">🔌</span>
   <div>
-    <p class="font-semibold text-success mb-1">Un seul câblage pour les cinq manips</p>
+    <p class="font-semibold text-success mb-1">Un seul câblage pour les quatre manips</p>
     <p class="text-sm text-base-content/60">
-      Les manips 2 à 5 utilisent exactement le même montage que la manip 1, avec deux fils supplémentaires
+      Les manips 2 à 4 utilisent exactement le même montage que la manip 1, avec deux fils supplémentaires
       pour les touch pads. <strong>Aucun fil à déplacer</strong> entre les manips.
     </p>
   </div>
@@ -111,7 +109,7 @@ Le module MAX7219 dialogue en **SPI** (comme le lecteur RFID de l'atelier 08). I
   CS   ──── D5       sélection du composant
   CLK  ──── D18      horloge
 
-Manips 2 à 5 — touches tactiles (en plus, aucun fil à retirer) :
+Manips 2 à 4 — touches tactiles (en plus, aucun fil à retirer) :
   D4   ──── fil libre de ~10 cm  (+ / gauche)
   D15  ──── fil libre de ~10 cm  (− / droite)`}</code></pre>
 </div>
@@ -275,43 +273,6 @@ Le `% 4` (reste de la division par 4) fait **boucler** la liste : après « gauc
 - Démarre avec un serpent plus long : ajoute des cases dans `reset()`, par exemple `(4, 1)` en dernier
 - Affiche la longueur du serpent dans le Shell à chaque bouchée pour connaître ton record
 - Plus dur : supprime les murs, le serpent qui sort d'un côté réapparaît de l'autre (indice : `nx % W`)
-
-</ToiDeJouer>
-
----
-
-## Manip 5 — Tetris
-
-Des pièces classiques (I, O, T, S, Z, J, L) tombent du haut de la matrice. Empile-les, les lignes complètes disparaissent. La matrice est orientée en portrait : 8 colonnes de large pour 32 lignes de haut.
-
-| Touch pad | Action |
-|---|---|
-| D4 | déplacer à gauche |
-| D15 | déplacer à droite |
-| D4 + D15 court (< 400 ms) | rotation |
-| D4 + D15 long (≥ 400 ms) | chute immédiate |
-
-<GitHubCodeBlock
-  repo="vincent-herm/fablab-esp32-ateliers"
-  file="atelier9-matrice-led/manip5_tetris.py"
-  language="python"
-  title="manip5_tetris.py — Tetris complet"
-/>
-
-<Prediction question="Le jeu tourne dans une boucle principale avec `sleep_ms(40)`, soit 25 fois par seconde. Mais la pièce ne tombe pas à 25 lignes par seconde. Comment le code gère-t-il la vitesse de chute indépendamment de la boucle ?">
-
-Le code compare `ticks_ms()` à `fall_time + fall_ms` à chaque passage de boucle. Tant que l'écart n'atteint pas `fall_ms` (600 ms au départ), la pièce ne bouge pas.
-
-C'est le principe du **timer non bloquant** : la boucle tourne vite (40 ms) pour détecter les touches sans délai, mais l'action "chute d'un cran" n'est déclenchée que quand le délai `fall_ms` est écoulé. Les deux cadences sont indépendantes et ne se bloquent pas l'une l'autre.
-
-</Prediction>
-
-<ToiDeJouer>
-
-- Accélère la chute : réduis `fall_ms = 600` à `300` — le jeu devient nettement plus difficile
-- Observe l'animation game over : toutes les lignes s'allument de haut en bas, puis s'éteignent
-- Plus dur : modifie `new_piece()` pour que les pièces n'apparaissent que sur la moitié gauche (change `3` en `1`)
-- Cherche dans le code comment les collisions sont détectées : trouve la fonction `valid()` et lis-la
 
 </ToiDeJouer>
 
