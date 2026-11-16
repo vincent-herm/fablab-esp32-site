@@ -85,6 +85,15 @@ const ateliers = [
     duration: '3h',
     tags: ['ESP32', 'RFID', 'RC522', 'SPI', 'Sécurité'],
   },
+  {
+    numero: 9,
+    title: 'Matrice LED MAX7219',
+    description: 'Fais défiler un texte sur 4 matrices 8×8 chaînées, puis crée un compteur piloté par touch pads — sans bouton, juste les doigts.',
+    href: siteUrl('/ateliers/matrice-led/'),
+    level: 'debutant' as const,
+    duration: '3h',
+    tags: ['ESP32', 'MAX7219', 'SPI', 'Matrice LED', 'Touch'],
+  },
 ];
 ---
 
@@ -103,7 +112,7 @@ const ateliers = [
         <div class="flex flex-wrap gap-3 mt-8">
           <div class="inline-flex items-center gap-2 bg-base-200/60 rounded-full px-4 py-2 text-sm">
             <span class="w-2 h-2 rounded-full bg-success"></span>
-            9 ateliers disponibles
+            10 ateliers disponibles
           </div>
           <div class="inline-flex items-center gap-2 bg-base-200/60 rounded-full px-4 py-2 text-sm font-semibold">
             Gratuit en 2026 · 20 € / 3 h dès 2027 · 6 personnes max

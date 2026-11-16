@@ -1,0 +1,258 @@
+---
+title: 'Matrice LED MAX7219'
+description: "Affiche un texte défilant sur 4 matrices 8×8 chaînées, puis crée un compteur piloté par touch pads — sans bouton, juste les doigts."
+level: 'debutant'
+duration: '3h'
+tags: ['ESP32', 'MAX7219', 'SPI', 'Matrice LED', 'Touch']
+---
+
+import Layout from '../../layouts/Layout.astro';
+import GitHubCodeBlock from '../../components/GitHubCodeBlock.astro';
+import DifficultyBadge from '../../components/DifficultyBadge.astro';
+import ToiDeJouer from '../../components/ToiDeJouer.astro';
+import Prediction from '../../components/Prediction.astro';
+import { siteUrl } from '../../utils/url';
+
+<Layout title="Atelier 09 — Matrice LED MAX7219" description="Texte défilant et compteur tactile sur 4 matrices 8×8 chaînées en SPI.">
+
+<div class="border-b border-base-200/60 bg-base-200/20">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+    <div class="flex items-center gap-2 text-sm text-base-content/50">
+      <a href={siteUrl('/')} class="hover:text-base-content transition-colors">Accueil</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <a href={siteUrl('/ateliers/')} class="hover:text-base-content transition-colors">Ateliers</a>
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+      <span class="text-base-content/80">Matrice LED MAX7219</span>
+    </div>
+  </div>
+</div>
+
+<section class="py-12 hero-pattern border-b border-base-200/60">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center gap-3 mb-6">
+      <span class="font-mono text-primary/60 text-sm font-bold bg-primary/10 px-3 py-1 rounded-lg">ATELIER 09</span>
+      <DifficultyBadge level="debutant" />
+    </div>
+    <h1 class="text-3xl sm:text-4xl font-black mb-4">Matrice LED MAX7219</h1>
+    <p class="text-base-content/65 text-lg leading-relaxed max-w-2xl mb-8">
+      4 matrices 8×8 chaînées forment un afficheur de 32 × 8 pixels. Tu fais défiler
+      un message personnalisé, puis tu construis un compteur que tu pilotes du bout
+      des doigts — sans aucun bouton.
+    </p>
+    <div class="flex flex-wrap gap-4">
+      <div class="flex items-center gap-2 text-sm text-base-content/60">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        3h
+      </div>
+      <div class="flex flex-wrap gap-2">
+        {['ESP32', 'MAX7219', 'SPI', 'Matrice LED', 'Touch'].map(tag => (
+          <span class="text-xs px-2.5 py-1 rounded-lg bg-base-200/60 text-base-content/50 font-mono">{tag}</span>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mdx-content">
+
+## Ce que tu vas créer
+
+**Manip 1 — Texte défilant.** Un message de ton choix défile en continu sur les 4 matrices chaînées. Une seule ligne à modifier pour changer le texte.
+
+**Manip 2 — Compteur tactile.** Le même afficheur affiche un nombre. Touche la broche D4 pour l'incrémenter, D15 pour le décrémenter. Pas de bouton : l'ESP32 mesure la capacité de ton doigt sur le fil.
+
+<div class="rounded-xl border border-success/30 bg-success/5 p-5 my-6 flex gap-4 items-start">
+  <span class="text-2xl">🔌</span>
+  <div>
+    <p class="font-semibold text-success mb-1">Un seul câblage pour les deux manips</p>
+    <p class="text-sm text-base-content/60">
+      La manip 2 utilise exactement le même montage que la manip 1, avec deux fils supplémentaires
+      pour les touch pads. <strong>Aucun fil à déplacer</strong> entre les deux.
+    </p>
+  </div>
+</div>
+
+---
+
+## Matériel nécessaire
+
+<div class="overflow-x-auto rounded-xl border border-base-200/80 my-6">
+  <table class="table table-zebra w-full">
+    <thead>
+      <tr><th>Composant</th><th>Quantité</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="font-medium">ESP32</td><td>1</td><td class="text-base-content/60">Fourni en atelier</td></tr>
+      <tr><td class="font-medium">Module MAX7219 4-en-1</td><td>1</td><td class="text-base-content/60">4 matrices 8×8 chaînées sur un seul PCB</td></tr>
+      <tr><td class="font-medium">Fils Dupont M-F</td><td>5</td><td class="text-base-content/60">Pour les 5 broches du module</td></tr>
+      <tr><td class="font-medium">Câble micro-USB</td><td>1</td><td class="text-base-content/60">Fourni en atelier</td></tr>
+    </tbody>
+  </table>
+</div>
+
+---
+
+## Connexions
+
+Le module MAX7219 dialogue en **SPI** (comme le lecteur RFID de l'atelier 08). Il n'a que 5 broches à connecter.
+
+<div class="rounded-xl overflow-hidden border border-base-200/60 bg-[#1a1b26] my-4">
+  <div class="px-4 py-2 border-b border-white/8 text-white/50 text-xs font-mono">câblage</div>
+  <pre class="p-4 text-xs font-mono text-white/70 leading-relaxed"><code>{`Module MAX7219 (bus SPI) :
+  VCC  ──── 3V3
+  GND  ──── GND
+  DIN  ──── D23      données vers le module
+  CS   ──── D5       sélection du composant
+  CLK  ──── D18      horloge
+
+Manip 2 — touch pads (en plus, aucun fil à retirer) :
+  D4   ──── fil libre de ~10 cm  (incrément  +)
+  D15  ──── fil libre de ~10 cm  (décrément  −)`}</code></pre>
+</div>
+
+<div class="rounded-xl border border-info/30 bg-info/5 p-5 my-6 flex gap-4 items-start">
+  <span class="text-2xl">💡</span>
+  <div>
+    <p class="font-semibold text-info mb-1">Touch pad = fil nu dans l'air</p>
+    <p class="text-sm text-base-content/60">
+      Pour la manip 2, branche simplement un fil Dupont sur D4 et un autre sur D15 —
+      laisse l'autre extrémité libre. C'est ce bout de fil que tu toucheras du doigt.
+      Pas besoin de composant supplémentaire.
+    </p>
+  </div>
+</div>
+
+<div class="rounded-xl border border-warning/30 bg-warning/5 p-5 my-6 flex gap-4 items-start">
+  <span class="text-2xl">⚠️</span>
+  <div>
+    <p class="font-semibold text-warning mb-1">D2 ne fonctionne pas comme touch pad</p>
+    <p class="text-sm text-base-content/60">
+      GPIO 2 est utilisé par la LED interne de l'ESP32 et par le mode de démarrage de la puce.
+      Utilise toujours D4 et D15 pour les touches capacitives.
+    </p>
+  </div>
+</div>
+
+<p class="text-sm text-base-content/60">
+  Pour le détail du composant, voir la
+  <a href={siteUrl('/doc/composants/max7219/')} class="link link-primary">fiche MAX7219</a>.
+</p>
+
+### La bibliothèque `max7219.py`
+
+Le module a besoin d'une bibliothèque à installer une fois sur la carte. Depuis le gestionnaire de fichiers de Thonny :
+
+1. Ouvre le fichier `composants/max7219-matrice/max7219.py` depuis le dépôt
+2. **Enregistre-le sur l'ESP32** (clic droit → « Enregistrer sous… » → « MicroPython device ») sous le nom `max7219.py`
+
+---
+
+## Manip 1 — Texte défilant
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="atelier9-matrice-led/manip1_texte_defilant.py"
+  language="python"
+  title="manip1_texte_defilant.py — Message personnalisé"
+/>
+
+<Prediction question="Le message fait 19 caractères. La boucle `for x in range(32, -largeur_msg, -1)` : quelle est la valeur de `largeur_msg` et pourquoi le défilement commence-t-il à x = 32 ?">
+
+`largeur_msg` vaut `19 × 8 = 152` pixels — chaque caractère de la police occupe exactement 8 colonnes.
+
+La boucle démarre à `x = 32` (largeur totale de l'afficheur) pour que le message **entre par la droite** : le premier caractère apparaît au bord droit et disparaît à gauche. Si on démarrait à `x = 0`, le message serait déjà partiellement affiché au départ, sans l'effet d'entrée.
+
+La boucle se termine à `x = -152` pour que le **dernier caractère sorte complètement** avant de recommencer.
+
+</Prediction>
+
+### Le protocole SPI
+
+Le MAX7219 utilise le même bus SPI que le RC522 de l'atelier 08. Rappel :
+
+| Fil | Rôle |
+|---|---|
+| `CLK` | l'horloge — l'ESP32 donne le rythme |
+| `DIN` | *Data In* — l'ESP32 envoie |
+| `CS` | sélection — active ce composant |
+
+Ici il n'y a pas de fil retour (pas de MISO) car les matrices n'ont rien à renvoyer : elles reçoivent des ordres, c'est tout.
+
+Le chaînage de 4 matrices fonctionne comme une file : chaque donnée entre par le premier module et est décalée vers le suivant à chaque envoi. L'ESP32 envoie 4 paires (registre + valeur) d'un coup, et chaque module conserve la sienne quand le CS repasse à 1.
+
+<ToiDeJouer>
+
+- Change le message : remplace `"FABLAB SUD-ARDECHE "` par ton prénom
+- Accélère ou ralentis le défilement : modifie `sleep_ms(50)` — essaie 20 et 150
+- Modifie la luminosité : `display.brightness(3)` accepte 0 (minimum) à 15 (maximum)
+- Fais défiler le message dans l'autre sens : change `range(32, -largeur_msg, -1)` en `range(-largeur_msg, 32, 1)`
+- Plus dur : affiche alternativement le message vers la gauche puis vers la droite
+
+</ToiDeJouer>
+
+---
+
+## Manip 2 — Compteur tactile
+
+Même câblage, même bibliothèque — ajoute juste les deux fils de touch. Le programme affiche un nombre et le met à jour quand tu effleure D4 ou D15.
+
+<GitHubCodeBlock
+  repo="vincent-herm/fablab-esp32-ateliers"
+  file="atelier9-matrice-led/manip2_compteur_touch.py"
+  language="python"
+  title="manip2_compteur_touch.py — Compteur +/−"
+/>
+
+<Prediction question="Le seuil est fixé à 200. Le code attend que la valeur repasse au-dessus de 200 après un appui (`while touch_plus.read() < SEUIL`). Pourquoi ce délai d'attente est-il nécessaire ?">
+
+Sans ce délai, **un seul appui d'une seconde** déclencherait des dizaines d'incréments.
+
+L'ESP32 lit le touch pad en continu dans la boucle principale à ~50 fois par seconde. Si on ne bloque pas tant que le doigt est posé, chaque passage de boucle compte comme un nouvel appui. La ligne `while touch_plus.read() < SEUIL: sleep_ms(10)` attend que tu enlèves le doigt avant de continuer — c'est **l'anti-rebond logiciel** du tactile, l'équivalent de l'anti-rebond qu'on utilise avec les boutons physiques.
+
+</Prediction>
+
+### Le touch pad en interne
+
+L'ESP32 intègre 10 capteurs tactiles capacitifs. Quand tu poses le doigt sur un fil relié à une broche tactile, la capacité du circuit change. L'ESP32 mesure cette variation et renvoie une **valeur numérique** : haute au repos (~500-600), basse au contact (~50-100). Fixer un seuil à 200 distingue les deux états de façon robuste.
+
+C'est le même principe que l'écran de ton smartphone, en beaucoup plus simple.
+
+<ToiDeJouer>
+
+- Affiche dans le Shell la valeur brute du touch pad : `print(touch_plus.read())` — observe les variations au repos et au contact
+- Ajuste le seuil si tes doigts donnent des valeurs différentes
+- Empêche le compteur de passer en dessous de 0 : `compteur = max(0, compteur - 1)`
+- Affiche un message spécial quand le compteur atteint 10 — par exemple fais clignoter l'affichage
+- Plus dur : ajoute un troisième touch pad (D13 par exemple) qui remet le compteur à zéro
+
+</ToiDeJouer>
+
+---
+
+## Pour aller plus loin
+
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 my-6">
+  {[
+    { title: 'Horloge temps réel', desc: 'Affiche l\'heure en direct en combinant le MAX7219 avec un module RTC DS3231 (I2C).' },
+    { title: 'Score de jeu', desc: 'Branche des boutons classiques et crée un jeu de réflexe — le plus rapide à appuyer fait monter son score.' },
+    { title: 'Afficheur WiFi', desc: 'L\'ESP32 récupère une donnée en ligne (météo, cours de bourse) et la défile en continu.' },
+  ].map(card => (
+    <div class="rounded-xl border border-base-200/80 bg-base-200/30 p-5">
+      <h4 class="font-semibold text-sm mb-2">{card.title}</h4>
+      <p class="text-xs text-base-content/60">{card.desc}</p>
+    </div>
+  ))}
+</div>
+
+<div class="border-t border-base-200/60 pt-10 mt-10 flex items-center justify-between">
+  <a href={siteUrl('/ateliers/rfid/')} class="group flex items-center gap-3 rounded-xl border border-base-200/80 bg-base-200/30 px-5 py-4 hover:border-primary/30 transition-colors">
+    <svg class="w-5 h-5 text-base-content/40 group-hover:text-primary group-hover:-translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+    <div><div class="text-xs text-base-content/50 mb-0.5">Atelier précédent</div><div class="font-semibold text-sm group-hover:text-primary transition-colors">Badge RFID</div></div>
+  </a>
+  <div class="rounded-xl border border-base-200/40 bg-base-200/10 px-5 py-4 opacity-40 cursor-not-allowed">
+    <div class="text-right"><div class="text-xs text-base-content/50 mb-0.5">Atelier suivant</div><div class="font-semibold text-sm text-base-content/40">Bientôt disponible</div></div>
+  </div>
+</div>
+
+</div>
+</Layout>
